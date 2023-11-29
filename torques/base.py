@@ -21,14 +21,13 @@ class TorqueObject(object):
         # Execute evaluation function when instance of class is called
         return self.eval_torque(t, y)
 
+    def __iter__(self):
+        # Returning an iterator over the base torque instance itself
+        return iter([self.base_torque]) if type(self.base_torque) is not list else iter(self.base_torque)
+
     def __add__(self, other):
         # Create a new instance of the class
         # Sum the results of eval_torque from both torques
         return TorqueObject(
-            [*self.de_list_able(self), *self.de_list_able(other)], lambda t, y: (self(t, y) + other(t, y))
+            [*self, *other], lambda t, y: (self(t, y) + other(t, y))
         )
-
-    @classmethod
-    def de_list_able(cls, potential_list: list or object) -> list:
-        """ Returns an unpack-able list in any case """
-        return potential_list if type(potential_list) is list else [potential_list]

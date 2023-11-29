@@ -1,5 +1,6 @@
 from attitude_propagator import AttitudePropagator
 from entities import Cylinder
+from torques.base import TorqueObject
 from torques.eddy_current import EddyCurrentTorque
 
 # Generate debris
@@ -13,7 +14,7 @@ debris = Cylinder(
 
 # External moments
 # Eddy Currents
-ect = EddyCurrentTorque(
+eddy: TorqueObject = EddyCurrentTorque(
     entity=debris,
     chaser_init_omega=[0.0, 0.0, 0.0],
     magnetic_field=[2e-4, 2e-4, 2e-4]
@@ -27,7 +28,7 @@ debris_prop = AttitudePropagator(
 )
 
 # Propagate
-debris_prop.propagate(ext_torque=ect, t_span=[0, 700], eval_points=700)
+debris_prop.propagate(ext_torque=eddy, t_span=[0, 700], eval_points=700)
 
 # Plot evolution
 debris_prop.plot_evolution()

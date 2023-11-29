@@ -5,7 +5,7 @@ from torques.base import TorqueObject
 
 class EddyCurrentTorque(object):
     def __new__(cls, *args, **kwargs) -> TorqueObject:
-        # Create Eddy Currents instance
+        # Create this torque's instance
         this_torque_instance = super().__new__(cls)
 
         # Return TorqueObject
