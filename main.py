@@ -1,7 +1,7 @@
 from attitude.attitude_propagator import AttitudePropagator
 from utilities.entities import Cylinder
-from torques.base import TorqueObject
-from torques.eddy_current import EddyCurrentTorque
+from attitude.torques import TorqueObject
+from attitude.torques import EddyCurrentTorque
 
 # Generate debris
 debris = Cylinder(

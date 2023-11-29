@@ -1,6 +1,6 @@
 import numpy as np
 
-from torques.base import TorqueObject
+from attitude.torques.base import TorqueObject
 
 
 class EddyCurrentTorque(object):
