@@ -11,7 +11,7 @@ class EddyCurrentTorque(object):
         # Return TorqueObject
         return TorqueObject(this_torque_instance, this_torque_instance.eval_torque, *args, **kwargs)
 
-    def __init__(self, *, entity, chaser_init_omega: np.ndarray, magnetic_field: np.ndarray):
+    def __init__(self, *, entity, chaser_w0: np.ndarray, magnetic_field: np.ndarray):
         """
         Initializes the eddy current torque class.
 
@@ -29,7 +29,7 @@ class EddyCurrentTorque(object):
         # - create object also for chaser (?)
         # - propagate its attitude (consider interaction with target) (?)
         # - model magnetic field with higher accuracy (!)
-        self.w0c: np.ndarray = np.array(chaser_init_omega)  # In the target's body reference frame
+        self.w0c: np.ndarray = np.array(chaser_w0)  # In the target's body reference frame
         self.B: np.ndarray = np.array(magnetic_field)
 
         # Compute gamma

@@ -3,37 +3,38 @@ from scipy.integrate import solve_ivp
 import numpy as np
 
 from attitude.attitude_conversion import quaternion_to_euler
-from attitude.attitude_anim import animate_attitude
-
-
-class QuaternionError(BaseException):
-    pass
+from attitude.attitude_animation import animate_attitude
 
 
 class AttitudePropagator(object):
-    def __init__(self, *, entity, init_omega: np.ndarray, init_quaternions: np.ndarray) -> None:
+    def __init__(self, *, entity, w0: np.ndarray, q0: np.ndarray, M_ext) -> None:
         # Entity
         self.__entity = entity
         self.__I = self.__entity.inertia_matrix
 
         # Initial parameters
-        self.__w0: np.ndarray = np.array(init_omega)                       # Initial angular velocity
-        self.__q0: np.ndarray = np.array(init_quaternions) / np.linalg.norm(init_quaternions)  # Initial quaternions (normalized)
+        self.w0: np.ndarray = np.array(w0)                                           # Initial angular velocity
+        self.q0: np.ndarray = np.array(q0) / np.linalg.norm(q0)  # Initial quaternions (normalized)
+        self.y0: np.ndarray = np.concatenate((self.w0, self.q0))                             # Overall initial conditions
+
+        # External torque
+        self.__ext_torque = M_ext
 
         # Evolving parameters
-        self.__prop_sol = None  # Propagation solution
+        self._timestamps = None  # Propagation timestamps
+        self._prop_sol = None  # Propagation solution
 
     @property
     def t(self) -> np.ndarray:
-        return self.__prop_sol.t
+        return self._timestamps
 
     @property
     def w(self) -> np.ndarray:
-        return self.__prop_sol.y[:3, :]
+        return self._prop_sol[:3, :]
 
     @property
     def q(self) -> np.ndarray:
-        return self.__prop_sol.y[3:, :]
+        return self._prop_sol[3:, :]
 
     @property
     def euler_angles(self) -> np.ndarray:
@@ -49,31 +50,22 @@ class AttitudePropagator(object):
                 converted = np.hstack((converted, euler))
         return converted
 
-    def propagate(self, *, ext_torque, t_span: np.ndarray, eval_points: int = 1000) -> None:
-        # Save local inertia matrix
-        In = self.__I
+    def propagate_function(self, t, y) -> list:
+        M = self.__ext_torque(t, y)  # Evaluate external moments at timestep t
+        w = y[:3]                    # Extract angular velocities
+        q = y[3:]                    # Extract quaternions
 
-        # Define Euler equations
-        def euler_equations(t, y):
-            M = ext_torque(t, y)  # Evaluate external moments at timestep t
-            w = y[:3]             # Extract angular velocities
-            q = y[3:]             # Extract quaternions
+        # Normalize quaternions
+        q = q / np.linalg.norm(q)
 
-            # Normalize quaternions
-            q = q / np.linalg.norm(q)
-
-            dwx = (M[0] - (In[2, 2] - In[1, 1]) * w[2] * w[1]) / In[0, 0]
-            dwy = (M[1] - (In[0, 0] - In[2, 2]) * w[0] * w[2]) / In[1, 1]
-            dwz = (M[2] - (In[1, 1] - In[0, 0]) * w[1] * w[0]) / In[2, 2]
-            dq1 = 0.5 * (w[2] * q[1] - w[1] * q[2] + w[0] * q[3])
-            dq2 = 0.5 * (-w[2] * q[0] + w[0] * q[2] + w[1] * q[3])
-            dq3 = 0.5 * (w[1] * q[0] - w[0] * q[1] + w[2] * q[3])
-            dq4 = 0.5 * (-w[0] * q[0] - w[1] * q[1] - w[2] * q[2])
-            return [dwx, dwy, dwz, dq1, dq2, dq3, dq4]
-
-        # Retrieve angular velocities
-        self.__prop_sol = solve_ivp(euler_equations, t_span, [*self.__w0, *self.__q0],
-                                    t_eval=np.linspace(*t_span, eval_points), method="Radau")
+        dwx = (M[0] - (self.__I[2, 2] - self.__I[1, 1]) * w[2] * w[1]) / self.__I[0, 0]
+        dwy = (M[1] - (self.__I[0, 0] - self.__I[2, 2]) * w[0] * w[2]) / self.__I[1, 1]
+        dwz = (M[2] - (self.__I[1, 1] - self.__I[0, 0]) * w[1] * w[0]) / self.__I[2, 2]
+        dq1 = 0.5 * (w[2] * q[1] - w[1] * q[2] + w[0] * q[3])
+        dq2 = 0.5 * (-w[2] * q[0] + w[0] * q[2] + w[1] * q[3])
+        dq3 = 0.5 * (w[1] * q[0] - w[0] * q[1] + w[2] * q[3])
+        dq4 = 0.5 * (-w[0] * q[0] - w[1] * q[1] - w[2] * q[2])
+        return [dwx, dwy, dwz, dq1, dq2, dq3, dq4]
 
     def plot_evolution(self) -> None:
         # Retrieve results

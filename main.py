@@ -1,7 +1,16 @@
-from attitude.attitude_propagator import AttitudePropagator
+# Entities
 from utilities.entities import Cylinder
-from attitude.torques import TorqueObject
-from attitude.torques import EddyCurrentTorque
+
+# Attitude
+from attitude.attitude_propagator import AttitudePropagator
+from attitude.torques.base import TorqueObject
+from attitude.torques.eddy_current import EddyCurrentTorque
+
+# Orbit
+from orbital.orbit_propagator import OrbitPropagator
+
+# Propagator
+from propagator import Propagator
 
 # Generate debris
 debris = Cylinder(
@@ -16,23 +25,22 @@ debris = Cylinder(
 # Eddy Currents
 eddy: TorqueObject = EddyCurrentTorque(
     entity=debris,
-    chaser_init_omega=[0.0, 0.0, 0.0],
+    chaser_w0=[0.0, 0.0, 0.0],
     magnetic_field=[2e-4, 2e-4, 2e-4]
 )
 
 # Instantiate propagator
-debris_prop = AttitudePropagator(
-    entity=debris,
-    init_omega=[0.5, 0.5, 0.5],
-    init_quaternions=[1.0, 0.0, 0.0, 0.0]
+debris_prop = Propagator(
+    attitude=AttitudePropagator(entity=debris, w0=[0.5, 0.5, 0.5], q0=[1.0, 0.0, 0.0, 0.0], M_ext=eddy),
+    orbit=OrbitPropagator(a0=1000, e0=0.0, i0=0.0, OM0=0.0, om0=0.0, f0=0.0)
 )
 
 # Propagate
-debris_prop.propagate(ext_torque=eddy, t_span=[0, 700], eval_points=700)
+debris_prop.propagate(t_span=[0, 700], eval_points=700)
 
 # Plot evolution
-debris_prop.plot_evolution()
-# debris_prop.plot_quaternions()
+debris_prop.attitude.plot_evolution()
+# debris_prop.attitude.plot_quaternions()
 
 # Animate evolution
-debris_prop.animate_evolution()
+# debris_prop.attitude.animate_evolution()
