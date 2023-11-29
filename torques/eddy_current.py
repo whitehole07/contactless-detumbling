@@ -6,10 +6,10 @@ from torques.base import TorqueObject
 class EddyCurrentTorque(object):
     def __new__(cls, *args, **kwargs) -> TorqueObject:
         # Create Eddy Currents instance
-        eddy_current_instance = super(EddyCurrentTorque, cls).__new__(cls)
+        this_torque_instance = super().__new__(cls)
 
         # Return TorqueObject
-        return TorqueObject(eddy_current_instance.eval_torque)
+        return TorqueObject(this_torque_instance, this_torque_instance.eval_torque, *args, **kwargs)
 
     def __init__(self, *, entity, w0c: np.ndarray, B: np.ndarray):
         """
