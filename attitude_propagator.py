@@ -11,14 +11,14 @@ class QuaternionError(BaseException):
 
 
 class AttitudePropagator(object):
-    def __init__(self, *, entity, w0: np.ndarray, q0: np.ndarray) -> None:
+    def __init__(self, *, entity, init_omega: np.ndarray, init_quaternions: np.ndarray) -> None:
         # Entity
         self.__entity = entity
         self.__I = self.__entity.inertia_matrix
 
         # Initial parameters
-        self.__w0: np.ndarray = np.array(w0)                       # Initial angular velocity
-        self.__q0: np.ndarray = np.array(q0) / np.linalg.norm(q0)  # Initial quaternions (normalized)
+        self.__w0: np.ndarray = np.array(init_omega)                       # Initial angular velocity
+        self.__q0: np.ndarray = np.array(init_quaternions) / np.linalg.norm(init_quaternions)  # Initial quaternions (normalized)
 
         # Evolving parameters
         self.__prop_sol = None  # Propagation solution
@@ -49,13 +49,13 @@ class AttitudePropagator(object):
                 converted = np.hstack((converted, euler))
         return converted
 
-    def propagate(self, *, M_ext, t_span: np.ndarray, eval_points: int = 1000) -> None:
+    def propagate(self, *, ext_torque, t_span: np.ndarray, eval_points: int = 1000) -> None:
         # Save local inertia matrix
         In = self.__I
 
         # Define Euler equations
         def euler_equations(t, y):
-            M = M_ext(t, y)  # Evaluate external moments at timestep t
+            M = ext_torque(t, y)  # Evaluate external moments at timestep t
             w = y[:3]        # Extract angular velocities
             q = y[3:]        # Extract quaternions
 

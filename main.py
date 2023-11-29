@@ -15,19 +15,19 @@ debris = Cylinder(
 # Eddy Currents
 ect = EddyCurrentTorque(
     entity=debris,
-    w0c=[0.0, 0.0, 0.0],
-    B=[2e-4, 2e-4, 2e-4]
+    chaser_init_omega=[0.0, 0.0, 0.0],
+    magnetic_field=[2e-4, 2e-4, 2e-4]
 )
 
 # Instantiate propagator
 debris_prop = AttitudePropagator(
     entity=debris,
-    w0=[0.5, 0.5, 0.5],
-    q0=[1.0, 0.0, 0.0, 0.0]
+    init_omega=[0.5, 0.5, 0.5],
+    init_quaternions=[1.0, 0.0, 0.0, 0.0]
 )
 
 # Propagate
-debris_prop.propagate(M_ext=ect, t_span=[0, 700], eval_points=700)
+debris_prop.propagate(ext_torque=ect, t_span=[0, 700], eval_points=700)
 
 # Plot evolution
 debris_prop.plot_evolution()
