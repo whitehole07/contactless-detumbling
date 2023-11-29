@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
-from utilities.attitude_conversion import quaternion_to_rotation_matrix
+from attitude.attitude_conversion import quaternion_to_rotation_matrix
 
 
 def animate_attitude(t, q, eu, h, r):

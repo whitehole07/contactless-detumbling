@@ -2,8 +2,8 @@ from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 import numpy as np
 
-from utilities.attitude_conversion import quaternion_to_euler
-from utilities.attitude_evol import animate_attitude
+from attitude.attitude_conversion import quaternion_to_euler
+from attitude.attitude_anim import animate_attitude
 
 
 class QuaternionError(BaseException):
@@ -56,8 +56,8 @@ class AttitudePropagator(object):
         # Define Euler equations
         def euler_equations(t, y):
             M = ext_torque(t, y)  # Evaluate external moments at timestep t
-            w = y[:3]        # Extract angular velocities
-            q = y[3:]        # Extract quaternions
+            w = y[:3]             # Extract angular velocities
+            q = y[3:]             # Extract quaternions
 
             # Normalize quaternions
             q = q / np.linalg.norm(q)

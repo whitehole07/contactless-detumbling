@@ -1,5 +1,5 @@
-from attitude_propagator import AttitudePropagator
-from entities import Cylinder
+from attitude.attitude_propagator import AttitudePropagator
+from utilities.entities import Cylinder
 from torques.base import TorqueObject
 from torques.eddy_current import EddyCurrentTorque
 
