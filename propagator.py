@@ -32,4 +32,5 @@ class Propagator(object):
         # Save solutions
         self.attitude._timestamps = self.__prop_sol.t
         self.attitude._prop_sol = self.__prop_sol.y[:7, :]  # Attitude solution
+        self.orbit._timestamps = self.__prop_sol.t
         self.orbit._prop_sol = self.__prop_sol.y[7:, :]   # Orbital solution

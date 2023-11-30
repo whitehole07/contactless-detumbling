@@ -39,7 +39,7 @@ debris_prop = Propagator(
 )
 
 # Propagate
-debris_prop.propagate(t_span=[0, 10000], eval_points=10000)
+debris_prop.propagate(t_span=[0, 500], eval_points=500)
 
 # Plot evolution
 debris_prop.attitude.plot_evolution()
