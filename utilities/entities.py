@@ -1,4 +1,4 @@
-__all__ = ["Cylinder"]
+__all__ = ["Cylinder", "Planet"]
 
 import numpy as np
 
@@ -16,3 +16,10 @@ class Cylinder(object):
 
         # Generate inertia matrix
         self.inertia_matrix: np.ndarray = cylinder_inertia(mass=mass, radius=radius, height=height)
+
+
+class Planet(object):
+    def __init__(self, mu: float, radius: float):
+        # Physical Properties
+        self.mu: float = mu
+        self.radius: float = radius

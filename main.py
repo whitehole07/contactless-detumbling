@@ -1,5 +1,5 @@
 # Entities
-from utilities.entities import Cylinder
+from utilities.entities import Cylinder, Planet
 
 # Attitude
 from attitude.attitude_propagator import AttitudePropagator
@@ -11,6 +11,9 @@ from orbital.orbit_propagator import OrbitPropagator
 
 # Propagator
 from propagator import Propagator
+
+# Generate Earth
+earth = Planet(mu=3.98600433e+5, radius=6371.01)
 
 # Generate debris
 debris = Cylinder(
@@ -32,15 +35,16 @@ eddy: TorqueObject = EddyCurrentTorque(
 # Instantiate propagator
 debris_prop = Propagator(
     attitude=AttitudePropagator(entity=debris, w0=[0.5, 0.5, 0.5], q0=[1.0, 0.0, 0.0, 0.0], M_ext=eddy),
-    orbit=OrbitPropagator(a0=1000, e0=0.0, i0=0.0, OM0=0.0, om0=0.0, f0=0.0)
+    orbit=OrbitPropagator(planet=earth, a0=(earth.radius+2000), e0=0.0, i0=10.0, OM0=0.0, om0=0.0, f0=0.0)
 )
 
 # Propagate
-debris_prop.propagate(t_span=[0, 700], eval_points=700)
+debris_prop.propagate(t_span=[0, 10000], eval_points=10000)
 
 # Plot evolution
 debris_prop.attitude.plot_evolution()
 # debris_prop.attitude.plot_quaternions()
+debris_prop.orbit.plot_orbit()
 
 # Animate evolution
 # debris_prop.attitude.animate_evolution()
