@@ -5,6 +5,7 @@ from utilities.entities import Cylinder, Planet
 from attitude.attitude_propagator import AttitudePropagator
 from attitude.torques.base import TorqueObject
 from attitude.torques.eddy_current import EddyCurrentTorque
+from attitude.torques.gravity_gradient import GravityGradientTorque
 
 # Orbit
 from orbital.orbit_propagator import OrbitPropagator
@@ -29,22 +30,26 @@ debris = Cylinder(
 eddy: TorqueObject = EddyCurrentTorque(
     entity=debris,
     chaser_w0=[0.0, 0.0, 0.0],
-    magnetic_field=[2e-4, 2e-4, 2e-4]
+    magnetic_field=[0, 1.5e-4, 1.5e-4]
+)
+# Gravity Gradient
+gravity: TorqueObject = GravityGradientTorque(
+    entity=debris,
+    planet=earth
 )
 
 # Instantiate propagator
 debris_prop = Propagator(
-    attitude=AttitudePropagator(entity=debris, w0=[0.5, 0.5, 0.5], q0=[1.0, 0.0, 0.0, 0.0], M_ext=eddy),
+    attitude=AttitudePropagator(entity=debris, w0=[0.3, 0, 0], q0=[0.0, 0.0, 0.0, 1.0], M_ext=eddy),
     orbit=OrbitPropagator(planet=earth, a0=(earth.radius+2000), e0=0.0, i0=10.0, OM0=0.0, om0=0.0, f0=0.0)
 )
 
 # Propagate
-debris_prop.propagate(t_span=[0, 500], eval_points=500)
+debris_prop.propagate(t_span=[0, 1750], eval_points=5000)
 
-# Plot evolution
-debris_prop.attitude.plot_evolution()
-# debris_prop.attitude.plot_quaternions()
+# Plots
 debris_prop.orbit.plot_orbit()
+debris_prop.attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
 
-# Animate evolution
-# debris_prop.attitude.animate_evolution()
+# Animate
+# debris_prop.attitude.animate(dpi=300)

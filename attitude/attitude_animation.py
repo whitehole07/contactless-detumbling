@@ -5,7 +5,7 @@ from matplotlib.animation import FuncAnimation
 from attitude.attitude_conversion import quaternion_to_rotation_matrix
 
 
-def animate_attitude(t, q, eu, h, r):
+def animate_attitude(t, q, eu, h, r, dpi):
     # Initialize the figure and 3D axis
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -55,13 +55,13 @@ def animate_attitude(t, q, eu, h, r):
 
         # Arrow for the positive x direction
         arrow_length: float = 5
-        ax.quiver(*(0, 0, 0), arrow_length, 0, 0, color='r', label='X-axis')
+        ax.quiver(*(0, 0, 0), arrow_length, 0, 0, color='b', label='X-axis')
 
         # Arrow for the positive y direction
         ax.quiver(*(0, 0, 0), 0, arrow_length, 0, color='g', label='Y-axis')
 
         # Arrow for the positive z direction
-        ax.quiver(*(0, 0, 0), 0, 0, arrow_length, color='b', label='Z-axis')
+        ax.quiver(*(0, 0, 0), 0, 0, arrow_length, color='r', label='Z-axis')
 
         # Remove tick labels
         ax.set_xticklabels([])
@@ -75,7 +75,7 @@ def animate_attitude(t, q, eu, h, r):
     anim = FuncAnimation(fig, update, frames=len(t), repeat=False)
 
     # Lower the DPI and resolution for faster rendering
-    dpi = 300  # Adjust the DPI as needed
+    dpi = dpi  # Adjust the DPI as needed
 
     # Save the animation with lower quality
     anim.save('rotation_animation.mp4', writer='ffmpeg', fps=30, dpi=dpi)

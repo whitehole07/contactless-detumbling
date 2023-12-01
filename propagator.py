@@ -21,7 +21,7 @@ class Propagator(object):
 
     def __overall_propagate_function(self, t, y) -> list:
         """ Returns a list of overall dys """
-        return [*self.attitude.propagate_function(t, y[:7]), *self.orbit.propagate_function(t, y[7:])]
+        return [*self.attitude.propagate_function(t, y), *self.orbit.propagate_function(t, y)]
 
     def propagate(self, *, t_span: np.ndarray, eval_points: int = 1000) -> None:
         """ Propagator """
@@ -31,6 +31,6 @@ class Propagator(object):
 
         # Save solutions
         self.attitude._timestamps = self.__prop_sol.t
-        self.attitude._prop_sol = self.__prop_sol.y[:7, :]  # Attitude solution
+        self.attitude._prop_sol = self.__prop_sol.y  # Attitude solution [:7, :]
         self.orbit._timestamps = self.__prop_sol.t
-        self.orbit._prop_sol = self.__prop_sol.y[7:, :]   # Orbital solution
+        self.orbit._prop_sol = self.__prop_sol.y     # Orbital solution [7:, :]

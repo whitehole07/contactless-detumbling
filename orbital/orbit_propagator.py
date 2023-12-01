@@ -30,19 +30,23 @@ class OrbitPropagator(object):
 
     @property
     def r(self) -> np.ndarray:
-        return self._prop_sol[:3, :]
+        return self._prop_sol[7:10]
 
     @property
     def v(self) -> np.ndarray:
-        return self._prop_sol[3:, :]
+        return self._prop_sol[10:13]
 
-    def propagate_function(self, t, y):
+    def propagate_function(self, t, y, internal_use=False):
         # Evaluate perturbing acceleration
-        # TODO: Consider adding orbital perturbations
+        # TODO: No-perturbation assumption, consider adding orbital perturbations
 
         # Position vector and velocity into single variables
-        rv = y[:3]
-        vv = y[3:]
+        if not internal_use:
+            rv = y[7:10]
+            vv = y[10:13]
+        else:
+            rv = y[:3]
+            vv = y[3:]
 
         # Distance from origin
         r = np.linalg.norm(rv)
@@ -73,12 +77,13 @@ class OrbitPropagator(object):
             # Propagate the rest of the orbit
             t_span = [self.t[-1], self.T]
             rest = solve_ivp(
-                self.propagate_function,
+                lambda t, y: self.propagate_function(t, y, internal_use=True),
                 t_span,
                 [*self.r[:, -1], *self.v[:, -1]],
                 t_eval=np.linspace(*t_span, 1000),
                 method="Radau")
-            ax.plot(rest.y[0, :], rest.y[1, :], rest.y[2, :], 'g-.', label='Rest')
+
+            ax.plot(rest.y[0, :], rest.y[1, :], rest.y[2, :], 'g-.', label='Remaining')
 
         # Mark the last point in the time series
         ax.scatter(self.r[0, -1], self.r[1, -1], self.r[2, -1], color='r', s=50, label='Last Position')

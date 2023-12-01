@@ -1,5 +1,7 @@
 __all__ = ["TorqueObject"]
 
+import numpy as np
+
 
 class TorqueObject(object):
     def __new__(cls, torque_instance, _, *args, **kwargs):
@@ -31,3 +33,13 @@ class TorqueObject(object):
         return TorqueObject(
             [*self, *other], lambda t, y: (self(t, y) + other(t, y))
         )
+
+    def generate_history(self, ts, ys) -> None:
+        # Iterate over torques
+        for torque in self:
+            # Compute torque for every time step
+            for t, y in zip(ts, ys.T):
+                if torque.history is not None:
+                    torque.history = np.hstack((torque.history, torque.eval_torque(t, y).reshape(3, 1)))
+                else:
+                    torque.history = torque.eval_torque(t, y).reshape(3, 1)

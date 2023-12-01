@@ -1,16 +1,17 @@
-from matplotlib import pyplot as plt
-from scipy.integrate import solve_ivp
 import numpy as np
 
 from attitude.attitude_conversion import quaternion_to_euler
 from attitude.attitude_animation import animate_attitude
+from attitude.attitude_plot import plot_evolution
+from attitude.torques.base import TorqueObject
+
 
 
 class AttitudePropagator(object):
     def __init__(self, *, entity, w0: np.ndarray, q0: np.ndarray, M_ext) -> None:
         # Entity
-        self.__entity = entity
-        self.__I = self.__entity.inertia_matrix
+        self._entity = entity
+        self.__I = self._entity.inertia_matrix
 
         # Initial parameters
         self.w0: np.ndarray = np.array(w0)                                           # Initial angular velocity
@@ -18,7 +19,7 @@ class AttitudePropagator(object):
         self.y0: np.ndarray = np.concatenate((self.w0, self.q0))                             # Overall initial conditions
 
         # External torque
-        self.__ext_torque = M_ext
+        self._ext_torque: TorqueObject = M_ext
 
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps
@@ -34,7 +35,7 @@ class AttitudePropagator(object):
 
     @property
     def q(self) -> np.ndarray:
-        return self._prop_sol[3:, :]
+        return self._prop_sol[3:7, :]
 
     @property
     def euler_angles(self) -> np.ndarray:
@@ -51,9 +52,9 @@ class AttitudePropagator(object):
         return converted
 
     def propagate_function(self, t, y) -> list:
-        M = self.__ext_torque(t, y)  # Evaluate external moments at timestep t
-        w = y[:3]                    # Extract angular velocities
-        q = y[3:]                    # Extract quaternions
+        M = self._ext_torque(t, y)  # Evaluate external moments at timestep t
+        w = y[0:3]                    # Extract angular velocities
+        q = y[3:7]                   # Extract quaternions
 
         # Normalize quaternions
         q = q / np.linalg.norm(q)
@@ -67,84 +68,16 @@ class AttitudePropagator(object):
         dq4 = 0.5 * (-w[0] * q[0] - w[1] * q[1] - w[2] * q[2])
         return [dwx, dwy, dwz, dq1, dq2, dq3, dq4]
 
-    def plot_evolution(self) -> None:
-        # Retrieve results
-        t = self.t
-        w = self.w
-        euler = self.euler_angles
+    def plot(self, quantities: list, ncols: int = 2) -> None:
+        plot_evolution(self, quantities, ncols)
 
-        # Print result
-        # Create a figure and axis with custom style
-        fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-        ax[0].set_xlabel('Time [s]')
-        ax[0].set_ylabel('Angular Velocity [rad/s]')
-
-        # Plot the vectors with customized appearance
-        ax[0].plot(t, w[0, :], label='$\omega_x$', color='blue', linestyle='-')
-        ax[0].plot(t, w[1, :], label='$\omega_y$', color='green', linestyle='--')
-        ax[0].plot(t, w[2, :], label='$\omega_z$', color='red', linestyle='-.')
-
-        # Add a legend
-        ax[0].legend()
-
-        # Add a title and grid
-        ax[0].set_title('Angular Velocities')
-        ax[0].grid(True)
-
-        # Angles plot
-        ax[1].set_xlabel('Time [s]')
-        ax[1].set_ylabel('Angle [deg]')
-
-        # Plot the vectors with customized appearance
-        ax[1].plot(t, euler[0, :], label=r'$\theta_{roll}$', color='blue', linestyle='-')
-        ax[1].plot(t, euler[1, :], label=r'$\theta_{pitch}$', color='green', linestyle='--')
-        ax[1].plot(t, euler[2, :], label=r'$\theta_{yaw}$', color='red', linestyle='-.')
-
-        # Add a legend
-        ax[1].legend()
-
-        # Add a title and grid
-        ax[1].set_title('Euler Angles')
-        ax[1].grid(True)
-
-        # Show the plot
-        plt.tight_layout()  # Improve spacing
-        plt.show()
-
-    def plot_quaternions(self) -> None:
-        # Retrieve results
-        t = self.t
-        q = self.q
-
-        # Print result
-        # Create a figure and axis with custom style
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.set_xlabel('Time [s]')
-        ax.set_ylabel('Quaternion Magnitude')
-
-        # Plot the vectors with customized appearance
-        ax.plot(t, q[0, :], label='$q_1$', color='blue', linestyle='-')
-        ax.plot(t, q[1, :], label='$q_2$', color='green', linestyle='--')
-        ax.plot(t, q[2, :], label='$q_3$', color='red', linestyle='-.')
-        ax.plot(t, q[3, :], label='$q_4$', color='purple', linestyle=':')
-
-        # Add a legend
-        ax.legend()
-
-        # Add a title and grid
-        ax.set_title('Quaternions')
-        ax.grid(True)
-
-        # Show the plot
-        plt.tight_layout()  # Improve spacing
-        plt.show()
-
-    def animate_evolution(self) -> None:
+    def animate(self, dpi: int = 300) -> None:
         # Plot Cylinder attitude
         animate_attitude(
             self.t,
             self.q,
             self.euler_angles,
-            self.__entity.height,
-            self.__entity.radius
+            self._entity.height,
+            self._entity.radius,
+            dpi
         )

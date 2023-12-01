@@ -23,6 +23,8 @@ class EddyCurrentTorque(object):
         Returns:
         None
         """
+        # Torque name
+        self.name = "Eddy Current"
 
         # Chaser attitude and magnetic field
         # TODO: to be considered:
@@ -40,9 +42,11 @@ class EddyCurrentTorque(object):
                 np.pi * entity.sigma * entity.radius**3 * entity.thickness * entity.height
         ) * np.diag([gamma, gamma, 1/2])
 
+        # Propagation history
+        self.history = None
+
     def eval_torque(self, t, y) -> np.ndarray:
         # Relative angular velocity
         wr: np.ndarray = y[:3] - self.w0c
 
-        # Compute torque
         return np.cross(np.dot(self.M_magn, np.cross(wr, self.B)), self.B)
