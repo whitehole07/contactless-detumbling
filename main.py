@@ -30,11 +30,11 @@ debris = Cylinder(
 electromagnet: Electromagnet = Electromagnet(
     n_turns=100,
     radius=2,
-    current=700,
+    current=800,
 )
 
-electromagnet.add_magnet(location=[0, 0, 8], moment=[0, 0, 1])
-electromagnet.add_magnet(location=[0, 0, -8], moment=[0, 0, 1])
+electromagnet.add_magnet(location=[0, 0, 8], moment=[0, 1, 1])
+electromagnet.add_magnet(location=[0, 0, -8], moment=[0, 1, 1])
 
 eddy: TorqueObject = EddyCurrentTorque(
     entity=debris,
@@ -50,12 +50,12 @@ gravity: TorqueObject = GravityGradientTorque(
 
 # Instantiate propagator
 debris_prop = Propagator(
-    attitude=AttitudePropagator(entity=debris, w0=[0.5, 0.2, 0], q0=[0.0, 0.0, 0.0, 1.0], M_ext=eddy),
+    attitude=AttitudePropagator(entity=debris, w0=[0.1, 0.05, 0.0], q0=[0, 0, 0, 1], M_ext=eddy+gravity),
     orbit=OrbitPropagator(planet=earth, a0=(earth.radius+2000), e0=0.0, i0=10.0, OM0=0.0, om0=0.0, f0=0.0)
 )
 
 # Propagate
-debris_prop.propagate(t_span=[0, 250], eval_points=250)
+debris_prop.propagate(t_span=[0, 150], eval_points=150)
 
 # Plots
 # debris_prop.orbit.plot_orbit()
