@@ -4,7 +4,7 @@ from attitude.attitude_conversion import quaternion_to_euler
 from attitude.attitude_animation import animate_attitude
 from attitude.attitude_plot import plot_evolution
 from attitude.torques.base import TorqueObject
-from attitude.torques.eddy_current import Electromagnet
+from attitude.torques.eddy_current import ElectromagnetEndEffector
 
 
 class AttitudePropagator(object):
@@ -53,8 +53,8 @@ class AttitudePropagator(object):
 
     def propagate_function(self, t, y) -> list:
         M = self._ext_torque(t, y)  # Evaluate external moments at timestep t
-        w = y[0:3]                    # Extract angular velocities
-        q = y[3:7]                   # Extract quaternions
+        w = y[0:3]                  # Extract angular velocities
+        q = y[3:7]                  # Extract quaternions
 
         # Normalize quaternions
         q = q / np.linalg.norm(q)
@@ -71,7 +71,7 @@ class AttitudePropagator(object):
     def plot(self, quantities: list, ncols: int = 2) -> None:
         plot_evolution(self, quantities, ncols)
 
-    def animate(self, *, dpi: int = 300, magnet: Electromagnet = None) -> None:
+    def animate(self, *, dpi: int = 300, magnets: list[ElectromagnetEndEffector] = ()) -> None:
         # Plot Cylinder attitude
         animate_attitude(
             self.t,
@@ -80,5 +80,5 @@ class AttitudePropagator(object):
             self._entity.height,
             self._entity.radius,
             dpi,
-            magnet=magnet
+            magnets=magnets
         )

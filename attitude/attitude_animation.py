@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 
 from attitude.attitude_conversion import quaternion_to_rotation_matrix
-from attitude.torques.eddy_current import Electromagnet
+from attitude.torques.eddy_current import ElectromagnetEndEffector
 from utilities.ui import LoadingBarWithTime
 
 
@@ -33,7 +33,7 @@ def rotate_cylinder(longitudinal_axis_m):
     return rotation_matrix
 
 
-def animate_attitude(t, q, eu, h, r, dpi, magnet: Electromagnet = None):
+def animate_attitude(t, q, eu, h, r, dpi, magnets: list[ElectromagnetEndEffector] = ()):
     # Initialize the figure and 3D axis
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')
@@ -47,22 +47,6 @@ def animate_attitude(t, q, eu, h, r, dpi, magnet: Electromagnet = None):
     Z, Theta = np.meshgrid(z, theta)
     X = r * np.cos(Theta)
     Y = r * np.sin(Theta)
-
-    # Magnet
-    if magnet is not None:
-        X_m_s, Y_m_s, Z_m_s = [], [], []
-        for loc in magnet.locations:
-            # Compute magnet meshgrid
-            z_m = np.linspace(loc[2] - magnet.height/2, loc[2] + magnet.height/2, 2)
-            X_m = loc[0] + magnet.radius*np.cos(theta)
-            Y_m = loc[1] + magnet.radius*np.sin(theta)
-            X_m, Z_m = np.meshgrid(X_m, z_m)
-            Y_m, Z_m = np.meshgrid(Y_m, z_m)
-
-            # Save
-            X_m_s.append(X_m)
-            Y_m_s.append(Y_m)
-            Z_m_s.append(Z_m)
 
     # Function to update the plot for each time step
     def update(frame):
@@ -85,24 +69,30 @@ def animate_attitude(t, q, eu, h, r, dpi, magnet: Electromagnet = None):
                         color='b', alpha=0.8, label="Debris")
 
         # Magnet
-        if magnet is not None:
-            for i, (location, moment) in enumerate(zip(magnet.locations, magnet.moments)):
-                # Rotate the cylinder based on the given axis_vector
-                R_m = rotate_cylinder(moment)
+        for magnet in magnets:
+            # Compute magnet meshgrid
+            z_m = np.linspace(magnet.locations[2, frame] - magnet.height / 2, magnet.locations[2, frame] + magnet.height / 2, 2)
+            X_m = magnet.locations[0, frame] + magnet.radius * np.cos(theta)
+            Y_m = magnet.locations[1, frame] + magnet.radius * np.sin(theta)
+            X_m, Z_m = np.meshgrid(X_m, z_m)
+            Y_m, Z_m = np.meshgrid(Y_m, z_m)
 
-                # Rotate Electromagnet
-                rotated_magnet = np.dot(R_m, np.array([X_m_s[i], Y_m_s[i], Z_m_s[i]]).reshape(3, -1) - location.reshape(-1, 1)) + location.reshape(-1, 1)
-                rotated_magnet = rotated_magnet.reshape(3, 2, 100)
+            # Rotate the cylinder based on the given axis_vector
+            R_m = rotate_cylinder(magnet.poses[:, frame])
 
-                # Plot magnetic moment
-                ax.quiver(*location, *(3*moment), color="orange")
+            # Rotate Electromagnet
+            rotated_magnet = np.dot(R_m, np.array([X_m, Y_m, Z_m]).reshape(3, -1) - magnet.locations[:, frame].reshape(-1, 1)) + magnet.locations[:, frame].reshape(-1, 1)
+            rotated_magnet = rotated_magnet.reshape(3, 2, 100)
 
-                # Cylinder
-                ax.plot_surface(rotated_magnet[0, :, :], rotated_magnet[1, :, :], rotated_magnet[2, :, :], color='orange',
-                                alpha=0.8, label="Electromagnet")
+            # Plot magnetic moment
+            ax.quiver(*magnet.locations[:, frame], *(3*magnet.poses[:, frame]), color="orange")
 
-                # Mark Center
-                ax.scatter(*location, color="orange")
+            # Cylinder
+            ax.plot_surface(rotated_magnet[0, :, :], rotated_magnet[1, :, :], rotated_magnet[2, :, :], color='orange',
+                            alpha=0.8, label="Electromagnet")
+
+            # Mark Center
+            ax.scatter(*magnet.locations[:, frame], color="orange")
 
         # Options
         ax.set_xlabel('X')
@@ -117,7 +107,7 @@ def animate_attitude(t, q, eu, h, r, dpi, magnet: Electromagnet = None):
                         f"Yaw:   {euler[2]:.2f}°", transform=ax.transAxes)
 
         # Set fixed ticks for the X, Y, and Z axes
-        max_magn = (max([x.max() for x in magnet.locations]) + magnet.radius) if magnet is not None else 0
+        max_magn = (max([x.max() for x in magnets[0].locations]) + magnets[0].radius) if magnets is not None else 0  # TODO: Fix removing index dependence
         max_dim_lim = int((max([r, h, max_magn]) + 20)/2)
 
         # Set ticks
