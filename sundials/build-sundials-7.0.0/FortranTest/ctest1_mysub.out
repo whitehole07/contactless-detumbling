@@ -1,0 +1,30 @@
+Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+
+Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+/snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest --check-build-system CMakeFiles/Makefile.cmake 0
+/snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest//CMakeFiles/progress.marks
+/usr/bin/make  -f CMakeFiles/Makefile2 all
+make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+/usr/bin/make  -f CMakeFiles/ctest1.dir/build.make CMakeFiles/ctest1.dir/depend
+make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/DependInfo.cmake
+Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/depend.internal".
+Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/depend.internal".
+Scanning dependencies of target ctest1
+make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+/usr/bin/make  -f CMakeFiles/ctest1.dir/build.make CMakeFiles/ctest1.dir/build
+make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+[ 50%] Building C object CMakeFiles/ctest1.dir/ctest1.c.o
+/usr/bin/cc   -O2 -g -DNDEBUG -o CMakeFiles/ctest1.dir/ctest1.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest1.c
+[100%] Linking C executable ctest1
+/snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ctest1.dir/link.txt --verbose=1
+/usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ctest1.dir/ctest1.c.o -o ctest1  libflib.a
+/usr/bin/ld: CMakeFiles/ctest1.dir/ctest1.c.o: en la función `main':
+/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest1.c:2: referencia a `mysub' sin definir
+collect2: error: ld returned 1 exit status
+make[2]: *** [CMakeFiles/ctest1.dir/build.make:100: ctest1] Error 1
+make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+make[1]: *** [CMakeFiles/Makefile2:86: CMakeFiles/ctest1.dir/all] Error 2
+make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+make: *** [Makefile:94: all] Error 2
+

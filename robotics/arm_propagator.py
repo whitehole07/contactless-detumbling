@@ -14,7 +14,7 @@ class ElectromagnetEndEffector(object):  # TODO: Create base parent class for an
         self.n_turns = n_turns
         self.radius = radius
         self.area = np.pi * radius ** 2
-        self.thickness = 0.005
+        self.thickness = 0.0005
         self.height = self.thickness * self.n_turns
 
         # Propagation indexes
@@ -22,7 +22,7 @@ class ElectromagnetEndEffector(object):  # TODO: Create base parent class for an
 
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps
-        self.locations = None    # Propagation solution
+        self.locations = None  # Propagation solution
         self.poses = None
         self.pose_sign = pose_sign
 
@@ -33,7 +33,7 @@ class ElectromagnetEndEffector(object):  # TODO: Create base parent class for an
 
         # Generate moments
         norm = np.linalg.norm(self.locations, axis=0)
-        self.poses = self.pose_sign *  self.locations / norm  # TODO: to adapt if introduced robotic arms constraints
+        self.poses = self.pose_sign * self.locations / norm  # TODO: to adapt if introduced robotic arms constraints
 
     def magnetic_field(self, _, y) -> np.ndarray:
         """
@@ -60,6 +60,44 @@ class ElectromagnetEndEffector(object):  # TODO: Create base parent class for an
         return mag * ((np.dot(3 * location, np.dot(moment, location))) / (r ** 5) - moment / (r ** 3))
 
 
+class Joint(object):
+    def __init__(self, theta: float, a: float, d: float, alpha: float, mass: float, com: np.ndarray) -> None:
+        """
+        Initialize the joint object
+
+        :param theta: angle about previous z from old x to new x
+        :param a: length of the common normal. Assuming a revolute joint, this is the radius about previous z.
+        :param d: offset along previous z to the common normal
+        :param alpha: angle about common normal, from old z axis to new z axis
+        :param mass: mass of the link
+        :param com: location of the center of mass of the link
+        """
+        # Save Denavit–Hartenberg parameters
+        self.theta = theta
+        self.a = a
+        self.d = d
+        self.alpha = alpha
+        self.mass = mass
+        self.com = com
+
+    def dh_transform(self):
+        """
+        Compute the Denavit-Hartenberg transformation matrix.
+        """
+        return np.array([
+            [np.cos(self.theta), -np.sin(self.theta) * np.cos(self.alpha), np.sin(self.theta) * np.sin(self.alpha), self.a * np.cos(self.theta)],
+            [np.sin(self.theta), np.cos(self.theta) * np.cos(self.alpha), -np.cos(self.theta) * np.sin(self.alpha), self.a * np.sin(self.theta)],
+            [0, np.sin(self.alpha), np.cos(self.alpha), self.d],
+            [0, 0, 0, 1]
+        ])
+
+
+class Arm(object):
+    def __init__(self, joints: list[Joint], end_effector: ElectromagnetEndEffector):
+        self.joints = joints
+        self.end_effector = end_effector
+
+
 class ArmPropagator(object):
     _count: int = 0
 
@@ -82,12 +120,12 @@ class ArmPropagator(object):
         self.end_effector = end_effector
 
         # Propagation indexes
-        self.indexes = slice(13+((self._count-1)*3), 16+((self._count-1)*3))
+        self.indexes = slice(13 + ((self._count - 1) * 3), 16 + ((self._count - 1) * 3))
         self.end_effector.indexes = self.indexes
 
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps
-        self._prop_sol = None    # Propagation solution
+        self._prop_sol = None  # Propagation solution
 
     def save(self, timestamps, solution) -> None:
         # Save at arm level
@@ -98,8 +136,8 @@ class ArmPropagator(object):
         self.end_effector.save(timestamps, solution)
 
     def propagate_function(self, t, _) -> list:
-        w = 0.05  # Angular velocity
-        r = 10
+        w = 0 #0.005  # Angular velocity
+        r = 8
 
         if self.end_effector.pose_sign == 1:
             # End effector's location (pose fixed)

@@ -5,6 +5,7 @@ from attitude.attitude_animation import animate_attitude
 from attitude.attitude_plot import plot_evolution
 from attitude.torques.base import TorqueObject
 from attitude.torques.eddy_current import ElectromagnetEndEffector
+from robotics.arm_propagator import Arm
 
 
 class AttitudePropagator(object):
@@ -71,7 +72,7 @@ class AttitudePropagator(object):
     def plot(self, quantities: list, ncols: int = 2) -> None:
         plot_evolution(self, quantities, ncols)
 
-    def animate(self, *, dpi: int = 300, magnets: list[ElectromagnetEndEffector] = ()) -> None:
+    def animate(self, *, dpi: int = 300, arms: list[Arm] = ()) -> None:
         # Plot Cylinder attitude
         animate_attitude(
             self.t,
@@ -80,5 +81,5 @@ class AttitudePropagator(object):
             self._entity.height,
             self._entity.radius,
             dpi,
-            magnets=magnets
+            arms=arms
         )

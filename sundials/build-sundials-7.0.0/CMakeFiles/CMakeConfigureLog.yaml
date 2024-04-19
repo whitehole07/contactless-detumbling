@@ -1,0 +1,1639 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:31 (project)"
+    message: |
+      The system is: Linux - 5.15.0-102-generic - x86_64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:31 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/cc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/3.29.2/CompilerIdC/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:64 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:31 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f2c25/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_f2c25.dir/build.make CMakeFiles/cmTC_f2c25.dir/build
+        make[1]: Entering directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ'
+        Building C object CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o
+        /usr/bin/cc   -v -o CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -c /snap/cmake/1381/share/cmake-3.29/Modules/CMakeCCompilerABI.c
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/cc
+        OFFLOAD_TARGET_NAMES=nvptx-none:hsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr,hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+        Thread model: posix
+        gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/9/cc1 -quiet -v -imultiarch x86_64-linux-gnu /snap/cmake/1381/share/cmake-3.29/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccSx5twr.s
+        GNU C17 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/../../../../x86_64-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/gcc/x86_64-linux-gnu/9/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        GNU C17 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        Compiler executable checksum: 01da938ff5dc2163489aa33cb3b747a7
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64'
+         as -v --64 -o CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o /tmp/ccSx5twr.s
+        GNU assembler version 2.34 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.34
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64'
+        Linking C executable cmTC_f2c25
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f2c25.dir/link.txt --verbose=1
+        /usr/bin/cc  -v -Wl,-v CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -o cmTC_f2c25
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/cc
+        COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper
+        OFFLOAD_TARGET_NAMES=nvptx-none:hsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr,hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+        Thread model: posix
+        gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_f2c25' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/9/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZGudyT.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_f2c25 /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+        collect2 version 9.4.0
+        /usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZGudyT.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_f2c25 /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+        GNU ld (GNU Binutils for Ubuntu) 2.34
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_f2c25' '-mtune=generic' '-march=x86-64'
+        make[1]: Leaving directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:134 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:31 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/gcc/x86_64-linux-gnu/9/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/9/include] ==> [/usr/lib/gcc/x86_64-linux-gnu/9/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/lib/gcc/x86_64-linux-gnu/9/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:170 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:31 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ']
+        ignore line: []
+        ignore line: [Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f2c25/fast]
+        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_f2c25.dir/build.make CMakeFiles/cmTC_f2c25.dir/build]
+        ignore line: [make[1]: Entering directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-oDowOQ']
+        ignore line: [Building C object CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/cc   -v -o CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -c /snap/cmake/1381/share/cmake-3.29/Modules/CMakeCCompilerABI.c]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/cc]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:hsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64']
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/9/cc1 -quiet -v -imultiarch x86_64-linux-gnu /snap/cmake/1381/share/cmake-3.29/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccSx5twr.s]
+        ignore line: [GNU C17 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 9.4.0  GMP version 6.2.0  MPFR version 4.0.2  MPC version 1.1.0  isl version isl-0.22.1-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/../../../../x86_64-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/9/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [GNU C17 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 9.4.0  GMP version 6.2.0  MPFR version 4.0.2  MPC version 1.1.0  isl version isl-0.22.1-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [Compiler executable checksum: 01da938ff5dc2163489aa33cb3b747a7]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o /tmp/ccSx5twr.s]
+        ignore line: [GNU assembler version 2.34 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.34]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64']
+        ignore line: [Linking C executable cmTC_f2c25]
+        ignore line: [/snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f2c25.dir/link.txt --verbose=1]
+        ignore line: [/usr/bin/cc  -v -Wl -v CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -o cmTC_f2c25]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/cc]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:hsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) ]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_f2c25' '-mtune=generic' '-march=x86-64']
+        link line: [ /usr/lib/gcc/x86_64-linux-gnu/9/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZGudyT.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_f2c25 /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccZGudyT.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-znow] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_f2c25] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib] ==> dir [/lib/../lib]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9/../../..] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../..]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lgcc] ==> lib [gcc]
+          arg [--push-state] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--pop-state] ==> ignore
+          arg [-lc] ==> lib [c]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--push-state] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--pop-state] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+        ignore line: [collect2 version 9.4.0]
+        ignore line: [/usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZGudyT.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_f2c25 /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_f2c25.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+        linker tool for 'C': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o] ==> [/usr/lib/x86_64-linux-gnu/Scrt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o] ==> [/usr/lib/x86_64-linux-gnu/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o] ==> [/usr/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9] ==> [/usr/lib/gcc/x86_64-linux-gnu/9]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib] ==> [/usr/lib]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib] ==> [/lib]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../..] ==> [/usr/lib]
+        implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+        implicit objs: [/usr/lib/x86_64-linux-gnu/Scrt1.o;/usr/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o;/usr/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/9;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:207 (cmake_determine_linker_id)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:31 (project)"
+    message: |
+      Running the C compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils for Ubuntu) 2.34
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckTypeSize.cmake:250 (check_include_file)"
+      - "cmake/SundialsIndexSize.cmake:36 (check_type_size)"
+      - "cmake/SundialsSetupCompilers.cmake:21 (include)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Looking for sys/types.h"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-bMA35P"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-bMA35P"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "HAVE_SYS_TYPES_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-bMA35P'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0b2b6/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_0b2b6.dir/build.make CMakeFiles/cmTC_0b2b6.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-bMA35P'
+        Building C object CMakeFiles/cmTC_0b2b6.dir/CheckIncludeFile.c.o
+        /usr/bin/cc    -o CMakeFiles/cmTC_0b2b6.dir/CheckIncludeFile.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-bMA35P/CheckIncludeFile.c
+        Linking C executable cmTC_0b2b6
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0b2b6.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_0b2b6.dir/CheckIncludeFile.c.o -o cmTC_0b2b6
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-bMA35P'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckTypeSize.cmake:251 (check_include_file)"
+      - "cmake/SundialsIndexSize.cmake:36 (check_type_size)"
+      - "cmake/SundialsSetupCompilers.cmake:21 (include)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Looking for stdint.h"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-NCLQqQ"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-NCLQqQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "HAVE_STDINT_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-NCLQqQ'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_2d907/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_2d907.dir/build.make CMakeFiles/cmTC_2d907.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-NCLQqQ'
+        Building C object CMakeFiles/cmTC_2d907.dir/CheckIncludeFile.c.o
+        /usr/bin/cc    -o CMakeFiles/cmTC_2d907.dir/CheckIncludeFile.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-NCLQqQ/CheckIncludeFile.c
+        Linking C executable cmTC_2d907
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2d907.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_2d907.dir/CheckIncludeFile.c.o -o cmTC_2d907
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-NCLQqQ'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckTypeSize.cmake:252 (check_include_file)"
+      - "cmake/SundialsIndexSize.cmake:36 (check_type_size)"
+      - "cmake/SundialsSetupCompilers.cmake:21 (include)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Looking for stddef.h"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-7wIoUR"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-7wIoUR"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "HAVE_STDDEF_H"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-7wIoUR'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_16316/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_16316.dir/build.make CMakeFiles/cmTC_16316.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-7wIoUR'
+        Building C object CMakeFiles/cmTC_16316.dir/CheckIncludeFile.c.o
+        /usr/bin/cc    -o CMakeFiles/cmTC_16316.dir/CheckIncludeFile.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-7wIoUR/CheckIncludeFile.c
+        Linking C executable cmTC_16316
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_16316.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_16316.dir/CheckIncludeFile.c.o -o cmTC_16316
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-7wIoUR'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckTypeSize.cmake:146 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckTypeSize.cmake:271 (__check_type_size_impl)"
+      - "cmake/SundialsIndexSize.cmake:36 (check_type_size)"
+      - "cmake/SundialsSetupCompilers.cmake:21 (include)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Check size of int64_t"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XCilYP"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XCilYP"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "HAVE_HAS_int64_t"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XCilYP'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_db7a0/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_db7a0.dir/build.make CMakeFiles/cmTC_db7a0.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XCilYP'
+        Building C object CMakeFiles/cmTC_db7a0.dir/HAS_int64_t.c.o
+        /usr/bin/cc    -o CMakeFiles/cmTC_db7a0.dir/HAS_int64_t.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XCilYP/HAS_int64_t.c
+        Linking C executable cmTC_db7a0
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_db7a0.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_db7a0.dir/HAS_int64_t.c.o -o cmTC_db7a0
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XCilYP'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "cmake/SundialsSetupCompilers.cmake:127 (check_c_source_compiles)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Performing Test SUNDIALS_C_COMPILER_HAS_BUILTIN_EXPECT"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-A5eKyP"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-A5eKyP"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "SUNDIALS_C_COMPILER_HAS_BUILTIN_EXPECT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-A5eKyP'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_ff719/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_ff719.dir/build.make CMakeFiles/cmTC_ff719.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-A5eKyP'
+        Building C object CMakeFiles/cmTC_ff719.dir/src.c.o
+        /usr/bin/cc -DSUNDIALS_C_COMPILER_HAS_BUILTIN_EXPECT  -std=gnu99 -o CMakeFiles/cmTC_ff719.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-A5eKyP/src.c
+        Linking C executable cmTC_ff719
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ff719.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_ff719.dir/src.c.o -o cmTC_ff719
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-A5eKyP'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "cmake/SundialsSetupCompilers.cmake:145 (check_c_source_compiles)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Performing Test SUNDIALS_C_COMPILER_HAS_ATTRIBUTE_ASSUME"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "SUNDIALS_C_COMPILER_HAS_ATTRIBUTE_ASSUME"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_8433a/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_8433a.dir/build.make CMakeFiles/cmTC_8433a.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ'
+        Building C object CMakeFiles/cmTC_8433a.dir/src.c.o
+        /usr/bin/cc -DSUNDIALS_C_COMPILER_HAS_ATTRIBUTE_ASSUME  -std=gnu99 -o CMakeFiles/cmTC_8433a.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ/src.c
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ/src.c: In function ‘main’:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ/src.c:7:9: error: #error no assume
+            7 |     #   error no assume
+              |         ^~~~~
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ/src.c:12:5: warning: empty declaration
+           12 |     __attribute__((assume(a >= 0.0)));
+              |     ^~~~~~~~~~~~~
+        make[1]: *** [CMakeFiles/cmTC_8433a.dir/build.make:78: CMakeFiles/cmTC_8433a.dir/src.c.o] Error 1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-r0NLIQ'
+        make: *** [Makefile:127: cmTC_8433a/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "cmake/SundialsSetupCompilers.cmake:165 (check_c_source_compiles)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Performing Test SUNDIALS_C_COMPILER_HAS_BUILTIN_ASSUME"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "SUNDIALS_C_COMPILER_HAS_BUILTIN_ASSUME"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_602f5/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_602f5.dir/build.make CMakeFiles/cmTC_602f5.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP'
+        Building C object CMakeFiles/cmTC_602f5.dir/src.c.o
+        /usr/bin/cc -DSUNDIALS_C_COMPILER_HAS_BUILTIN_ASSUME  -std=gnu99 -o CMakeFiles/cmTC_602f5.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP/src.c
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP/src.c: In function ‘main’:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP/src.c:5:7: warning: implicit declaration of function ‘__builtin_assume’; did you mean ‘__builtin_asin’? [-Wimplicit-function-declaration]
+            5 |       __builtin_assume(a >= 0.0);
+              |       ^~~~~~~~~~~~~~~~
+              |       __builtin_asin
+        Linking C executable cmTC_602f5
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_602f5.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_602f5.dir/src.c.o -o cmTC_602f5
+        /usr/bin/ld: CMakeFiles/cmTC_602f5.dir/src.c.o: en la función `main':
+        src.c:(.text+0x30): referencia a `__builtin_assume' sin definir
+        collect2: error: ld returned 1 exit status
+        make[1]: *** [CMakeFiles/cmTC_602f5.dir/build.make:99: cmTC_602f5] Error 1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-jvEjXP'
+        make: *** [Makefile:127: cmTC_602f5/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "cmake/SundialsSetupCompilers.cmake:179 (check_c_source_compiles)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Performing Test SUNDIALS_C_COMPILER_HAS_ASSUME"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "SUNDIALS_C_COMPILER_HAS_ASSUME"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7df2c/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_7df2c.dir/build.make CMakeFiles/cmTC_7df2c.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN'
+        Building C object CMakeFiles/cmTC_7df2c.dir/src.c.o
+        /usr/bin/cc -DSUNDIALS_C_COMPILER_HAS_ASSUME  -std=gnu99 -o CMakeFiles/cmTC_7df2c.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN/src.c
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN/src.c: In function ‘main’:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN/src.c:5:7: warning: implicit declaration of function ‘__assume’ [-Wimplicit-function-declaration]
+            5 |       __assume(a >= 0.0));
+              |       ^~~~~~~~
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN/src.c:5:25: error: expected ‘;’ before ‘)’ token
+            5 |       __assume(a >= 0.0));
+              |                         ^
+              |                         ;
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN/src.c:5:25: error: expected statement before ‘)’ token
+        make[1]: *** [CMakeFiles/cmTC_7df2c.dir/build.make:78: CMakeFiles/cmTC_7df2c.dir/src.c.o] Error 1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-9bltvN'
+        make: *** [Makefile:127: cmTC_7df2c/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsPOSIXTimers.cmake:66 (try_compile)"
+      - "cmake/tpl/SundialsPOSIXTimers.cmake:75 (posix_timers_test)"
+      - "cmake/SundialsSetupCompilers.cmake:194 (include)"
+      - "CMakeLists.txt:180 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST"
+    buildResult:
+      variable: "COMPILE_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        /usr/bin/make  -f CMakeFiles/ltest.dir/build.make CMakeFiles/ltest.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles/ltest.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles/ltest.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles/ltest.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles/ltest.dir/depend.internal".
+        Scanning dependencies of target ltest
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        /usr/bin/make  -f CMakeFiles/ltest.dir/build.make CMakeFiles/ltest.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        [ 50%] Building C object CMakeFiles/ltest.dir/ltest.c.o
+        /usr/bin/cc   -O2 -g -DNDEBUG -std=gnu99 -o CMakeFiles/ltest.dir/ltest.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/ltest.c
+        [100%] Linking C executable ltest
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ltest.dir/link.txt --verbose=1
+        /usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ltest.dir/ltest.c.o -o ltest
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        [100%] Built target ltest
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST'
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/POSIX_TIMER_TEST/CMakeFiles 0
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "cmake/SundialsSetupCompilers.cmake:212 (check_c_source_compiles)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Performing Test COMPILER_HAS_DEPRECATED_MSG"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "COMPILER_HAS_DEPRECATED_MSG"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_76fd2/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_76fd2.dir/build.make CMakeFiles/cmTC_76fd2.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO'
+        Building C object CMakeFiles/cmTC_76fd2.dir/src.c.o
+        /usr/bin/cc -DCOMPILER_HAS_DEPRECATED_MSG  -std=gnu99 -o CMakeFiles/cmTC_76fd2.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO/src.c
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO/src.c: In function ‘main’:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO/src.c:4:3: warning: ‘somefunc’ is deprecated: test [-Wdeprecated-declarations]
+            4 |   int main(void) { return somefunc();}
+              |   ^~~
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO/src.c:3:45: note: declared here
+            3 |   __attribute__ ((__deprecated__(msg))) int somefunc(void) { return 0; }
+              |                                             ^~~~~~~~
+        Linking C executable cmTC_76fd2
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_76fd2.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_76fd2.dir/src.c.o -o cmTC_76fd2
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-lkXELO'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineFortranCompiler.cmake:186 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "cmake/SundialsSetupFortran.cmake:44 (enable_language)"
+      - "cmake/SundialsSetupCompilers.cmake:318 (include)"
+      - "CMakeLists.txt:180 (include)"
+    message: |
+      Compiling the Fortran compiler identification source file "CMakeFortranCompilerId.F" succeeded.
+      Compiler: /usr/bin/gfortran 
+      Build flags: 
+      Id flags: -v 
+      
+      The output was:
+      0
+      Driving: /usr/bin/gfortran -v CMakeFortranCompilerId.F -l gfortran -l m -shared-libgcc
+      Using built-in specs.
+      COLLECT_GCC=/usr/bin/gfortran
+      COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper
+      OFFLOAD_TARGET_NAMES=nvptx-none:hsa
+      OFFLOAD_TARGET_DEFAULT=1
+      Target: x86_64-linux-gnu
+      Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr,hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+      Thread model: posix
+      gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
+      COLLECT_GCC_OPTIONS='-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+       /usr/lib/gcc/x86_64-linux-gnu/9/f951 CMakeFortranCompilerId.F -ffixed-form -cpp=/tmp/ccTbhvQg.f90 -quiet -v -imultiarch x86_64-linux-gnu CMakeFortranCompilerId.F -quiet -dumpbase CMakeFortranCompilerId.F -mtune=generic -march=x86-64 -auxbase CMakeFortranCompilerId -version -fintrinsic-modules-path /usr/lib/gcc/x86_64-linux-gnu/9/finclude -fpre-include=/usr/include/finclude/math-vector-fortran.h -o /tmp/ccnYGy4h.s
+      GNU Fortran (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
+      	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
+      
+      GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+      ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+      ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"
+      ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/../../../../x86_64-linux-gnu/include"
+      #include "..." search starts here:
+      #include <...> search starts here:
+       /usr/lib/gcc/x86_64-linux-gnu/9/finclude
+       /usr/lib/gcc/x86_64-linux-gnu/9/include
+       /usr/local/include
+       /usr/include/x86_64-linux-gnu
+       /usr/include
+      End of search list.
+      GNU Fortran2008 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
+      	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
+      
+      GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+      COLLECT_GCC_OPTIONS='-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+       as -v --64 -o /tmp/cc8xgLhf.o /tmp/ccnYGy4h.s
+      GNU ensamblador versión 2.34 (x86_64-linux-gnu) utilizando BFD versión (GNU Binutils for Ubuntu) 2.34
+      Reading specs from /usr/lib/gcc/x86_64-linux-gnu/9/libgfortran.spec
+      rename spec lib to liborig
+      COLLECT_GCC_OPTIONS='-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+      COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
+      LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/
+      COLLECT_GCC_OPTIONS='-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+       /usr/lib/gcc/x86_64-linux-gnu/9/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZp3Tag.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. /tmp/cc8xgLhf.o -lgfortran -lm -lgcc_s -lgcc -lquadmath -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+      COLLECT_GCC_OPTIONS='-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+      
+      
+      Compilation of the Fortran compiler identification source "CMakeFortranCompilerId.F" produced "a.out"
+      
+      The Fortran compiler identification is GNU, found in:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/3.29.2/CompilerIdFortran/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:64 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "cmake/SundialsSetupFortran.cmake:44 (enable_language)"
+      - "cmake/SundialsSetupCompilers.cmake:318 (include)"
+      - "CMakeLists.txt:180 (include)"
+    checks:
+      - "Detecting Fortran compiler ABI info"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "CMAKE_Fortran_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_44a2e/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_44a2e.dir/build.make CMakeFiles/cmTC_44a2e.dir/build
+        make[1]: Entering directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR'
+        Building Fortran object CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o
+        /usr/bin/gfortran   -v -c /snap/cmake/1381/share/cmake-3.29/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/gfortran
+        OFFLOAD_TARGET_NAMES=nvptx-none:hsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr,hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+        Thread model: posix
+        gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
+        COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/9/f951 /snap/cmake/1381/share/cmake-3.29/Modules/CMakeFortranCompilerABI.F90 -cpp=/tmp/cckZ97Ti.f90 -quiet -v -imultiarch x86_64-linux-gnu /snap/cmake/1381/share/cmake-3.29/Modules/CMakeFortranCompilerABI.F90 -quiet -dumpbase CMakeFortranCompilerABI.F90 -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -version -fintrinsic-modules-path /usr/lib/gcc/x86_64-linux-gnu/9/finclude -fpre-include=/usr/include/finclude/math-vector-fortran.h -o /tmp/cc9fH2Pj.s
+        GNU Fortran (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/../../../../x86_64-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/gcc/x86_64-linux-gnu/9/finclude
+         /usr/lib/gcc/x86_64-linux-gnu/9/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        GNU Fortran2008 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64'
+         as -v --64 -o CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o /tmp/cc9fH2Pj.s
+        GNU assembler version 2.34 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.34
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64'
+        Linking Fortran executable cmTC_44a2e
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_44a2e.dir/link.txt --verbose=1
+        /usr/bin/gfortran  -v -Wl,-v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -o cmTC_44a2e
+        Driving: /usr/bin/gfortran -v -Wl,-v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -o cmTC_44a2e -l gfortran -l m -shared-libgcc
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/gfortran
+        COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper
+        OFFLOAD_TARGET_NAMES=nvptx-none:hsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr,hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+        Thread model: posix
+        gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
+        Reading specs from /usr/lib/gcc/x86_64-linux-gnu/9/libgfortran.spec
+        rename spec lib to liborig
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_44a2e' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_44a2e' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+         /usr/lib/gcc/x86_64-linux-gnu/9/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/cchyokLM.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_44a2e /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc -lquadmath -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+        collect2 version 9.4.0
+        /usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/cchyokLM.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_44a2e /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc -lquadmath -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+        GNU ld (GNU Binutils for Ubuntu) 2.34
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_44a2e' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+        make[1]: Leaving directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:134 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "cmake/SundialsSetupFortran.cmake:44 (enable_language)"
+      - "cmake/SundialsSetupCompilers.cmake:318 (include)"
+      - "CMakeLists.txt:180 (include)"
+    message: |
+      Parsed Fortran implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/gcc/x86_64-linux-gnu/9/finclude]
+          add: [/usr/lib/gcc/x86_64-linux-gnu/9/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/9/finclude] ==> [/usr/lib/gcc/x86_64-linux-gnu/9/finclude]
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/9/include] ==> [/usr/lib/gcc/x86_64-linux-gnu/9/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/lib/gcc/x86_64-linux-gnu/9/finclude;/usr/lib/gcc/x86_64-linux-gnu/9/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:170 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "cmake/SundialsSetupFortran.cmake:44 (enable_language)"
+      - "cmake/SundialsSetupCompilers.cmake:318 (include)"
+      - "CMakeLists.txt:180 (include)"
+    message: |
+      Parsed Fortran implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR']
+        ignore line: []
+        ignore line: [Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_44a2e/fast]
+        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_44a2e.dir/build.make CMakeFiles/cmTC_44a2e.dir/build]
+        ignore line: [make[1]: Entering directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-mXwouR']
+        ignore line: [Building Fortran object CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o]
+        ignore line: [/usr/bin/gfortran   -v -c /snap/cmake/1381/share/cmake-3.29/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/gfortran]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:hsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64']
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/9/f951 /snap/cmake/1381/share/cmake-3.29/Modules/CMakeFortranCompilerABI.F90 -cpp=/tmp/cckZ97Ti.f90 -quiet -v -imultiarch x86_64-linux-gnu /snap/cmake/1381/share/cmake-3.29/Modules/CMakeFortranCompilerABI.F90 -quiet -dumpbase CMakeFortranCompilerABI.F90 -mtune=generic -march=x86-64 -auxbase-strip CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -version -fintrinsic-modules-path /usr/lib/gcc/x86_64-linux-gnu/9/finclude -fpre-include=/usr/include/finclude/math-vector-fortran.h -o /tmp/cc9fH2Pj.s]
+        ignore line: [GNU Fortran (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 9.4.0  GMP version 6.2.0  MPFR version 4.0.2  MPC version 1.1.0  isl version isl-0.22.1-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/9/../../../../x86_64-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/9/finclude]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/9/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [GNU Fortran2008 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 9.4.0  GMP version 6.2.0  MPFR version 4.0.2  MPC version 1.1.0  isl version isl-0.22.1-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o /tmp/cc9fH2Pj.s]
+        ignore line: [GNU assembler version 2.34 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.34]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64']
+        ignore line: [Linking Fortran executable cmTC_44a2e]
+        ignore line: [/snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_44a2e.dir/link.txt --verbose=1]
+        ignore line: [/usr/bin/gfortran  -v -Wl -v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -o cmTC_44a2e]
+        ignore line: [Driving: /usr/bin/gfortran -v -Wl -v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -o cmTC_44a2e -l gfortran -l m -shared-libgcc]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/gfortran]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:hsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) ]
+        ignore line: [Reading specs from /usr/lib/gcc/x86_64-linux-gnu/9/libgfortran.spec]
+        ignore line: [rename spec lib to liborig]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_44a2e' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_44a2e' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+        link line: [ /usr/lib/gcc/x86_64-linux-gnu/9/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/cchyokLM.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_44a2e /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc -lquadmath -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/cchyokLM.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lquadmath] ==> ignore
+          arg [-plugin-opt=-pass-through=-lm] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-znow] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_44a2e] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib] ==> dir [/lib/../lib]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/9/../../..] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../..]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o] ==> ignore
+          arg [-lgfortran] ==> lib [gfortran]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lquadmath] ==> lib [quadmath]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+        ignore line: [collect2 version 9.4.0]
+        ignore line: [/usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/9/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper -plugin-opt=-fresolution=/tmp/cchyokLM.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_44a2e /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.. -v CMakeFiles/cmTC_44a2e.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc -lquadmath -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+        linker tool for 'Fortran': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/Scrt1.o] ==> [/usr/lib/x86_64-linux-gnu/Scrt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o] ==> [/usr/lib/x86_64-linux-gnu/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o] ==> [/usr/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9] ==> [/usr/lib/gcc/x86_64-linux-gnu/9]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib] ==> [/usr/lib]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib] ==> [/lib]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/9/../../..] ==> [/usr/lib]
+        implicit libs: [gfortran;m;gcc_s;gcc;quadmath;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/usr/lib/x86_64-linux-gnu/Scrt1.o;/usr/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o;/usr/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/9;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeDetermineCompilerABI.cmake:207 (cmake_determine_linker_id)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "cmake/SundialsSetupFortran.cmake:44 (enable_language)"
+      - "cmake/SundialsSetupCompilers.cmake:318 (include)"
+      - "CMakeLists.txt:180 (include)"
+    message: |
+      Running the Fortran compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils for Ubuntu) 2.34
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckFortranFunctionExists.cmake:69 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:370 (check_fortran_function_exists)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:416 (check_blas_libraries)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "cmake/tpl/SundialsLapack.cmake:50 (find_package)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    checks:
+      - "Looking for Fortran sgemm"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-QxOdzQ"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-QxOdzQ"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "BLAS_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-QxOdzQ'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_54d02/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_54d02.dir/build.make CMakeFiles/cmTC_54d02.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-QxOdzQ'
+        Building Fortran object CMakeFiles/cmTC_54d02.dir/testFortranCompiler.f.o
+        /usr/bin/gfortran    -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-QxOdzQ/testFortranCompiler.f -o CMakeFiles/cmTC_54d02.dir/testFortranCompiler.f.o
+        Linking Fortran executable cmTC_54d02
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_54d02.dir/link.txt --verbose=1
+        /usr/bin/gfortran CMakeFiles/cmTC_54d02.dir/testFortranCompiler.f.o -o cmTC_54d02
+        /usr/bin/ld: CMakeFiles/cmTC_54d02.dir/testFortranCompiler.f.o: en la función `MAIN__':
+        testFortranCompiler.f:(.text+0xa): referencia a `sgemm_' sin definir
+        collect2: error: ld returned 1 exit status
+        make[1]: *** [CMakeFiles/cmTC_54d02.dir/build.make:99: cmTC_54d02] Error 1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-QxOdzQ'
+        make: *** [Makefile:127: cmTC_54d02/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:470 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "cmake/tpl/SundialsLapack.cmake:50 (find_package)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-eANgpP"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-eANgpP"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-eANgpP'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b6ebf/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_b6ebf.dir/build.make CMakeFiles/cmTC_b6ebf.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-eANgpP'
+        Building C object CMakeFiles/cmTC_b6ebf.dir/src.c.o
+        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu99 -o CMakeFiles/cmTC_b6ebf.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-eANgpP/src.c
+        Linking C executable cmTC_b6ebf
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b6ebf.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_b6ebf.dir/src.c.o -o cmTC_b6ebf
+        /usr/bin/ld: CMakeFiles/cmTC_b6ebf.dir/src.c.o: en la función `main':
+        src.c:(.text+0x46): referencia a `pthread_create' sin definir
+        /usr/bin/ld: src.c:(.text+0x52): referencia a `pthread_detach' sin definir
+        /usr/bin/ld: src.c:(.text+0x5e): referencia a `pthread_cancel' sin definir
+        /usr/bin/ld: src.c:(.text+0x6f): referencia a `pthread_join' sin definir
+        collect2: error: ld returned 1 exit status
+        make[1]: *** [CMakeFiles/cmTC_b6ebf.dir/build.make:99: cmTC_b6ebf] Error 1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-eANgpP'
+        make: *** [Makefile:127: cmTC_b6ebf/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:470 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "cmake/tpl/SundialsLapack.cmake:50 (find_package)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-it7WGP"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-it7WGP"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-it7WGP'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_80eb5/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_80eb5.dir/build.make CMakeFiles/cmTC_80eb5.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-it7WGP'
+        Building C object CMakeFiles/cmTC_80eb5.dir/CheckFunctionExists.c.o
+        /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create -std=gnu99 -o CMakeFiles/cmTC_80eb5.dir/CheckFunctionExists.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-it7WGP/CheckFunctionExists.c
+        Linking C executable cmTC_80eb5
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_80eb5.dir/link.txt --verbose=1
+        /usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create CMakeFiles/cmTC_80eb5.dir/CheckFunctionExists.c.o -o cmTC_80eb5  -lpthreads
+        /usr/bin/ld: no se puede encontrar -lpthreads
+        collect2: error: ld returned 1 exit status
+        make[1]: *** [CMakeFiles/cmTC_80eb5.dir/build.make:99: cmTC_80eb5] Error 1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-it7WGP'
+        make: *** [Makefile:127: cmTC_80eb5/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:470 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "cmake/tpl/SundialsLapack.cmake:50 (find_package)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-TQOtuR"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-TQOtuR"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-TQOtuR'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_3d157/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_3d157.dir/build.make CMakeFiles/cmTC_3d157.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-TQOtuR'
+        Building C object CMakeFiles/cmTC_3d157.dir/CheckFunctionExists.c.o
+        /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create -std=gnu99 -o CMakeFiles/cmTC_3d157.dir/CheckFunctionExists.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-TQOtuR/CheckFunctionExists.c
+        Linking C executable cmTC_3d157
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3d157.dir/link.txt --verbose=1
+        /usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create CMakeFiles/cmTC_3d157.dir/CheckFunctionExists.c.o -o cmTC_3d157  -lpthread
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-TQOtuR'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckFortranFunctionExists.cmake:69 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:370 (check_fortran_function_exists)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindBLAS.cmake:757 (check_blas_libraries)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:247 (find_package)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
+      - "cmake/tpl/SundialsLapack.cmake:50 (find_package)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    checks:
+      - "Looking for Fortran sgemm"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-PbKXwO"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-PbKXwO"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "BLAS_openblas_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-PbKXwO'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0c756/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_0c756.dir/build.make CMakeFiles/cmTC_0c756.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-PbKXwO'
+        Building Fortran object CMakeFiles/cmTC_0c756.dir/testFortranCompiler.f.o
+        /usr/bin/gfortran    -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-PbKXwO/testFortranCompiler.f -o CMakeFiles/cmTC_0c756.dir/testFortranCompiler.f.o
+        Linking Fortran executable cmTC_0c756
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0c756.dir/link.txt --verbose=1
+        /usr/bin/gfortran CMakeFiles/cmTC_0c756.dir/testFortranCompiler.f.o -o cmTC_0c756  /usr/lib/x86_64-linux-gnu/libopenblas.so
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-PbKXwO'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckFortranFunctionExists.cmake:69 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:218 (check_fortran_function_exists)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/FindLAPACK.cmake:497 (check_lapack_libraries)"
+      - "cmake/tpl/SundialsLapack.cmake:50 (find_package)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    checks:
+      - "Looking for Fortran cheev"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XbKtON"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XbKtON"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "LAPACK_openblas_WORKS"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XbKtON'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_e0559/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_e0559.dir/build.make CMakeFiles/cmTC_e0559.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XbKtON'
+        Building Fortran object CMakeFiles/cmTC_e0559.dir/testFortranCompiler.f.o
+        /usr/bin/gfortran    -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XbKtON/testFortranCompiler.f -o CMakeFiles/cmTC_e0559.dir/testFortranCompiler.f.o
+        Linking Fortran executable cmTC_e0559
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e0559.dir/link.txt --verbose=1
+        /usr/bin/gfortran CMakeFiles/cmTC_e0559.dir/testFortranCompiler.f.o -o cmTC_e0559  /usr/lib/x86_64-linux-gnu/libopenblas.so /usr/lib/x86_64-linux-gnu/libopenblas.so
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-XbKtON'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsLapack.cmake:129 (try_compile)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+    buildResult:
+      variable: "FTEST_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/flib.dir/build.make CMakeFiles/flib.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/flib.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/flib.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/flib.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/flib.dir/depend.internal".
+        Scanning dependencies of target flib
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/flib.dir/build.make CMakeFiles/flib.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 25%] Building Fortran object CMakeFiles/flib.dir/flib.f.o
+        /usr/bin/gfortran   -O2 -g -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/flib.f -o CMakeFiles/flib.dir/flib.f.o
+        [ 50%] Linking Fortran static library libflib.a
+        /snap/cmake/1381/bin/cmake -P CMakeFiles/flib.dir/cmake_clean_target.cmake
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/flib.dir/link.txt --verbose=1
+        /usr/bin/ar qc libflib.a CMakeFiles/flib.dir/flib.f.o
+        /usr/bin/ranlib libflib.a
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 50%] Built target flib
+        /usr/bin/make  -f CMakeFiles/ftest.dir/build.make CMakeFiles/ftest.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ftest.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ftest.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ftest.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ftest.dir/depend.internal".
+        Scanning dependencies of target ftest
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ftest.dir/build.make CMakeFiles/ftest.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 75%] Building Fortran object CMakeFiles/ftest.dir/ftest.f.o
+        /usr/bin/gfortran   -O2 -g -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ftest.f -o CMakeFiles/ftest.dir/ftest.f.o
+        [100%] Linking Fortran executable ftest
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ftest.dir/link.txt --verbose=1
+        /usr/bin/gfortran -O2 -g CMakeFiles/ftest.dir/ftest.f.o -o ftest  libflib.a
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [100%] Built target ftest
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles 0
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsLapack.cmake:173 (try_compile)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+    buildResult:
+      variable: "CTEST_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest1.dir/build.make CMakeFiles/ctest1.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/depend.internal".
+        Scanning dependencies of target ctest1
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest1.dir/build.make CMakeFiles/ctest1.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 50%] Building C object CMakeFiles/ctest1.dir/ctest1.c.o
+        /usr/bin/cc   -O2 -g -DNDEBUG -o CMakeFiles/ctest1.dir/ctest1.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest1.c
+        [100%] Linking C executable ctest1
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ctest1.dir/link.txt --verbose=1
+        /usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ctest1.dir/ctest1.c.o -o ctest1  libflib.a
+        /usr/bin/ld: CMakeFiles/ctest1.dir/ctest1.c.o: en la función `main':
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest1.c:2: referencia a `mysub' sin definir
+        collect2: error: ld returned 1 exit status
+        make[2]: *** [CMakeFiles/ctest1.dir/build.make:100: ctest1] Error 1
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        make[1]: *** [CMakeFiles/Makefile2:86: CMakeFiles/ctest1.dir/all] Error 2
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        make: *** [Makefile:94: all] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsLapack.cmake:173 (try_compile)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+    buildResult:
+      variable: "CTEST_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest1.dir/build.make CMakeFiles/ctest1.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest1.dir/depend.internal".
+        Scanning dependencies of target ctest1
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest1.dir/build.make CMakeFiles/ctest1.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 50%] Building C object CMakeFiles/ctest1.dir/ctest1.c.o
+        /usr/bin/cc   -O2 -g -DNDEBUG -o CMakeFiles/ctest1.dir/ctest1.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest1.c
+        [100%] Linking C executable ctest1
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ctest1.dir/link.txt --verbose=1
+        /usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ctest1.dir/ctest1.c.o -o ctest1  libflib.a
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [100%] Built target ctest1
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles 0
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsLapack.cmake:217 (try_compile)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+    buildResult:
+      variable: "CTEST_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest2.dir/build.make CMakeFiles/ctest2.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/depend.internal".
+        Scanning dependencies of target ctest2
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest2.dir/build.make CMakeFiles/ctest2.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 50%] Building C object CMakeFiles/ctest2.dir/ctest2.c.o
+        /usr/bin/cc   -O2 -g -DNDEBUG -o CMakeFiles/ctest2.dir/ctest2.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest2.c
+        [100%] Linking C executable ctest2
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ctest2.dir/link.txt --verbose=1
+        /usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ctest2.dir/ctest2.c.o -o ctest2  libflib.a
+        /usr/bin/ld: CMakeFiles/ctest2.dir/ctest2.c.o: en la función `main':
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest2.c:2: referencia a `my_sub' sin definir
+        collect2: error: ld returned 1 exit status
+        make[2]: *** [CMakeFiles/ctest2.dir/build.make:100: ctest2] Error 1
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        make[1]: *** [CMakeFiles/Makefile2:86: CMakeFiles/ctest2.dir/all] Error 2
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        make: *** [Makefile:94: all] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsLapack.cmake:217 (try_compile)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest"
+    buildResult:
+      variable: "CTEST_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest2.dir/build.make CMakeFiles/ctest2.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles/ctest2.dir/depend.internal".
+        Scanning dependencies of target ctest2
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /usr/bin/make  -f CMakeFiles/ctest2.dir/build.make CMakeFiles/ctest2.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [ 50%] Building C object CMakeFiles/ctest2.dir/ctest2.c.o
+        /usr/bin/cc   -O2 -g -DNDEBUG -o CMakeFiles/ctest2.dir/ctest2.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/ctest2.c
+        [100%] Linking C executable ctest2
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ctest2.dir/link.txt --verbose=1
+        /usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ctest2.dir/ctest2.c.o -o ctest2  libflib.a
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        [100%] Built target ctest2
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest'
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/FortranTest/CMakeFiles 0
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/tpl/SundialsLapack.cmake:332 (try_compile)"
+      - "cmake/SundialsSetupTPLs.cmake:122 (include)"
+      - "CMakeLists.txt:186 (include)"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest"
+    buildResult:
+      variable: "COMPILE_OK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile
+        /snap/cmake/1381/bin/cmake -S/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest -B/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest --check-build-system CMakeFiles/Makefile.cmake 0
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest//CMakeFiles/progress.marks
+        /usr/bin/make  -f CMakeFiles/Makefile2 all
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        /usr/bin/make  -f CMakeFiles/ltest.dir/build.make CMakeFiles/ltest.dir/depend
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        cd /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest && /snap/cmake/1381/bin/cmake -E cmake_depends "Unix Makefiles" /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles/ltest.dir/DependInfo.cmake
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles/ltest.dir/DependInfo.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles/ltest.dir/depend.internal".
+        Dependee "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles/ltest.dir/depend.internal".
+        Scanning dependencies of target ltest
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        /usr/bin/make  -f CMakeFiles/ltest.dir/build.make CMakeFiles/ltest.dir/build
+        make[2]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        [ 50%] Building C object CMakeFiles/ltest.dir/ltest.c.o
+        /usr/bin/cc   -O2 -g -DNDEBUG -std=gnu99 -o CMakeFiles/ltest.dir/ltest.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/ltest.c
+        [100%] Linking C executable ltest
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/ltest.dir/link.txt --verbose=1
+        /usr/bin/cc -O2 -g -DNDEBUG CMakeFiles/ltest.dir/ltest.c.o -o ltest  /usr/lib/x86_64-linux-gnu/libopenblas.so /usr/lib/x86_64-linux-gnu/libopenblas.so
+        make[2]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        [100%] Built target ltest
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest'
+        /snap/cmake/1381/bin/cmake -E cmake_progress_start /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/LapackTest/CMakeFiles 0
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCompilerFlag.cmake:52 (cmake_check_compiler_flag)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:242 (check_compiler_flag)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:419 (_test_compiler_hidden_visibility)"
+      - "src/sundials/CMakeLists.txt:160 (generate_export_header)"
+    checks:
+      - "Performing Test COMPILER_HAS_HIDDEN_VISIBILITY"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-RrplvO"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-RrplvO"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "COMPILER_HAS_HIDDEN_VISIBILITY"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-RrplvO'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_4df9f/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_4df9f.dir/build.make CMakeFiles/cmTC_4df9f.dir/build
+        make[1]: Entering directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-RrplvO'
+        Building C object CMakeFiles/cmTC_4df9f.dir/src.c.o
+        /usr/bin/cc -DCOMPILER_HAS_HIDDEN_VISIBILITY  -std=gnu99   -fvisibility=hidden -o CMakeFiles/cmTC_4df9f.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-RrplvO/src.c
+        Linking C executable cmTC_4df9f
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4df9f.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_4df9f.dir/src.c.o -o cmTC_4df9f
+        make[1]: Leaving directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-RrplvO'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckCompilerFlag.cmake:52 (cmake_check_compiler_flag)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:243 (check_compiler_flag)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:419 (_test_compiler_hidden_visibility)"
+      - "src/sundials/CMakeLists.txt:160 (generate_export_header)"
+    checks:
+      - "Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-2UCbON"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-2UCbON"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "COMPILER_HAS_HIDDEN_INLINE_VISIBILITY"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-2UCbON'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_81130/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_81130.dir/build.make CMakeFiles/cmTC_81130.dir/build
+        make[1]: Entering directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-2UCbON'
+        Building C object CMakeFiles/cmTC_81130.dir/src.c.o
+        /usr/bin/cc -DCOMPILER_HAS_HIDDEN_INLINE_VISIBILITY  -std=gnu99   -fvisibility-inlines-hidden -o CMakeFiles/cmTC_81130.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-2UCbON/src.c
+        cc1: warning: command line option '-fvisibility-inlines-hidden' is valid for C++/ObjC++ but not for C
+        Linking C executable cmTC_81130
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_81130.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_81130.dir/src.c.o -o cmTC_81130
+        make[1]: Leaving directory '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-2UCbON'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/CheckSourceCompiles.cmake:77 (cmake_check_source_compiles)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:213 (check_source_compiles)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:273 (_check_c_compiler_attribute)"
+      - "/snap/cmake/1381/share/cmake-3.29/Modules/GenerateExportHeader.cmake:420 (_test_compiler_has_deprecated)"
+      - "src/sundials/CMakeLists.txt:160 (generate_export_header)"
+    checks:
+      - "Performing Test COMPILER_HAS_DEPRECATED_ATTR"
+    directories:
+      source: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP"
+      binary: "/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/macros;/home/whitehole/PycharmProjects/master_thesis/sundials/sundials-7.0.0/cmake/tpl"
+    buildResult:
+      variable: "COMPILER_HAS_DEPRECATED_ATTR"
+      cached: true
+      stdout: |
+        Change Dir: '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP'
+        
+        Run Build Command(s): /snap/cmake/1381/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_d15aa/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_d15aa.dir/build.make CMakeFiles/cmTC_d15aa.dir/build
+        make[1]: se entra en el directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP'
+        Building C object CMakeFiles/cmTC_d15aa.dir/src.c.o
+        /usr/bin/cc -DCOMPILER_HAS_DEPRECATED_ATTR  -std=gnu99 -o CMakeFiles/cmTC_d15aa.dir/src.c.o -c /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP/src.c
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP/src.c: In function ‘main’:
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP/src.c:2:5: warning: ‘somefunc’ is deprecated [-Wdeprecated-declarations]
+            2 |     int main() { return somefunc();}
+              |     ^~~
+        /home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP/src.c:1:37: note: declared here
+            1 | __attribute__((__deprecated__)) int somefunc() { return 0; }
+              |                                     ^~~~~~~~
+        Linking C executable cmTC_d15aa
+        /snap/cmake/1381/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d15aa.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_d15aa.dir/src.c.o -o cmTC_d15aa
+        make[1]: se sale del directorio '/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/CMakeFiles/CMakeScratch/TryCompile-JO6yfP'
+        
+      exitCode: 0
+...

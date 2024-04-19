@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -O2 -g -DNDEBUG -shared -Wl,-soname,libsundials_sunlinsolspbcgs.so.5 -o libsundials_sunlinsolspbcgs.so.5.0.0 CMakeFiles/sundials_sunlinsolspbcgs_obj_shared.dir/sunlinsol_spbcgs.c.o  -Wl,-rpath,/home/whitehole/PycharmProjects/master_thesis/sundials/build-sundials-7.0.0/src/sundials: -lm ../../sundials/libsundials_core.so.7.0.0

@@ -4,6 +4,7 @@ from matplotlib.animation import FuncAnimation
 
 from attitude.attitude_conversion import quaternion_to_rotation_matrix
 from attitude.torques.eddy_current import ElectromagnetEndEffector
+from robotics.arm_propagator import Arm
 from utilities.ui import LoadingBarWithTime
 
 
@@ -33,7 +34,7 @@ def rotate_cylinder(longitudinal_axis_m):
     return rotation_matrix
 
 
-def animate_attitude(t, q, eu, h, r, dpi, magnets: list[ElectromagnetEndEffector] = ()):
+def animate_attitude(t, q, eu, h, r, dpi, arms: list[Arm] = ()):
     # Initialize the figure and 3D axis
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')
@@ -69,7 +70,7 @@ def animate_attitude(t, q, eu, h, r, dpi, magnets: list[ElectromagnetEndEffector
                         color='b', alpha=0.8, label="Debris")
 
         # Magnet
-        for magnet in magnets:
+        for magnet in arms:
             # Compute magnet meshgrid
             z_m = np.linspace(magnet.locations[2, frame] - magnet.height / 2, magnet.locations[2, frame] + magnet.height / 2, 2)
             X_m = magnet.locations[0, frame] + magnet.radius * np.cos(theta)
@@ -107,7 +108,10 @@ def animate_attitude(t, q, eu, h, r, dpi, magnets: list[ElectromagnetEndEffector
                         f"Yaw:   {euler[2]:.2f}°", transform=ax.transAxes)
 
         # Set fixed ticks for the X, Y, and Z axes
-        max_magn = (max([x.max() for x in magnets[0].locations]) + magnets[0].radius) if magnets is not None else 0  # TODO: Fix removing index dependence
+        if arms:
+            max_magn = (max([x.max() for x in arms[0].locations]) + arms[0].radius)
+        else:
+            max_magn = 0# TODO: Fix removing index dependence
         max_dim_lim = int((max([r, h, max_magn]) + 20)/2)
 
         # Set ticks
