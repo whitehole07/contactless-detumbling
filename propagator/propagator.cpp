@@ -171,7 +171,7 @@ int main(void)
   printf(" \nAttitude propagation\n\n");
 
   /* Open file for printing statistics */
-  FID = fopen("attitude.csv", "w");
+  FID = fopen("integration_stats.csv", "w");
 
   iout = 0;
   tout = T0+1;

@@ -14,6 +14,7 @@
 #include <symengine/symbol.h>
 #include <symengine/symengine_casts.h>
 #include <symengine/matrix.h>
+#include <symengine/simplify.h>
 
 /* RapidJSON */
 #include "rapidjson/document.h"
@@ -92,8 +93,8 @@ int main() {
     };
 
     // Load D and C matrix
-    DenseMatrix D = load_matrix_from_JSON("../robotics/analytical/MATLAB/D.json");
-    DenseMatrix C = load_matrix_from_JSON("../robotics/analytical/MATLAB/C.json");
+    DenseMatrix D = load_matrix_from_JSON("../robotics/analytical/D.json");
+    DenseMatrix C = load_matrix_from_JSON("../robotics/analytical/C.json");
 
     // Substitute values 
     DenseMatrix resultD = subs_matrix(D, values);
@@ -106,6 +107,53 @@ int main() {
     return 0;
 }
 
+/* Integration functions */
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
+{
+    sunrealtype wx, wy, wz, q1, q2, q3, q4;
+    sunrealtype dwx, dwy, dwz, dq1, dq2, dq3, dq4;
+    UserData data;
+
+    /* Replacement array */
+    map_basic_basic values = {
+        {t1, integer(1)},
+        {t2, integer(1)},
+        {t3, integer(1)},
+        {t4, integer(1)},
+        {t5, integer(1)},
+        {t6, integer(1)},
+        {dt1, integer(1)},
+        {dt2, integer(1)},
+        {dt3, integer(1)},
+        {dt4, integer(1)},
+        {dt5, integer(1)},
+        {dt6, integer(1)}
+    };
+
+    /* Retrieve user data */
+    data  = (UserData)user_data;
+
+    /* Equations of motion */
+    // dy
+    Ith(ydot, 1) = Ith(y, 7);
+    Ith(ydot, 2) = Ith(y, 8);
+    Ith(ydot, 3) = Ith(y, 9);
+    Ith(ydot, 4) = Ith(y, 10);
+    Ith(ydot, 5) = Ith(y, 11);
+    Ith(ydot, 6) = Ith(y, 12);
+
+    // ddy
+    Ith(ydot, 7)  = 
+    Ith(ydot, 8)  = 
+    Ith(ydot, 9)  = 
+    Ith(ydot, 10) = 
+    Ith(ydot, 11) = 
+    Ith(ydot, 12) = 
+
+    return (0);
+}
+
+/* Matrix operation functions */
 DenseMatrix subs_matrix(DenseMatrix& mat, map_basic_basic subs_values) {
     DenseMatrix result(mat.nrows(), mat.ncols());
     for (unsigned i = 0; i < mat.nrows(); ++i) {
