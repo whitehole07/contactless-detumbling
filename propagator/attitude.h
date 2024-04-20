@@ -1,0 +1,14 @@
+#include <nvector/nvector_serial.h>
+#include <sunlinsol/sunlinsol_dense.h>
+
+#ifndef ATTITUDE_H
+#define ATTITUDE_H
+
+#define NEQ_ATTITUDE  7  /* number of equations  */
+
+int initiate(SUNContext sunctx, N_Vector y, const int y_init_slice, void* user_data);
+
+int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+
+#endif
+
