@@ -1,0 +1,6 @@
+/propagator/sundials/
+/propagator/rapidjson/
+/propagator/symengine/
+/.vscode/
+/venv/
+/rotation_animation.mp4
