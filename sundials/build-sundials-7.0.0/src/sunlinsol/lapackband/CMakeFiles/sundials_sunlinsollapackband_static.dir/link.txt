@@ -1,2 +1,0 @@
-/usr/bin/ar qc libsundials_sunlinsollapackband.a CMakeFiles/sundials_sunlinsollapackband_obj_static.dir/sunlinsol_lapackband.c.o
-/usr/bin/ranlib libsundials_sunlinsollapackband.a
