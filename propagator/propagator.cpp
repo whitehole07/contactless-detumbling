@@ -11,16 +11,22 @@
 #include "attitude.h"
 #include "propagator.h"
 
+/* Equations */
+#define NEQ   NEQ_ATTITUDE
+
 /* Constants */
-#define RTOL  SUN_RCONST(1.0e-4)   /* scalar relative tolerance            */
-#define ATOL  SUN_RCONST(1.0e-8)   /* vector absolute tolerance components */
-#define T0    SUN_RCONST(0.0)      /* initial time           */
-#define T1    SUN_RCONST(20.0)     /* first output time      */
+#define RTOL    SUN_RCONST(1.0e-4)   /* scalar relative tolerance            */
+#define ATOL    SUN_RCONST(1.0e-8)   /* vector absolute tolerance components */
+#define T0      SUN_RCONST(0.0)      /* initial time           */
+#define T1      SUN_RCONST(20000.0)     /* first output time      */
+#define TSTEP   1
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
 /* Private functions to output results */
+static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, bool init);
+
 static void PrintOutput(int i, sunrealtype t, N_Vector y);
 
 /* Private function to check function return values */
@@ -59,17 +65,17 @@ int main(void)
     }
 
     /* Initial conditions */
-    y = N_VNew_Serial(NEQ_ATTITUDE, sunctx);
+    y = N_VNew_Serial(NEQ, sunctx);
     if (check_retval((void*)y, "N_VNew_Serial", 0)) { return (1); }
 
     /* Init attitude */
     initiate(sunctx, y, 0, user_data);
 
     /* Set the vector absolute tolerance */
-    abstol = N_VNew_Serial(NEQ_ATTITUDE, sunctx);
+    abstol = N_VNew_Serial(NEQ, sunctx);
     if (check_retval((void*)abstol, "N_VNew_Serial", 0)) { return (1); }
 
-    for (size_t i = 0; i < NEQ_ATTITUDE; i++) { Ith(abstol, i) = ATOL; }
+    for (size_t i = 0; i < NEQ; i++) { Ith(abstol, i) = ATOL; }
 
     /* Call CVodeCreate to create the solver memory and specify the
     * Backward Differentiation Formula */
@@ -91,7 +97,7 @@ int main(void)
     if (check_retval(&retval, "CVodeSetUserData", 1)) { return (1); }
 
     // Attach linear solver
-    A = SUNDenseMatrix(NEQ_ATTITUDE, NEQ_ATTITUDE, sunctx);
+    A = SUNDenseMatrix(NEQ, NEQ, sunctx);
     LS = SUNLinSol_Dense(y, A, sunctx);
 
     retval = CVodeSetLinearSolver(cvode_mem, LS, A);
@@ -100,8 +106,12 @@ int main(void)
     /* Loop */
     printf(" \nPropagation\n\n");
 
+    // Open CSV file for writing and save first row
+    FILE *csv_file = fopen("prop_result.csv", "w");
+    save_to_CSV(csv_file, t, y, true);
+
     iout = 0;
-    tout = T0+1;
+    tout = T0 + TSTEP;
     while (t < T1) {
     retval = CVode(cvode_mem, tout, y, &t, CV_NORMAL);
     PrintOutput(iout, t, y);
@@ -112,7 +122,13 @@ int main(void)
         iout++;
         tout += 1;
     }
+
+    // Save row
+    save_to_CSV(csv_file, t, y, false);
+
     }
+    // Close CSV file
+    fclose(csv_file);
 
     /* Print final statistics to the screen */
     printf("\nFinal Statistics:\n");
@@ -145,7 +161,7 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
   f_attitude(t, y, ydot, user_data);
 
   // Robotic Arm
-  
+
   return (0);
 }
 
@@ -155,10 +171,31 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
  *-------------------------------
  */
 
+static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, bool init) {
+
+    if (init) {
+      // Write header row
+      fprintf(csv_file, "Time,");
+      for (int i = 0; i < NEQ; i++) {
+          fprintf(csv_file, "Component %d,", i + 1);
+      }
+      fprintf(csv_file, "\n");
+    }
+
+    fprintf(csv_file, "%f,", t); // Write time value
+    for (int i = 0; i < NEQ; i++) {
+            fprintf(csv_file, "%e,", Ith(y, i)); // Write each component
+    }
+    fprintf(csv_file, "\n"); // Write newline
+
+
+  return;
+}
+
 static void PrintOutput(int i, sunrealtype t, N_Vector y)
 {
   printf("At (%d) t = %0.4e      y =%14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e\n", i, t, \
-  Ith(y, 1), Ith(y, 2), Ith(y, 3), Ith(y, 4), Ith(y, 5), Ith(y, 6), Ith(y, 7));
+  Ith(y, 0), Ith(y, 1), Ith(y, 2), Ith(y, 3), Ith(y, 4), Ith(y, 5), Ith(y, 6));
 
   return;
 }
