@@ -39,16 +39,8 @@
 /* Eddy Current Torque */
 #define MAG_N_TURNS  500
 #define MAG_RADIUS   2
-#define MAG_CURRENT  5000
+#define MAG_CURRENT  50
 #define MAG_POSE     1 // TODO: check
-
-// Magnetic Tensor
-#define GAMMA   1 - (2*DEBRIS_RADIUS/DEBRIS_HEIGHT) * tanh(DEBRIS_HEIGHT/(2*DEBRIS_RADIUS))
-#define MAGN    PI * DEBRIS_SIGMA * pow(DEBRIS_RADIUS, 3) * DEBRIS_THICK * DEBRIS_HEIGHT
-
-#define MAGN_TENS11   MAGN * GAMMA
-#define MAGN_TENS22   MAGN * GAMMA
-#define MAGN_TENS33   MAGN * 0.5
 
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data);
@@ -57,7 +49,7 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
 N_Vector get_magnetic_field(SUNContext sunctx);
 
-N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y);
+N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data);
 
 N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b);
 
@@ -81,8 +73,18 @@ int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
   IJth(I, 1, 1) = DEBRIS_IYY; 
   IJth(I, 2, 2) = DEBRIS_IZZ;
 
+  // Get magnetic tensor
+  SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
+  sunrealtype gamma  = 1 - ((2*DEBRIS_RADIUS/DEBRIS_HEIGHT) * tanh(DEBRIS_HEIGHT/(2*DEBRIS_RADIUS)));
+  sunrealtype magn   = PI * DEBRIS_SIGMA * pow(DEBRIS_RADIUS, 3) * DEBRIS_THICK * DEBRIS_HEIGHT;
+  IJth(M, 0, 0) = gamma * magn;
+  IJth(M, 1, 1) = gamma * magn;
+  IJth(M, 2, 2) = 0.5   * magn;
+
+  // Set user data
   UserData data  = (UserData)user_data;
   data->I = I;
+  data->M = M;
 
   return(0);
 }
@@ -99,27 +101,27 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   sunctx = data->sunctx;
   I = data->I;
   
-  wx = Ith(y, 0);
-  wy = Ith(y, 1);
-  wz = Ith(y, 2);
-  q1 = Ith(y, 3);
-  q2 = Ith(y, 4);
-  q3 = Ith(y, 5);
-  q4 = Ith(y, 6);
+  wx = Ith(y, INIT_SLICE_ATTITUDE + 0);
+  wy = Ith(y, INIT_SLICE_ATTITUDE + 1);
+  wz = Ith(y, INIT_SLICE_ATTITUDE + 2);
+  q1 = Ith(y, INIT_SLICE_ATTITUDE + 3);
+  q2 = Ith(y, INIT_SLICE_ATTITUDE + 4);
+  q3 = Ith(y, INIT_SLICE_ATTITUDE + 5);
+  q4 = Ith(y, INIT_SLICE_ATTITUDE + 6);
 
   // Retrieve Inertia matrix columns
   sunrealtype** I_cols = SUNDenseMatrix_Cols(I);
 
   // Compute eddy current torque
-  N_Vector T_eddy = eddy_current_torque(*sunctx, y);
+  N_Vector T_eddy = eddy_current_torque(*sunctx, y, data);
 
-  Ith(ydot, 0) = (Ith(T_eddy, 0) - (I_cols[2][2] - I_cols[1][1]) * wz * wy) / I_cols[0][0];
-  Ith(ydot, 1) = (Ith(T_eddy, 1) - (I_cols[0][0] - I_cols[2][2]) * wx * wz) / I_cols[1][1];
-  Ith(ydot, 2) = (Ith(T_eddy, 2) - (I_cols[1][1] - I_cols[0][0]) * wy * wx) / I_cols[2][2];
-  Ith(ydot, 3) = SUN_RCONST(0.5) * (wz * q2 - wy * q3 + wx * q4);
-  Ith(ydot, 4) = SUN_RCONST(0.5) * (-wz * q1 + wx * q3 + wy * q4);
-  Ith(ydot, 5) = SUN_RCONST(0.5) * (wy * q1 - wx * q2 + wz * q4);
-  Ith(ydot, 6) = SUN_RCONST(0.5) * (-wx * q1 - wy * q2 - wz * q3);
+  Ith(ydot, INIT_SLICE_ATTITUDE + 0) = (Ith(T_eddy, 0) - (I_cols[2][2] - I_cols[1][1]) * wz * wy) / I_cols[0][0];
+  Ith(ydot, INIT_SLICE_ATTITUDE + 1) = (Ith(T_eddy, 1) - (I_cols[0][0] - I_cols[2][2]) * wx * wz) / I_cols[1][1];
+  Ith(ydot, INIT_SLICE_ATTITUDE + 2) = (Ith(T_eddy, 2) - (I_cols[1][1] - I_cols[0][0]) * wy * wx) / I_cols[2][2];
+  Ith(ydot, INIT_SLICE_ATTITUDE + 3) = SUN_RCONST(0.5) * (wz * q2 - wy * q3 + wx * q4);
+  Ith(ydot, INIT_SLICE_ATTITUDE + 4) = SUN_RCONST(0.5) * (-wz * q1 + wx * q3 + wy * q4);
+  Ith(ydot, INIT_SLICE_ATTITUDE + 5) = SUN_RCONST(0.5) * (wy * q1 - wx * q2 + wz * q4);
+  Ith(ydot, INIT_SLICE_ATTITUDE + 6) = SUN_RCONST(0.5) * (-wx * q1 - wy * q2 - wz * q3);
 
   return (0);
 }
@@ -130,7 +132,7 @@ N_Vector get_magnetic_field(SUNContext sunctx) {
   N_Vector B = N_VNew_Serial(3, sunctx);
 
   N_Vector location = N_VNew_Serial(3, sunctx);
-  Ith(location, 0) = 7; // TODO: recover from y (same for pose)
+  Ith(location, 0) = -7; // TODO: recover from y (same for pose)
   Ith(location, 1) = 0;
   Ith(location, 2) = 0;
 
@@ -140,7 +142,7 @@ N_Vector get_magnetic_field(SUNContext sunctx) {
   Ith(moment, 2) = 0;
 
   // Scalar components
-  sunrealtype mag = (MU0 * MAG_N_TURNS * MAG_CURRENT * (pow(PI*MAG_RADIUS, 2))) / (4 * PI);
+  sunrealtype mag = (MU0 * MAG_N_TURNS * MAG_CURRENT * (PI*pow(MAG_RADIUS, 2))) / (4 * PI);
   sunrealtype r = sqrt(N_VDotProd(location, location));
 
   // Compute the dot product: dot(moment,location)
@@ -156,13 +158,6 @@ N_Vector get_magnetic_field(SUNContext sunctx) {
   N_VLinearSum(1.0 / pow(r, 5), B, -1.0 / pow(r, 3), moment, B);
   N_VScale(mag, B, B);
 
-  // Output the transformed expression
-  /* std::cout << "Transformed expression: ";
-  for (int i = 0; i < 3; ++i) {
-      std::cout << Ith(B, i) << " ";
-  }
-  std::cout << std::endl; */
-
   // Free the memory allocated for the N_Vector objects
   N_VDestroy(location);
   N_VDestroy(moment);
@@ -170,18 +165,16 @@ N_Vector get_magnetic_field(SUNContext sunctx) {
   return B;
 }
 
-N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y) {
+N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) {
   // Compute magnetic field
   N_Vector B = get_magnetic_field(sunctx);
 
   // Get magnetic tensor
-  SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
-  IJth(M, 0, 0) = MAGN * GAMMA;
-  IJth(M, 1, 1) = MAGN * GAMMA;
-  IJth(M, 2, 2) = MAGN * 0.5;
+  SUNMatrix M = user_data->M;
 
   // Extract relative angular velocity
   N_Vector wr = N_VNew_Serial(3, sunctx);  // ASSUMPTION: no chaser contribution to wr
+  N_Vector tmp = N_VNew_Serial(3, sunctx);
   for (size_t i = 0; i < 3; i++) { Ith(wr, i) = Ith(y, INIT_SLICE_ATTITUDE + i); }
 
   // Compute torque
@@ -189,15 +182,16 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y) {
   wr = cross(sunctx, wr, B);
   
   // Perform the matrix-vector multiplication: M * temp1
-  SUNMatMatvec(M, wr, wr);
+  SUNMatMatvecSetup(M);
+  SUNMatMatvec(M, wr, tmp);
 
   // Torque, perform the cross product: cross(M * cross(wr, B), B)
-  N_Vector T = cross(sunctx, wr, B);
+  N_Vector T = cross(sunctx, tmp, B);
 
   // Free memory
   N_VDestroy(B);
   N_VDestroy(wr);
-  SUNMatDestroy(M);
+  N_VDestroy(tmp);
 
   return T;
 }

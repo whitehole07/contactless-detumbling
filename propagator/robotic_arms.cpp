@@ -25,7 +25,7 @@
 
 /* Problem Constants */
 #define T1   SUN_RCONST(0.0)
-#define T2   SUN_RCONST(0.7)
+#define T2   SUN_RCONST(-0.7)
 #define T3   SUN_RCONST(0.0)
 #define T4   SUN_RCONST(0.0)
 #define T5   SUN_RCONST(0.0)
@@ -93,14 +93,19 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     sunctx = data->sunctx;
     tau = data->tau;
 
+    // Extract from general y
+    N_Vector y_m = N_VNew_Serial(NEQ_MANIP, *sunctx);
+    for (size_t i = 0; i < NEQ_MANIP; i++) { Ith(y_m, i) = Ith(y, INIT_SLICE_MANIP + i); }
+    
+
     // Init matrices
     SUNMatrix Dv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
     SUNMatrix Cv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
     
     /* Evaluate matrices */
-    Dv = D(Dv, *sunctx, y);
+    Dv = D(Dv, *sunctx, y_m);
 
-    /*cout << "Matrix D: \n" << endl;
+    /* cout << "Matrix D: \n" << endl;
     // Iterate over each row
     for (sunindextype i = 0; i < 6; ++i) {
         // Iterate over each column
@@ -115,7 +120,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
         cout << endl;
     }*/
 
-    Cv = C(Cv, *sunctx, y);
+    Cv = C(Cv, *sunctx, y_m);
 
     /*cout << "Matrix C:\n" << endl;
     // Iterate over each row
@@ -144,7 +149,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     N_Vector tmp = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
 
     // Extract slice of y
-    for (size_t i = NEQ_MANIP/2; i < NEQ_MANIP; i++) { Ith(y_s, i - NEQ_MANIP/2) = Ith(y, i); }
+    for (size_t i = NEQ_MANIP/2; i < NEQ_MANIP; i++) { Ith(y_s, i - NEQ_MANIP/2) = Ith(y_m, i); }
 
     // Perform the operation Cv * y(n+1:end)
     SUNMatMatvec(Cv, y_s, ddq);
@@ -173,33 +178,29 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     // Perform summation
     N_VLinearSum(-1, ddq, 1, tmp, ddq);
 
-    /* for (size_t i = 0; i < 6; i++)
-    {
-        cout << Ith(ddq, i) << endl;
-    }*/
-
     /* Equations of motion */
     // dq
-    Ith(ydot, 0) = Ith(y, 6);
-    Ith(ydot, 1) = Ith(y, 7);
-    Ith(ydot, 2) = Ith(y, 8);
-    Ith(ydot, 3) = Ith(y, 9);
-    Ith(ydot, 4) = Ith(y, 10);
-    Ith(ydot, 5) = Ith(y, 11);
+    Ith(ydot, INIT_SLICE_MANIP + 0) = Ith(y, INIT_SLICE_MANIP + 6);
+    Ith(ydot, INIT_SLICE_MANIP + 1) = Ith(y, INIT_SLICE_MANIP + 7);
+    Ith(ydot, INIT_SLICE_MANIP + 2) = Ith(y, INIT_SLICE_MANIP + 8);
+    Ith(ydot, INIT_SLICE_MANIP + 3) = Ith(y, INIT_SLICE_MANIP + 9);
+    Ith(ydot, INIT_SLICE_MANIP + 4) = Ith(y, INIT_SLICE_MANIP + 10);
+    Ith(ydot, INIT_SLICE_MANIP + 5) = Ith(y, INIT_SLICE_MANIP + 11);
 
     // ddq
-    Ith(ydot, 6)  = Ith(ddq, 0);
-    Ith(ydot, 7)  = Ith(ddq, 1);
-    Ith(ydot, 8)  = Ith(ddq, 2);
-    Ith(ydot, 9)  = Ith(ddq, 3);
-    Ith(ydot, 10) = Ith(ddq, 4);
-    Ith(ydot, 11) = Ith(ddq, 5);
+    Ith(ydot, INIT_SLICE_MANIP + 6)  = Ith(ddq, INIT_SLICE_MANIP + 0);
+    Ith(ydot, INIT_SLICE_MANIP + 7)  = Ith(ddq, INIT_SLICE_MANIP + 1);
+    Ith(ydot, INIT_SLICE_MANIP + 8)  = Ith(ddq, INIT_SLICE_MANIP + 2);
+    Ith(ydot, INIT_SLICE_MANIP + 9)  = Ith(ddq, INIT_SLICE_MANIP + 3);
+    Ith(ydot, INIT_SLICE_MANIP + 10) = Ith(ddq, INIT_SLICE_MANIP + 4);
+    Ith(ydot, INIT_SLICE_MANIP + 11) = Ith(ddq, INIT_SLICE_MANIP + 5);
 
     // Clean up
     SUNLinSolFree(LS);
     SUNMatDestroy(Dv);
     SUNMatDestroy(Cv);
     N_VDestroy_Serial(y_s);
+    N_VDestroy_Serial(y_m);
     N_VDestroy_Serial(ddq);
     N_VDestroy_Serial(tmp);
 

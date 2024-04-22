@@ -149,22 +149,22 @@ T = @(j) [ % theta, a, d, alpha
 
 %% State Space
 % % Initial parameters
-tspan = [0, 5];
+tspan = [0, 200];
 y0 = [0; -0.7; 0; 0; 0; 0; 0.1; 0; 0; 0; 0; 0]; %; 0; 0; 0; 0; 0.1; 0.1];
 
 % Solve differential equation
-options = odeset('RelTol', 1e-2, 'AbsTol', 1e-4); % Set relative tolerance to 1e-6
-[t, y] = ode15s(@(t, y) stateEquation(t, y, D, C, q, tau, tspan), tspan, y0, options);
+options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Set relative tolerance to 1e-6
+[time, y] = ode15s(@(t, y) stateEquation(t, y, D, C, q, tau, tspan), tspan, y0, options);
 
 %% Animate
-% Plot evolution
+% % Plot evolution
 plotMovement(dh, y(:, 1:n));
 
 %% Plot
 % Plot joint angles
 figure;
-t = linspace(tspan(1), tspan(end), size(y, 1));
-plot(t, rad2deg(y(:, 1:n)), "linewidth", 2)
+time = linspace(tspan(1), tspan(end), size(y, 1));
+plot(time, rad2deg(y(:, 1:n)), "linewidth", 2)
 xlabel("Time [s]")
 ylabel("Joint angle [deg]")
 legend("$\theta_1$", "$\theta_2$", "$\theta_3$", "$\theta_4$", "$\theta_5$", "$\theta_6$", 'Interpreter', 'latex')
@@ -173,8 +173,39 @@ title("Evolution of Joint Angles")
 
 % Plot joint velocities
 figure;
-t = linspace(tspan(1), tspan(end), size(y, 1));
-plot(t, rad2deg(y(:, n+1:end)), "linewidth", 2)
+time = linspace(tspan(1), tspan(end), size(y, 1));
+plot(time, rad2deg(y(:, n+1:end)), "linewidth", 2)
+xlabel("Time [s]")
+ylabel("Joint angular velocity [deg/s]")
+legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta}_4$", "$\dot{\theta}_5$", "$\dot{\theta}_6$", 'Interpreter', 'latex')
+grid on
+title("Evolution of Joint Angular Velocities")
+
+%% Test
+val = [0,-0.7,0,0,0,0,0.1,0,0,0,0,0];
+double(subs(D, [t1(t) t2(t) t3(t) t4(t) t5(t) t6(t) diff(t1(t), t) diff(t2(t), t) diff(t3(t), t) diff(t4(t), t) diff(t5(t), t) diff(t6(t), t)], val))
+double(subs(C, [t1(t) t2(t) t3(t) t4(t) t5(t) t6(t) diff(t1(t), t) diff(t2(t), t) diff(t3(t), t) diff(t4(t), t) diff(t5(t), t) diff(t6(t), t)], val))
+
+%% Load custom
+p = csvread("prop_result.csv", 1, 0);
+t = p(:, 1);
+p = p(:, 2:n+n+1);
+
+% plotMovement(dh, p(:, 1:n));
+
+% Plot joint angles
+figure;
+time = linspace(t(1), t(end), size(p, 1));
+plot(time, rad2deg(p(:, 1:n)), "linewidth", 2)
+xlabel("Time [s]")
+ylabel("Joint angle [deg]")
+legend("$\theta_1$", "$\theta_2$", "$\theta_3$", "$\theta_4$", "$\theta_5$", "$\theta_6$", 'Interpreter', 'latex')
+grid on
+title("Evolution of Joint Angles")
+
+% Plot joint velocities
+figure;
+plot(time, rad2deg(p(:, n+1:end)), "linewidth", 2)
 xlabel("Time [s]")
 ylabel("Joint angular velocity [deg/s]")
 legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta}_4$", "$\dot{\theta}_5$", "$\dot{\theta}_6$", 'Interpreter', 'latex')

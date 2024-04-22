@@ -15,9 +15,9 @@
 #define IJth(A, i, j)  SM_ELEMENT_D(A, i, j)  /* (i,j)-th matrix component i,j=1..NEQ */
 
 // Integrator configuration
-#define NEQ                   NEQ_ATTITUDE
-#define INIT_SLICE_ATTITUDE   0
+#define NEQ                   NEQ_ATTITUDE + NEQ_MANIP
 #define INIT_SLICE_MANIP      0
+#define INIT_SLICE_ATTITUDE   NEQ_MANIP
 
 using namespace std;
 using namespace SymEngine;
@@ -25,11 +25,13 @@ using namespace SymEngine;
 /* User data */
 typedef struct
 { 
+  SUNContext* sunctx;
+
   // Attitude
   SUNMatrix I;
+  SUNMatrix M;
 
   // Robotic arm
-  SUNContext* sunctx;
   N_Vector tau;
 }* UserData;
 

@@ -18,8 +18,8 @@
 
 // Time settings
 #define T0      SUN_RCONST(0.0)         /* Initial time */
-#define T1      SUN_RCONST(2000.0)     /* Final time */
-#define TSTEP   1                       /* Time step */
+#define T1      SUN_RCONST(200)         /* Final time */
+#define TSTEP   0.555555555555556       /* Time step */
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -65,8 +65,8 @@ int main(void)
     if (check_retval((void*)y, "N_VNew_Serial", 0)) { return (1); }
 
     /* Initiate external propagators */
+    initiate_manipulator(sunctx, y, user_data);
     initiate_attitude(sunctx, y, user_data);
-    //initiate_manipulator(sunctx, y, user_data);
 
     /* Set the vector absolute tolerance */
     abstol = N_VNew_Serial(NEQ, sunctx);
@@ -159,11 +159,12 @@ int main(void)
  */
 
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
-  // Attitude
-  f_attitude(t, y, ydot, user_data);
 
   // Robotic Arm
-  // f_manipulator(t, y, ydot, user_data);
+  f_manipulator(t, y, ydot, user_data);
+
+  // Attitude
+  f_attitude(t, y, ydot, user_data);
 
   return (0);
 }

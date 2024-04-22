@@ -48,22 +48,22 @@ joints_2 = [
 ]  # Joints second robotic arm
 
 # End effector
-electromagnet_1: ElectromagnetEndEffector = ElectromagnetEndEffector(
+"""electromagnet_1: ElectromagnetEndEffector = ElectromagnetEndEffector(
     n_turns=500,
     radius=2,
     current=50,
     pose_sign=1
-)
+)"""
 electromagnet_2: ElectromagnetEndEffector = ElectromagnetEndEffector(
     n_turns=500,
     radius=2,
     current=50,
     pose_sign=-1
 )
-electromagnets = [electromagnet_1, electromagnet_2]
+electromagnets = [electromagnet_2] # [electromagnet_1, electromagnet_2]
 
 # Arms
-arm_1: Arm = Arm(joints=joints_1, end_effector=electromagnet_1)
+# arm_1: Arm = Arm(joints=joints_1, end_effector=electromagnet_1)
 arm_2: Arm = Arm(joints=joints_2, end_effector=electromagnet_2)
 
 # External moments
@@ -85,7 +85,7 @@ debris_prop = Propagator(
     attitude=AttitudePropagator(entity=debris, w0=[0.2, 0.3, 0], q0=[0, 0, 0, 1], M_ext=eddy+gravity),
     orbit=OrbitPropagator(planet=earth, a0=(earth.radius+2000), e0=0.0, i0=10.0, OM0=0.0, om0=0.0, f0=0.0),
     robotics=[
-        ArmPropagator(end_effector=electromagnet_1, y0=[0, 0, 7], p0=[1, 0, 0]),
+        # ArmPropagator(end_effector=electromagnet_1, y0=[0, 0, 7], p0=[1, 0, 0]),
         ArmPropagator(end_effector=electromagnet_2, y0=[0, 0, -7], p0=[-1, 0, 0])
     ]
 )
