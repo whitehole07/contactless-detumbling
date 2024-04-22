@@ -6,7 +6,7 @@
 
 #define NEQ_ATTITUDE  7  /* number of equations  */
 
-int initiate_attitude(SUNContext sunctx, N_Vector y, const int y_init_slice, void* user_data);
+int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data);
 
 int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 

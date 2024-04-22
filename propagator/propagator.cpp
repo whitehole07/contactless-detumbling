@@ -12,9 +12,6 @@
 #include "attitude.h"
 #include "robotic_arms.h"
 
-/* Equations */
-#define NEQ  NEQ_MANIP
-
 // Solver settings
 #define RTOL    SUN_RCONST(1.0e-4)      /* scalar relative tolerance            */
 #define ATOL    SUN_RCONST(1.0e-8)      /* vector absolute tolerance components */
@@ -68,8 +65,8 @@ int main(void)
     if (check_retval((void*)y, "N_VNew_Serial", 0)) { return (1); }
 
     /* Initiate external propagators */
-    // initiate_attitude(sunctx, y, 0, user_data);
-    initiate_manipulator(sunctx, y, 0, user_data);
+    initiate_attitude(sunctx, y, user_data);
+    //initiate_manipulator(sunctx, y, user_data);
 
     /* Set the vector absolute tolerance */
     abstol = N_VNew_Serial(NEQ, sunctx);
@@ -163,10 +160,10 @@ int main(void)
 
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
   // Attitude
-  // f_attitude(t, y, ydot, user_data);
+  f_attitude(t, y, ydot, user_data);
 
   // Robotic Arm
-  f_manipulator(t, y, ydot, user_data);
+  // f_manipulator(t, y, ydot, user_data);
 
   return (0);
 }

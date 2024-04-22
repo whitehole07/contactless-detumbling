@@ -37,39 +37,33 @@
 #define DT5  SUN_RCONST(0.0)
 #define DT6  SUN_RCONST(0.0)
 
-#define RTOL  SUN_RCONST(1.0e-4)
-#define ATOL  SUN_RCONST(1.0e-8)
-
-#define INIT_TIMET0  SUN_RCONST(0.0)
-#define END_TIME     SUN_RCONST(20.0)
-
 using namespace std;
 using namespace SymEngine;
 using namespace rapidjson;
 
 /* Functions Called by the Solver */
-int initiate_manipulator(SUNContext sunctx, N_Vector y, const int y_init_slice, void* user_data);
+int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data);
 
 int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
 
-int initiate_manipulator(SUNContext sunctx, N_Vector y, const int y_init_slice, void* user_data) {
+int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     // Save symbols and linear solver
     UserData data  = (UserData)user_data;
 
     /* Initialize y_manip */
-    Ith(y, y_init_slice + 0)  = T1;
-    Ith(y, y_init_slice + 1)  = T2;
-    Ith(y, y_init_slice + 2)  = T3;
-    Ith(y, y_init_slice + 3)  = T4;
-    Ith(y, y_init_slice + 4)  = T5;
-    Ith(y, y_init_slice + 5)  = T6;
-    Ith(y, y_init_slice + 6)  = DT1;
-    Ith(y, y_init_slice + 7)  = DT2;
-    Ith(y, y_init_slice + 8)  = DT3;
-    Ith(y, y_init_slice + 9)  = DT4;
-    Ith(y, y_init_slice + 10) = DT5;
-    Ith(y, y_init_slice + 11) = DT6;
+    Ith(y, INIT_SLICE_MANIP + 0)  = T1;
+    Ith(y, INIT_SLICE_MANIP + 1)  = T2;
+    Ith(y, INIT_SLICE_MANIP + 2)  = T3;
+    Ith(y, INIT_SLICE_MANIP + 3)  = T4;
+    Ith(y, INIT_SLICE_MANIP + 4)  = T5;
+    Ith(y, INIT_SLICE_MANIP + 5)  = T6;
+    Ith(y, INIT_SLICE_MANIP + 6)  = DT1;
+    Ith(y, INIT_SLICE_MANIP + 7)  = DT2;
+    Ith(y, INIT_SLICE_MANIP + 8)  = DT3;
+    Ith(y, INIT_SLICE_MANIP + 9)  = DT4;
+    Ith(y, INIT_SLICE_MANIP + 10) = DT5;
+    Ith(y, INIT_SLICE_MANIP + 11) = DT6;
 
     /* Initialize tau (temporary) */
     N_Vector tau = N_VNew_Serial(NEQ_MANIP/2, sunctx);
