@@ -46,3 +46,30 @@ class Propagator(object):
 
         for arm in self.arms:                          # Arm solutions [13+(i*3):16+(i*3)]
             arm.save(self.__prop_sol.t, self.__prop_sol.y[arm.indexes])
+
+    def load_from_csv(self, filename: str) -> None:
+        """
+        Load a CSV file into a NumPy array.
+
+        Args:
+            filename (str): The path to the CSV file.
+
+        Returns:
+            numpy.ndarray: The NumPy array containing the data from the CSV file.
+        """
+        try:
+            # Load CSV file into a NumPy array as strings
+            csv = np.genfromtxt(filename, delimiter=',', skip_header=1)[:, :-1]
+            t = csv[:, 0]; y = csv[:, 1:]
+
+            # Save solutions
+            self.attitude._timestamps = t
+            self.attitude._prop_sol = y  # Attitude solution [:7, :]
+            self.orbit._timestamps = t
+            self.orbit._prop_sol = y  # Orbital solution [7:, :]
+
+            for arm in self.arms:  # Arm solutions [13+(i*3):16+(i*3)]
+                arm.save(t, y[arm.indexes])
+        except Exception as e:
+            print(f"Error loading CSV file: {e}")
+            return None

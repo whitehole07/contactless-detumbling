@@ -13,13 +13,13 @@
 #include "robotic_arms.h"
 
 // Solver settings
-#define RTOL    SUN_RCONST(1.0e-4)      /* scalar relative tolerance            */
-#define ATOL    SUN_RCONST(1.0e-8)      /* vector absolute tolerance components */
+#define RTOL    SUN_RCONST(1.0e-2)      /* scalar relative tolerance            */
+#define ATOL    SUN_RCONST(1.0e-4)      /* vector absolute tolerance components */
 
 // Time settings
 #define T0      SUN_RCONST(0.0)         /* Initial time */
-#define T1      SUN_RCONST(200)         /* Final time */
-#define TSTEP   0.555555555555556       /* Time step */
+#define T1      SUN_RCONST(3600)        /* Final time */
+#define TSTEP   1                       /* Time step */
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);

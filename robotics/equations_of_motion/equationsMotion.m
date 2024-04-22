@@ -149,11 +149,11 @@ T = @(j) [ % theta, a, d, alpha
 
 %% State Space
 % % Initial parameters
-tspan = [0, 200];
+tspan = [0, 3600];
 y0 = [0; -0.7; 0; 0; 0; 0; 0.1; 0; 0; 0; 0; 0]; %; 0; 0; 0; 0; 0.1; 0.1];
 
 % Solve differential equation
-options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Set relative tolerance to 1e-6
+options = odeset('RelTol', 1e-2, 'AbsTol', 1e-4); % Set relative tolerance to 1e-6
 [time, y] = ode15s(@(t, y) stateEquation(t, y, D, C, q, tau, tspan), tspan, y0, options);
 
 %% Animate
