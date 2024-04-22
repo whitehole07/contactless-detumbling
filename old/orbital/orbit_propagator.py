@@ -2,8 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 
-from orbital.orbit_conversion import keplerian_to_cartesian
-from utilities.entities import Planet
+from old.orbital.orbit_conversion import keplerian_to_cartesian
+from old.utilities.entities import Planet
 
 
 class OrbitPropagator(object):

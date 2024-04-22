@@ -2,7 +2,7 @@ __all__ = ["Cylinder", "Planet"]
 
 import numpy as np
 
-from utilities.inertia_matrix import cylinder_inertia
+from old.utilities.inertia_matrix import cylinder_inertia
 
 
 class Cylinder(object):

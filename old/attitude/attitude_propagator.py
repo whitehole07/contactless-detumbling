@@ -1,11 +1,10 @@
 import numpy as np
 
-from attitude.attitude_conversion import quaternion_to_euler
-from attitude.attitude_animation import animate_attitude
-from attitude.attitude_plot import plot_evolution
-from attitude.torques.base import TorqueObject
-from attitude.torques.eddy_current import ElectromagnetEndEffector
-from robotics.arm_propagator import Arm
+from old.attitude.attitude_conversion import quaternion_to_euler
+from old.attitude.attitude_animation import animate_attitude
+from old.attitude.attitude_plot import plot_evolution
+from old.attitude.torques.base import TorqueObject
+from old.robotics.arm_propagator import Arm
 
 
 class AttitudePropagator(object):

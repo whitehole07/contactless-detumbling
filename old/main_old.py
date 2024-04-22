@@ -14,7 +14,7 @@ from attitude.torques.gravity_gradient import GravityGradientTorque
 from orbital.orbit_propagator import OrbitPropagator
 
 # Propagator
-from propagator import Propagator
+from old.propagator import Propagator
 
 # Generate Earth
 earth = Planet(mu=3.98600433e+5, radius=6371.01)

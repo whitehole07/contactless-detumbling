@@ -1,7 +1,7 @@
 import numpy as np
 
-from attitude.torques.base import TorqueObject
-from robotics.arm_propagator import ElectromagnetEndEffector
+from old.attitude.torques.base import TorqueObject
+from old.robotics.arm_propagator import ElectromagnetEndEffector
 
 
 class EddyCurrentTorque(object):

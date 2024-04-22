@@ -2,10 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
-from attitude.attitude_conversion import quaternion_to_rotation_matrix
-from attitude.torques.eddy_current import ElectromagnetEndEffector
-from robotics.arm_propagator import Arm
-from utilities.ui import LoadingBarWithTime
+from old.attitude.attitude_conversion import quaternion_to_rotation_matrix
+from old.robotics.arm_propagator import Arm
+from old.utilities.ui import LoadingBarWithTime
 
 
 def rotate_cylinder(longitudinal_axis_m):

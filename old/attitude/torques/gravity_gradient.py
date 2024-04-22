@@ -1,7 +1,7 @@
 import numpy as np
 
-from attitude.attitude_conversion import quaternion_to_rotation_matrix
-from attitude.torques.base import TorqueObject
+from old.attitude.attitude_conversion import quaternion_to_rotation_matrix
+from old.attitude.torques.base import TorqueObject
 
 
 class GravityGradientTorque(object):
