@@ -75,7 +75,7 @@ Im(:, :, 6) = [
 n = size(dh, 1);
 
 % Load matrices
-% load("C.mat")
+load("C.mat")
 load("D.mat")
 
 %% Transformation matrix
@@ -121,62 +121,62 @@ T = @(j) [ % theta, a, d, alpha
 % D = simplify(D);
 % fprintf("Simplified D")
 % save("D.mat", "D");
-% matToJSON("D.json", D);
+% matToTXT("D.json", D);
 
 %% Christoffel symbols
 % Init C tensor
-C = sym(zeros(n));
-for j = 1:n
-    for k = 1:n
-        % Init value
-        ckj = 0;
-
-        % Summation of christoffels
-        for i = 1:n
-            ckj = ckj + 0.5 * (diff(D(k, j), q(i)) + diff(D(k, i), q(j)) - diff(D(i, j), q(k))) * diff(q(i), t);
-            ckj = simplify(ckj);
-            fprintf("Simplified C (%d, %d, %d)\n", i, j, k)
-        end
-
-        % Assign value
-        C(k, j) = ckj;
-    end
-end
-
-% Save
-save("C.mat", "C");
-matToJSON("C.json", C);
+% C = sym(zeros(n));
+% for j = 1:n
+%     for k = 1:n
+%         % Init value
+%         ckj = 0;
+% 
+%         % Summation of christoffels
+%         for i = 1:n
+%             ckj = ckj + 0.5 * (diff(D(k, j), q(i)) + diff(D(k, i), q(j)) - diff(D(i, j), q(k))) * diff(q(i), t);
+%             ckj = simplify(ckj);
+%             fprintf("Simplified C (%d, %d, %d)\n", i, j, k)
+%         end
+% 
+%         % Assign value
+%         C(k, j) = ckj;
+%     end
+% end
+% 
+% % Save
+% save("C.mat", "C");
+% matToTXT("C.json", C);
 
 %% State Space
 % % Initial parameters
-% tspan = [0, 2];
-% y0 = [0; -pi/4; 0; 0; 0; 0; 1; 0; 0; 0; 0; 0]; %; 0; 0; 0; 0; 0.1; 0.1];
-% 
-% % Solve differential equation
-% options = odeset('RelTol', 1e-4, 'AbsTol', 1e-6); % Set relative tolerance to 1e-6
-% [t, y] = ode15s(@(t, y) stateEquation(t, y, D, C, q, tau, tspan), tspan, y0, options);
-% 
-% %% Animate
-% % Plot evolution
-% plotMovement(dh, y(:, 1:n));
-% 
-% %% Plot
-% % Plot joint angles
-% figure;
-% t = linspace(tspan(1), tspan(end), size(y, 1));
-% plot(t, rad2deg(y(:, 1:n)), "linewidth", 2)
-% xlabel("Time [s]")
-% ylabel("Joint angle [deg]")
-% legend("$\theta_1$", "$\theta_2$", "$\theta_3$", "$\theta_4$", "$\theta_5$", "$\theta_6$", 'Interpreter', 'latex')
-% grid on
-% title("Evolution of Joint Angles")
-% 
-% % Plot joint velocities
-% figure;
-% t = linspace(tspan(1), tspan(end), size(y, 1));
-% plot(t, rad2deg(y(:, n+1:end)), "linewidth", 2)
-% xlabel("Time [s]")
-% ylabel("Joint angular velocity [deg/s]")
-% legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta}_4$", "$\dot{\theta}_5$", "$\dot{\theta}_6$", 'Interpreter', 'latex')
-% grid on
-% title("Evolution of Joint Angular Velocities")
+tspan = [0, 5];
+y0 = [0; -0.7; 0; 0; 0; 0; 0.1; 0; 0; 0; 0; 0]; %; 0; 0; 0; 0; 0.1; 0.1];
+
+% Solve differential equation
+options = odeset('RelTol', 1e-2, 'AbsTol', 1e-4); % Set relative tolerance to 1e-6
+[t, y] = ode15s(@(t, y) stateEquation(t, y, D, C, q, tau, tspan), tspan, y0, options);
+
+%% Animate
+% Plot evolution
+plotMovement(dh, y(:, 1:n));
+
+%% Plot
+% Plot joint angles
+figure;
+t = linspace(tspan(1), tspan(end), size(y, 1));
+plot(t, rad2deg(y(:, 1:n)), "linewidth", 2)
+xlabel("Time [s]")
+ylabel("Joint angle [deg]")
+legend("$\theta_1$", "$\theta_2$", "$\theta_3$", "$\theta_4$", "$\theta_5$", "$\theta_6$", 'Interpreter', 'latex')
+grid on
+title("Evolution of Joint Angles")
+
+% Plot joint velocities
+figure;
+t = linspace(tspan(1), tspan(end), size(y, 1));
+plot(t, rad2deg(y(:, n+1:end)), "linewidth", 2)
+xlabel("Time [s]")
+ylabel("Joint angular velocity [deg/s]")
+legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta}_4$", "$\dot{\theta}_5$", "$\dot{\theta}_6$", 'Interpreter', 'latex')
+grid on
+title("Evolution of Joint Angular Velocities")

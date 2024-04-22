@@ -26,7 +26,7 @@
 #define ZERO  SUN_RCONST(0.0)
 
 
-int initiate(SUNContext sunctx, N_Vector y, const int y_init_slice, void* user_data) {
+int initiate_attitude(SUNContext sunctx, N_Vector y, const int y_init_slice, void* user_data) {
   /* Variables */
   SUNMatrix I;
 

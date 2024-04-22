@@ -8,18 +8,21 @@
 #include <sunmatrix/sunmatrix_dense.h>
 
 /* Local */
-#include "attitude.h"
 #include "propagator.h"
+#include "attitude.h"
+#include "robotic_arms.h"
 
 /* Equations */
-#define NEQ   NEQ_ATTITUDE
+#define NEQ  NEQ_MANIP
 
-/* Constants */
-#define RTOL    SUN_RCONST(1.0e-4)   /* scalar relative tolerance            */
-#define ATOL    SUN_RCONST(1.0e-8)   /* vector absolute tolerance components */
-#define T0      SUN_RCONST(0.0)      /* initial time           */
-#define T1      SUN_RCONST(20000.0)     /* first output time      */
-#define TSTEP   1
+// Solver settings
+#define RTOL    SUN_RCONST(1.0e-4)      /* scalar relative tolerance            */
+#define ATOL    SUN_RCONST(1.0e-8)      /* vector absolute tolerance components */
+
+// Time settings
+#define T0      SUN_RCONST(0.0)         /* Initial time */
+#define T1      SUN_RCONST(2000.0)     /* Final time */
+#define TSTEP   1                       /* Time step */
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -58,18 +61,15 @@ int main(void)
 
     /* Set the pointer to user-defined data */
     user_data = (UserData)malloc(sizeof *user_data); /* Allocate data memory */
-    if (!user_data)
-    {
-    fprintf(stderr, "MEMORY_ERROR: malloc failed - returned NULL pointer\n");
-    return 1;
-    }
+    user_data->sunctx = &sunctx;
 
     /* Initial conditions */
     y = N_VNew_Serial(NEQ, sunctx);
     if (check_retval((void*)y, "N_VNew_Serial", 0)) { return (1); }
 
-    /* Init attitude */
-    initiate(sunctx, y, 0, user_data);
+    /* Initiate external propagators */
+    // initiate_attitude(sunctx, y, 0, user_data);
+    initiate_manipulator(sunctx, y, 0, user_data);
 
     /* Set the vector absolute tolerance */
     abstol = N_VNew_Serial(NEQ, sunctx);
@@ -92,6 +92,11 @@ int main(void)
     * and vector absolute tolerances */
     retval = CVodeSVtolerances(cvode_mem, RTOL, abstol);
     if (check_retval(&retval, "CVodeSVtolerances", 1)) { return (1); }
+
+      // Increase the maximum number of steps
+    long int max_num_steps = 1000; // Set the desired maximum number of steps
+    retval = CVodeSetMaxNumSteps(cvode_mem, max_num_steps);
+    if (check_retval(&retval, "CVodeSetMaxNumSteps", 1)) { return (1); }
 
     retval = CVodeSetUserData(cvode_mem, user_data);
     if (check_retval(&retval, "CVodeSetUserData", 1)) { return (1); }
@@ -120,7 +125,7 @@ int main(void)
     if (retval == CV_SUCCESS)
     {
         iout++;
-        tout += 1;
+        tout += TSTEP;
     }
 
     // Save row
@@ -158,9 +163,10 @@ int main(void)
 
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
   // Attitude
-  f_attitude(t, y, ydot, user_data);
+  // f_attitude(t, y, ydot, user_data);
 
   // Robotic Arm
+  f_manipulator(t, y, ydot, user_data);
 
   return (0);
 }
@@ -194,7 +200,7 @@ static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, bool init) {
 
 static void PrintOutput(int i, sunrealtype t, N_Vector y)
 {
-  printf("At (%d) t = %0.4e      y =%14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e\n", i, t, \
+  printf("At (%d) t = %0.4e    y =%14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e  %14.6e\n", i, t, \
   Ith(y, 0), Ith(y, 1), Ith(y, 2), Ith(y, 3), Ith(y, 4), Ith(y, 5), Ith(y, 6));
 
   return;
