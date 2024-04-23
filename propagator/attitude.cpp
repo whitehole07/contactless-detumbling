@@ -9,6 +9,7 @@
 
 /* Local */
 #include "attitude.h"
+#include "robotic_arms.h"
 #include "propagator.h"
 
 /* Constants */
@@ -46,7 +47,7 @@ int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data);
 
 int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
-N_Vector get_magnetic_field(SUNContext sunctx);
+N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx);
 
 N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data);
 
@@ -125,20 +126,18 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   return (0);
 }
 
-N_Vector get_magnetic_field(SUNContext sunctx) {
+N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx) {
   /* Compute magnetic field */
   // Vectorial component
   N_Vector B = N_VNew_Serial(3, sunctx);
 
-  N_Vector location = N_VNew_Serial(3, sunctx);
-  Ith(location, 0) = 0; // TODO: recover from y (same for pose)
-  Ith(location, 1) = 0;
-  Ith(location, 2) = 7;
+  // Extract end effector location
+  N_Vector location = end_effector_position(y, sunctx);
+  cout << "location norm: " << sqrt(N_VDotProd(location, location)) << endl;    
 
-  N_Vector moment = N_VNew_Serial(3, sunctx);
-  Ith(moment, 0) = 0;
-  Ith(moment, 1) = 0;
-  Ith(moment, 2) = 1;
+  // Extract end effector pose
+  N_Vector moment = end_effector_pose(y, sunctx);
+  cout << "pose norm: " << sqrt(N_VDotProd(moment, moment)) << endl;    
 
   // Scalar components
   sunrealtype mag = (MU0 * MAG_N_TURNS * MAG_CURRENT * (PI*pow(MAG_RADIUS, 2))) / (4 * PI);
@@ -166,7 +165,7 @@ N_Vector get_magnetic_field(SUNContext sunctx) {
 
 N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) {
   // Compute magnetic field
-  N_Vector B = get_magnetic_field(sunctx);
+  N_Vector B = get_magnetic_field(y, sunctx);
 
   // Get magnetic tensor
   SUNMatrix M = user_data->M;

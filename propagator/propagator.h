@@ -26,6 +26,7 @@ using namespace SymEngine;
 typedef struct
 { 
   SUNContext* sunctx;
+  N_Vector additional;  // Vector of additional data to save to CSV
 
   // Attitude
   SUNMatrix I;

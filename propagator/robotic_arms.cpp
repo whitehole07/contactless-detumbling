@@ -7,21 +7,14 @@
 #include <sunlinsol/sunlinsol_dense.h>
 #include <sunmatrix/sunmatrix_dense.h>
 
-/* SymEngine */
-#include <symengine/symengine_config.h>
-#include <symengine/parser.h>
-#include <symengine/expression.h>
-#include <symengine/symbol.h>
-#include <symengine/symengine_casts.h>
-#include <symengine/matrix.h>
-
-/* RapidJSON */
-#include "rapidjson/document.h"
-
 /* Local */
 #include "robotic_arms.h"
 #include "mat.h"
 #include "propagator.h"
+
+/* Constants */
+#define PI    SUN_RCONST(3.14159265358979323846)
+#define ZERO  SUN_RCONST(0.0)
 
 /* Problem Constants */
 #define T1   SUN_RCONST(0.0)
@@ -37,14 +30,33 @@
 #define DT5  SUN_RCONST(0.0)
 #define DT6  SUN_RCONST(0.0)
 
+/* Global Variables: Robot's Base Frame to Target's Body Frame */
+#define ORIGIN_XDISTANCE_TO_DEBRIS  10  // [m]
+#define ORIGIN_YDISTANCE_TO_DEBRIS  0   // [m]
+#define ORIGIN_ZDISTANCE_TO_DEBRIS  0   // [m]
+
+/* Denavit-Hartenberg Parameters */
+#define DH_A        {     0, -0.6127, -0.57155,       0,       0,       0}
+#define DH_D        {0.1807,       0,        0, 0.17415, 0.11985, 0.11655}
+#define DH_ALPHA    {  PI/2,       0,        0,    PI/2,   -PI/2,       0}
+
 using namespace std;
 using namespace SymEngine;
-using namespace rapidjson;
 
 /* Functions Called by the Solver */
 int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data);
 
 int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+
+N_Vector end_effector_position(N_Vector y, SUNContext sunctx);
+
+N_Vector end_effector_pose(N_Vector y, SUNContext sunctx);
+
+SUNMatrix get_joint_matrix(int joint_number, N_Vector y, SUNContext sunctx);
+
+SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNContext sunctx);
+
+SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
 
 int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
@@ -104,38 +116,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     
     /* Evaluate matrices */
     Dv = D(Dv, *sunctx, y_m);
-
-    /* cout << "Matrix D: \n" << endl;
-    // Iterate over each row
-    for (sunindextype i = 0; i < 6; ++i) {
-        // Iterate over each column
-        for (sunindextype j = 0; j < 6; ++j) {
-            // Retrieve the matrix element at row i, column j
-            sunrealtype value;
-            value = IJth(Dv, i, j);
-            // Print the matrix element
-            cout << value << "\t";
-        }
-        // Move to the next row
-        cout << endl;
-    }*/
-
     Cv = C(Cv, *sunctx, y_m);
-
-    /*cout << "Matrix C:\n" << endl;
-    // Iterate over each row
-    for (sunindextype i = 0; i < 6; ++i) {
-        // Iterate over each column
-        for (sunindextype j = 0; j < 6; ++j) {
-            // Retrieve the matrix element at row i, column j
-            sunrealtype value;
-            value = IJth(Cv, i, j);
-            // Print the matrix element
-            cout << value << "\t";
-        }
-        // Move to the next row
-        cout << endl;
-    }*/
 
     /* Computations
     EoM:
@@ -153,11 +134,6 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
     // Perform the operation Cv * y(n+1:end)
     SUNMatMatvec(Cv, y_s, ddq);
-    /*for (size_t i = 0; i < 6; i++)
-    {
-        cout << Ith(y_s, i) << " " << Ith(ddq, i)<< endl;
-    }
-    cout << "\n" << endl;*/
     
     // Perform the operation - [A=Dv] \ [b = (Cv * y(n+1:end))] -> [Ax = b]
     LS = SUNLinSol_Dense(ddq, Dv, *sunctx);
@@ -168,12 +144,6 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     LS = SUNLinSol_Dense(tau, Dv, *sunctx);
     retval = SUNLinSolSetup(LS, Dv);
     retval = SUNLinSolSolve(LS, Dv, tmp, tau, 0.0);
-
-    /*for (size_t i = 0; i < 6; i++)
-    {
-        cout << Ith(ddq, i) << " " << Ith(tmp, i) << endl;
-    }
-    cout << "\n" << endl;*/
 
     // Perform summation
     N_VLinearSum(-1, ddq, 1, tmp, ddq);
@@ -205,4 +175,133 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     N_VDestroy_Serial(tmp);
 
     return (0);
+}
+
+N_Vector end_effector_position(N_Vector y, SUNContext sunctx) {
+    // Get end effector transformation matrix
+    SUNMatrix T = get_transformation_matrix(NEQ_MANIP/2, y, sunctx);
+
+    // Extract position
+    N_Vector loc = N_VNew_Serial(3, sunctx);
+
+    // Set position considering offsets
+    Ith(loc, 0) = IJth(T, 0, 3) + ORIGIN_XDISTANCE_TO_DEBRIS;
+    Ith(loc, 1) = IJth(T, 1, 3) + ORIGIN_YDISTANCE_TO_DEBRIS;
+    Ith(loc, 2) = IJth(T, 2, 3) + ORIGIN_ZDISTANCE_TO_DEBRIS;
+    
+    // Free up memory
+    SUNMatDestroy(T);
+
+    return loc;
+}
+
+N_Vector end_effector_pose(N_Vector y, SUNContext sunctx) {
+    // Get end effector transformation matrix
+    SUNMatrix T = get_transformation_matrix(NEQ_MANIP/2, y, sunctx);
+
+    // Extract pose
+    N_Vector pos = N_VNew_Serial(3, sunctx);
+    for (size_t i = 0; i < 3; i++)
+    {
+        Ith(pos, i) = IJth(T, i, 2);
+    }
+
+    // Normalize pose
+    sunrealtype norm = sqrt(N_VDotProd(pos, pos));
+    N_VScale(1.0 / norm, pos, pos);
+    
+    // Free up memory
+    SUNMatDestroy(T);
+
+    return pos;
+}
+
+SUNMatrix get_joint_matrix(int joint_number, N_Vector y, SUNContext sunctx) {
+    // Load parameters
+    double theta[6]; for (size_t i = 0; i < 6; i++) { theta[i] = Ith(y, INIT_SLICE_MANIP + i); }
+    double a[6]     = DH_A;
+    double d[6]     = DH_D;
+    double alpha[6] = DH_ALPHA;
+
+    // Init matrix
+    SUNMatrix Ti = SUNDenseMatrix(4, 4, sunctx);
+    
+    // Set matrix
+    // Row 0
+    IJth(Ti, 0, 0) = cos(theta[joint_number]);
+    IJth(Ti, 0, 1) = -sin(theta[joint_number]) * cos(alpha[joint_number]);
+    IJth(Ti, 0, 2) = sin(theta[joint_number]) * sin(alpha[joint_number]);
+    IJth(Ti, 0, 3) = a[joint_number] * cos(theta[joint_number]);
+    
+    // Row 1
+    IJth(Ti, 1, 0) = sin(theta[joint_number]);
+    IJth(Ti, 1, 1) = cos(theta[joint_number]) * cos(alpha[joint_number]);
+    IJth(Ti, 1, 2) = -cos(theta[joint_number]) * sin(alpha[joint_number]);
+    IJth(Ti, 1, 3) = a[joint_number] * sin(theta[joint_number]);
+
+    // Row 2
+    IJth(Ti, 2, 0) = 0;
+    IJth(Ti, 2, 1) = sin(alpha[joint_number]);
+    IJth(Ti, 2, 2) = cos(alpha[joint_number]);
+    IJth(Ti, 2, 3) = d[joint_number];
+
+    // Row 3
+    IJth(Ti, 3, 0) = 0;
+    IJth(Ti, 3, 1) = 0;
+    IJth(Ti, 3, 2) = 0;
+    IJth(Ti, 3, 3) = 1;
+
+    return Ti;
+}
+
+
+SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNContext sunctx) {
+    // Loop to get i-th transformation matrix
+    SUNMatrix T0i = SUNDenseMatrix(4, 4, sunctx);
+
+    for (size_t i = 0; i < final_joint_number; i++)
+    {
+        // Get joint matrix
+        SUNMatrix Ti = get_joint_matrix(i, y, sunctx);
+
+        // Update transformation matrix
+        if (i > 0)
+        {
+            // Compute transformation matrix
+            T0i = mat_mul(T0i, Ti, sunctx);
+
+        } else
+        {   
+            // First matrix
+            SUNMatCopy(Ti, T0i);
+        }
+        
+        // Free up memory
+        SUNMatDestroy(Ti);
+    }
+
+    return T0i;
+}
+
+SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx) {
+    // Get the sizes of the matrices
+    int m = SM_ROWS_D(A);
+    int n = SM_COLUMNS_D(A);
+    int p = SM_COLUMNS_D(B);
+
+    // Create a dense matrix to store the result of the multiplication
+    SUNMatrix C = SUNDenseMatrix(m, p, sunctx);
+
+    // Perform matrix-matrix multiplication: C = A * B
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < p; j++) {
+            sunrealtype sum = 0.0;
+            for (int k = 0; k < n; k++) {
+                sum += IJth(A, i, k) * IJth(B, k, j);
+            }
+            IJth(C, i, j) = sum;
+        }
+    }
+
+    return C;
 }

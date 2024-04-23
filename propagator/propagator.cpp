@@ -18,7 +18,7 @@
 
 // Time settings
 #define T0      SUN_RCONST(0.0)         /* Initial time */
-#define T1      SUN_RCONST(3600)        /* Final time */
+#define T1      SUN_RCONST(200)        /* Final time */
 #define TSTEP   1                       /* Time step */
 
 /* Functions Called by the Solver */
