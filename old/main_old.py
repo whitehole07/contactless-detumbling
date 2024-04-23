@@ -1,17 +1,17 @@
 # Entities
 import numpy as np
 
-from robotics.arm_propagator import ArmPropagator, Joint, Arm
-from utilities.entities import Cylinder, Planet
+from old.robotics.arm_propagator import ArmPropagator, Joint, Arm
+from old.utilities.entities import Cylinder, Planet
 
 # Attitude
-from attitude.attitude_propagator import AttitudePropagator
-from attitude.torques.base import TorqueObject
-from attitude.torques.eddy_current import EddyCurrentTorque, ElectromagnetEndEffector
-from attitude.torques.gravity_gradient import GravityGradientTorque
+from old.attitude.attitude_propagator import AttitudePropagator
+from old.attitude.torques.base import TorqueObject
+from old.attitude.torques.eddy_current import EddyCurrentTorque, ElectromagnetEndEffector
+from old.attitude.torques.gravity_gradient import GravityGradientTorque
 
 # Orbit
-from orbital.orbit_propagator import OrbitPropagator
+from old.orbital.orbit_propagator import OrbitPropagator
 
 # Propagator
 from old.propagator import Propagator
@@ -82,20 +82,20 @@ gravity: TorqueObject = GravityGradientTorque(
 
 # Instantiate propagator
 debris_prop = Propagator(
-    attitude=AttitudePropagator(entity=debris, w0=[0.2, 0.3, 0], q0=[0, 0, 0, 1], M_ext=eddy+gravity),
+    attitude=AttitudePropagator(entity=debris, w0=[0.1, 0.2, 0], q0=[0, 0, 0, 1], M_ext=eddy),
     orbit=OrbitPropagator(planet=earth, a0=(earth.radius+2000), e0=0.0, i0=10.0, OM0=0.0, om0=0.0, f0=0.0),
     robotics=[
         # ArmPropagator(end_effector=electromagnet_1, y0=[0, 0, 7], p0=[1, 0, 0]),
-        ArmPropagator(end_effector=electromagnet_2, y0=[0, 0, -7], p0=[-1, 0, 0])
+        ArmPropagator(end_effector=electromagnet_2, y0=[0, 0, 7], p0=[0, 0, 1])
     ]
 )
 
 # Propagate
-debris_prop.propagate(t_span=[0, 450], eval_points=450)
+debris_prop.propagate(t_span=[0, 3600], eval_points=3600)
 
 # Plots
 # debris_prop.orbit.plot_orbit()
-debris_prop.attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
+debris_prop.attitude.plot(["angular_velocity", "quaternions", "energy", "euler_angles"])
 
 # Animate
-debris_prop.attitude.animate(dpi=300, arms=electromagnets)
+# debris_prop.attitude.animate(dpi=300, arms=electromagnets)

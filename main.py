@@ -1,22 +1,14 @@
 # Entities
 import numpy as np
 
-from robotics.arm_propagator import ArmPropagator, Joint
-from utilities.entities import Cylinder, Planet
+from post_processing.robotics.arm_propagator import ArmPropagator, Joint
+from post_processing.utilities.entities import Cylinder
 
 # Attitude
-from attitude.attitude_propagator import AttitudePropagator
-from attitude.torques.base import TorqueObject
-from attitude.torques.eddy_current import EddyCurrentTorque, ElectromagnetEndEffector
+from post_processing.attitude.attitude_propagator import AttitudePropagator
+from post_processing.attitude.torques.base import TorqueObject
+from post_processing.attitude.torques.eddy_current import EddyCurrentTorque, ElectromagnetEndEffector
 
-# Orbit
-from orbital.orbit_propagator import OrbitPropagator
-
-# Propagator
-from old.propagator import Propagator
-
-# Generate Earth
-earth = Planet(mu=3.98600433e+5, radius=6371.01)
 
 # Generate debris
 debris = Cylinder(
@@ -29,7 +21,7 @@ debris = Cylinder(
 
 # Generate robotic arms (UR10 standard)
 # Joints
-joints_1 = [
+joints = [
     Joint(0, 0, 0.1273, np.pi/2, 7.1, [0.021, 0.000, 0.027]),
     Joint(0, -0.612, 0, 0, 12.7, [0.38, 0.000, 0.158]),
     Joint(0, -0.5723, 0, 0, 4.27, [0.24, 0.000, 0.068]),
@@ -55,21 +47,21 @@ eddy: TorqueObject = EddyCurrentTorque(
     electromagnets=electromagnets
 )
 
-# Instantiate propagator
-debris_prop = Propagator(
-    attitude=AttitudePropagator(entity=debris, w0=[0.2, 0.3, 0], q0=[0, 0, 0, 1], M_ext=eddy),
-    orbit=OrbitPropagator(planet=earth, a0=(earth.radius+2000), e0=0.0, i0=10.0, OM0=0.0, om0=0.0, f0=0.0),
-    robotics=[
-        ArmPropagator(end_effector=electromagnet, y0=[0, 0, -7], p0=[-1, 0, 0])
-    ]
-)
+# Load propagation results
+csv = np.genfromtxt("./propagator/prop_result.csv", delimiter=',', skip_header=1)[:, :-1]
 
-# Propagate
-debris_prop.load_from_csv("./propagator/prop_result.csv")
+# Save attitude results
+attitude = AttitudePropagator(entity=debris, M_ext=eddy)
+attitude._timestamps = csv[:, 0]
+attitude._prop_sol = csv[:, 13:20].T
+
+# Save robotic arm results
+robotics = ArmPropagator(joints=joints, end_effector=electromagnet)
+robotics._timestamps = csv[:, 0]
+robotics._prop_sol = csv[:, 1:13].T
 
 # Plots
-# debris_prop.orbit.plot_orbit()
-debris_prop.attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
+attitude.plot(["angular_velocity", "quaternions", "energy", "euler_angles"])
 
 # Animate
-# debris_prop.attitude.animate(dpi=300, arms=electromagnets)
+attitude.animate(dpi=300, arms=electromagnets)

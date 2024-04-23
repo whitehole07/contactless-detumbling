@@ -17,9 +17,9 @@
 #define MU0   4 * PI * 1e-7
 
 /* Problem IV */
-#define WX0   SUN_RCONST(0.2)
-#define WY0   SUN_RCONST(0.3)
-#define WZ0   SUN_RCONST(0.1)
+#define WX0   SUN_RCONST(0.1)
+#define WY0   SUN_RCONST(0.2)
+#define WZ0   SUN_RCONST(0.0)
 #define Q10   SUN_RCONST(0.0)
 #define Q20   SUN_RCONST(0.0)
 #define Q30   SUN_RCONST(0.0)
@@ -40,7 +40,6 @@
 #define MAG_N_TURNS  500
 #define MAG_RADIUS   2
 #define MAG_CURRENT  50
-#define MAG_POSE     1 // TODO: check
 
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data);
@@ -132,14 +131,14 @@ N_Vector get_magnetic_field(SUNContext sunctx) {
   N_Vector B = N_VNew_Serial(3, sunctx);
 
   N_Vector location = N_VNew_Serial(3, sunctx);
-  Ith(location, 0) = -7; // TODO: recover from y (same for pose)
+  Ith(location, 0) = 0; // TODO: recover from y (same for pose)
   Ith(location, 1) = 0;
-  Ith(location, 2) = 0;
+  Ith(location, 2) = 7;
 
   N_Vector moment = N_VNew_Serial(3, sunctx);
-  Ith(moment, 0) = 1;
+  Ith(moment, 0) = 0;
   Ith(moment, 1) = 0;
-  Ith(moment, 2) = 0;
+  Ith(moment, 2) = 1;
 
   // Scalar components
   sunrealtype mag = (MU0 * MAG_N_TURNS * MAG_CURRENT * (PI*pow(MAG_RADIUS, 2))) / (4 * PI);

@@ -14,7 +14,7 @@
 
 // Solver settings
 #define RTOL    SUN_RCONST(1.0e-2)      /* scalar relative tolerance            */
-#define ATOL    SUN_RCONST(1.0e-4)      /* vector absolute tolerance components */
+#define ATOL    SUN_RCONST(1.0e-3)      /* vector absolute tolerance components */
 
 // Time settings
 #define T0      SUN_RCONST(0.0)         /* Initial time */
