@@ -26,35 +26,24 @@
 #define Q30   SUN_RCONST(0.0)
 #define Q40   SUN_RCONST(1.0)
 
-/* Debris Properties */
-#define DEBRIS_MASS     950        // [kg]
-#define DEBRIS_HEIGHT   5          // [m]
-#define DEBRIS_RADIUS   2.5        // [m]
-#define DEBRIS_SIGMA    35000000
-#define DEBRIS_THICK    0.1
-
-#define DEBRIS_IXX   (0.083333333333333) * DEBRIS_MASS * (pow(DEBRIS_HEIGHT, 2) + 3 * pow(DEBRIS_RADIUS, 2))   // SUN_RCONST(3463.542)
-#define DEBRIS_IYY   (0.083333333333333) * DEBRIS_MASS * (pow(DEBRIS_HEIGHT, 2) + 3 * pow(DEBRIS_RADIUS, 2))   // SUN_RCONST(3463.542)
-#define DEBRIS_IZZ   (0.500000000000000) * DEBRIS_MASS * (                            pow(DEBRIS_RADIUS, 2))   // SUN_RCONST(2968.75)
-
-/* Eddy Current Torque */
-#define MAG_N_TURNS  500
-#define MAG_RADIUS   2
-#define MAG_CURRENT  50
-
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data);
 
 int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
-N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx);
+N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data);
 
 N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data);
 
 N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b);
 
+static void save_settings();
+
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
+  // Save parameters
+  save_settings();
+  
   /* Variables */
   SUNMatrix I;
 
@@ -126,18 +115,24 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   return (0);
 }
 
-N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx) {
+N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data) {
   /* Compute magnetic field */
   // Vectorial component
   N_Vector B = N_VNew_Serial(3, sunctx);
 
-  // Extract end effector location
+  // Extract end effector location and save it to additional values
   N_Vector location = end_effector_position(y, sunctx);
-  cout << "location norm: " << sqrt(N_VDotProd(location, location)) << endl;    
-
-  // Extract end effector pose
+  for (size_t i = 0; i < 3; i++)
+  {
+    Ith(user_data->additional, EE_LOC_INIT_SLICE + i) = Ith(location, i);
+  }
+  
+  // Extract end effector pose and save it to additional values
   N_Vector moment = end_effector_pose(y, sunctx);
-  cout << "pose norm: " << sqrt(N_VDotProd(moment, moment)) << endl;    
+  for (size_t i = 0; i < 3; i++)
+  {
+    Ith(user_data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
+  }
 
   // Scalar components
   sunrealtype mag = (MU0 * MAG_N_TURNS * MAG_CURRENT * (PI*pow(MAG_RADIUS, 2))) / (4 * PI);
@@ -165,7 +160,7 @@ N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx) {
 
 N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) {
   // Compute magnetic field
-  N_Vector B = get_magnetic_field(y, sunctx);
+  N_Vector B = get_magnetic_field(y, sunctx, user_data);
 
   // Get magnetic tensor
   SUNMatrix M = user_data->M;
@@ -202,4 +197,18 @@ N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b) {
     Ith(result, 2) = Ith(a, 0) * Ith(b, 1) - Ith(a, 1) * Ith(b, 0);
     
     return result;
+}
+
+static void save_settings(){
+  FILE *settings_file = fopen("./csv/settings.csv", "w");
+
+  // Write header row
+  fprintf(settings_file, "Debris mass,Debris radius,Debris height,Debris thickness,Debris sigma,Magnet turns,Magnet radius,Magnet current,Base x offset, Base y offset, Base z offset,\n");
+
+  // Save values
+  fprintf(settings_file, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,\n", DEBRIS_MASS, DEBRIS_RADIUS, DEBRIS_HEIGHT, DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, \
+  MAG_RADIUS, MAG_CURRENT, ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS);
+
+  fclose(settings_file);
+  return;
 }

@@ -23,6 +23,14 @@ using namespace std;
 using namespace SymEngine;
 
 /* User data */
+/* Init additional values to be saved 
+    3x - end effector position
+    3x - end effector pose
+*/
+#define ADDITIONAL_SIZE   6
+#define EE_LOC_INIT_SLICE 0
+#define EE_POS_INIT_SLICE 3
+
 typedef struct
 { 
   SUNContext* sunctx;

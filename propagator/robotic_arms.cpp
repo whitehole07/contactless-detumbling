@@ -19,26 +19,16 @@
 /* Problem Constants */
 #define T1   SUN_RCONST(0.0)
 #define T2   SUN_RCONST(-0.7)
-#define T3   SUN_RCONST(0.0)
+#define T3   SUN_RCONST(-0.3)
 #define T4   SUN_RCONST(0.0)
 #define T5   SUN_RCONST(0.0)
 #define T6   SUN_RCONST(0.0)
-#define DT1  SUN_RCONST(0.1)
+#define DT1  SUN_RCONST(-0.02)
 #define DT2  SUN_RCONST(0.0)
 #define DT3  SUN_RCONST(0.0)
 #define DT4  SUN_RCONST(0.0)
 #define DT5  SUN_RCONST(0.0)
 #define DT6  SUN_RCONST(0.0)
-
-/* Global Variables: Robot's Base Frame to Target's Body Frame */
-#define ORIGIN_XDISTANCE_TO_DEBRIS  10  // [m]
-#define ORIGIN_YDISTANCE_TO_DEBRIS  0   // [m]
-#define ORIGIN_ZDISTANCE_TO_DEBRIS  0   // [m]
-
-/* Denavit-Hartenberg Parameters */
-#define DH_A        {     0, -0.6127, -0.57155,       0,       0,       0}
-#define DH_D        {0.1807,       0,        0, 0.17415, 0.11985, 0.11655}
-#define DH_ALPHA    {  PI/2,       0,        0,    PI/2,   -PI/2,       0}
 
 using namespace std;
 using namespace SymEngine;
@@ -58,8 +48,13 @@ SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNConte
 
 SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
+static void save_joints();
+
 
 int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
+    // Save joints
+    save_joints();
+
     // Save symbols and linear solver
     UserData data  = (UserData)user_data;
 
@@ -87,6 +82,21 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     Ith(tau, 4)  = 0.0;
     Ith(tau, 5)  = 0.0;
     data->tau = tau;
+
+    /* Init end effector position and pose */
+    // Extract end effector location and save it to additional values
+    N_Vector location = end_effector_position(y, sunctx);
+    for (size_t i = 0; i < 3; i++)
+    {
+        Ith(data->additional, EE_LOC_INIT_SLICE + i) = Ith(location, i);
+    }
+    
+    // Extract end effector pose and save it to additional values
+    N_Vector moment = end_effector_pose(y, sunctx);
+    for (size_t i = 0; i < 3; i++)
+    {
+        Ith(data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
+    }
 
     return 0;
 }
@@ -124,7 +134,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
         ddq = -Dv\(Cv*y(n+1:end)) + Dv\tau;
     */
 
-   // Init vectors
+    // Init vectors
     N_Vector y_s = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
     N_Vector ddq = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
     N_Vector tmp = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
@@ -304,4 +314,24 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx) {
     }
 
     return C;
+}
+
+static void save_joints(){
+  FILE *settings_file = fopen("./csv/denavit_hartenberg.csv", "w");
+
+  // Write header row
+  fprintf(settings_file, "a, d, alpha,\n");
+
+  // Save values
+  double a[6] = DH_A;
+  double d[6] = DH_D;
+  double alpha[6] = DH_ALPHA;
+
+  for (size_t i = 0; i < 6; i++)
+  {
+    fprintf(settings_file, "%f,%f,%f,\n", a[i], d[i], alpha[i]);
+  }
+
+  fclose(settings_file);
+  return;
 }

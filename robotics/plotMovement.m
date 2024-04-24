@@ -23,9 +23,9 @@ function plotMovement(parameters, angles_evolution)
     axis(ax, 'equal');
     
     % Set axis limits
-    xlim(ax, [-1.5 1.5]);
-    ylim(ax, [-1.5 1.5]);
-    zlim(ax, [-1.5 1.5]);
+    xlim(ax, [-15 15]);
+    ylim(ax, [-15 15]);
+    zlim(ax, [-15 15]);
     grid on;
     
     % Initialize transformation matrices

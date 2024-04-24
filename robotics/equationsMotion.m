@@ -7,6 +7,7 @@ clear
 
 %% Define parameters
 syms t1(t) t2(t) t3(t) t4(t) t5(t) t6(t)
+syms scale
 
 % Joint variables
 q = [t1(t); t2(t); t3(t); t4(t); t5(t); t6(t)];
@@ -14,17 +15,17 @@ tau = [0; 0; 0; 0; 0; 0];
 
 % Denavit-Hartenberg Parameters
 dh = [
-    t1(t), 0, 0.1807, pi/2
-    t2(t), -0.6127, 0, 0
-    t3(t), -0.57155, 0, 0
-    t4(t), 0, 0.17415, pi/2
-    t5(t), 0, 0.11985, -pi/2
-    t6(t), 0, 0.11655, 0
+    t1(t),               0,  scale*0.1807, pi/2
+    t2(t),  scale*-0.6127,              0, 0
+    t3(t), scale*-0.57155,              0, 0
+    t4(t),               0, scale*0.17415, pi/2
+    t5(t),               0, scale*0.11985, -pi/2
+    t6(t),               0, scale*0.11655, 0
     ];
 
 % Masses
-m = [7.369, 13.051, 3.989, 2.1, 1.98, 0.615];
-com = [
+m = (scale^3)*[7.369, 13.051, 3.989, 2.1, 1.98, 0.615];
+com = scale*[
     0.021, 0.000, 0.027
     0.38, 0.000, 0.158
     0.24, 0.000, 0.068
@@ -70,6 +71,8 @@ Im(:, :, 6) = [
     0.0000, 0.0004, 0.0000
     -0.0000, 0.0000, 0.0003
     ];
+% Scale
+Im = (scale^2)*Im;
 
 % Degrees of freedom
 n = size(dh, 1);
@@ -77,6 +80,12 @@ n = size(dh, 1);
 % Load matrices
 load("C.mat")
 load("D.mat")
+
+% Subs scale
+scalev = 10;
+dh = subs(dh, scale, scalev);
+D = subs(D, scale, scalev);
+C = subs(C, scale, scalev);
 
 %% Transformation matrix
 % Generic transformation matrix between adjacent frames using DH convention
@@ -87,7 +96,7 @@ T = @(j) [ % theta, a, d, alpha
     0, 0, 0, 1
     ];
 
-%% Inertia matrix
+% %% Inertia matrix
 % % Init inertia matrix
 % D = zeros(n);
 % 
@@ -121,10 +130,10 @@ T = @(j) [ % theta, a, d, alpha
 % D = simplify(D);
 % fprintf("Simplified D")
 % save("D.mat", "D");
-% matToTXT("D.json", D);
-
-%% Christoffel symbols
-% Init C tensor
+% matToJSON("D.json", D);
+% 
+% %% Christoffel symbols
+% % Init C tensor
 % C = sym(zeros(n));
 % for j = 1:n
 %     for k = 1:n
@@ -145,11 +154,11 @@ T = @(j) [ % theta, a, d, alpha
 % 
 % % Save
 % save("C.mat", "C");
-% matToTXT("C.json", C);
+% matToJSON("C.json", C);
 
 %% State Space
 % % Initial parameters
-tspan = [0, 3600];
+tspan = [0, 100];
 y0 = [0; -0.7; 0; 0; 0; 0; 0.1; 0; 0; 0; 0; 0]; %; 0; 0; 0; 0; 0.1; 0.1];
 
 % Solve differential equation
@@ -181,33 +190,33 @@ legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta
 grid on
 title("Evolution of Joint Angular Velocities")
 
-%% Test
-val = [0,-0.7,0,0,0,0,0.1,0,0,0,0,0];
-double(subs(D, [t1(t) t2(t) t3(t) t4(t) t5(t) t6(t) diff(t1(t), t) diff(t2(t), t) diff(t3(t), t) diff(t4(t), t) diff(t5(t), t) diff(t6(t), t)], val))
-double(subs(C, [t1(t) t2(t) t3(t) t4(t) t5(t) t6(t) diff(t1(t), t) diff(t2(t), t) diff(t3(t), t) diff(t4(t), t) diff(t5(t), t) diff(t6(t), t)], val))
-
-%% Load custom
-p = csvread("prop_result.csv", 1, 0);
-t = p(:, 1);
-p = p(:, 2:n+n+1);
-
-% plotMovement(dh, p(:, 1:n));
-
-% Plot joint angles
-figure;
-time = linspace(t(1), t(end), size(p, 1));
-plot(time, rad2deg(p(:, 1:n)), "linewidth", 2)
-xlabel("Time [s]")
-ylabel("Joint angle [deg]")
-legend("$\theta_1$", "$\theta_2$", "$\theta_3$", "$\theta_4$", "$\theta_5$", "$\theta_6$", 'Interpreter', 'latex')
-grid on
-title("Evolution of Joint Angles")
-
-% Plot joint velocities
-figure;
-plot(time, rad2deg(p(:, n+1:end)), "linewidth", 2)
-xlabel("Time [s]")
-ylabel("Joint angular velocity [deg/s]")
-legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta}_4$", "$\dot{\theta}_5$", "$\dot{\theta}_6$", 'Interpreter', 'latex')
-grid on
-title("Evolution of Joint Angular Velocities")
+% %% Test
+% val = [0,-0.7,0,0,0,0,0.1,0,0,0,0,0];
+% double(subs(D, [t1(t) t2(t) t3(t) t4(t) t5(t) t6(t) diff(t1(t), t) diff(t2(t), t) diff(t3(t), t) diff(t4(t), t) diff(t5(t), t) diff(t6(t), t)], val))
+% double(subs(C, [t1(t) t2(t) t3(t) t4(t) t5(t) t6(t) diff(t1(t), t) diff(t2(t), t) diff(t3(t), t) diff(t4(t), t) diff(t5(t), t) diff(t6(t), t)], val))
+% 
+% %% Load custom
+% p = csvread("prop_result.csv", 1, 0);
+% t = p(:, 1);
+% p = p(:, 2:n+n+1);
+% 
+% % plotMovement(dh, p(:, 1:n));
+% 
+% % Plot joint angles
+% figure;
+% time = linspace(t(1), t(end), size(p, 1));
+% plot(time, rad2deg(p(:, 1:n)), "linewidth", 2)
+% xlabel("Time [s]")
+% ylabel("Joint angle [deg]")
+% legend("$\theta_1$", "$\theta_2$", "$\theta_3$", "$\theta_4$", "$\theta_5$", "$\theta_6$", 'Interpreter', 'latex')
+% grid on
+% title("Evolution of Joint Angles")
+% 
+% % Plot joint velocities
+% figure;
+% plot(time, rad2deg(p(:, n+1:end)), "linewidth", 2)
+% xlabel("Time [s]")
+% ylabel("Joint angular velocity [deg/s]")
+% legend("$\dot{\theta}_1$", "$\dot{\theta}_2$", "$\dot{\theta}_3$", "$\dot{\theta}_4$", "$\dot{\theta}_5$", "$\dot{\theta}_6$", 'Interpreter', 'latex')
+% grid on
+% title("Evolution of Joint Angular Velocities")

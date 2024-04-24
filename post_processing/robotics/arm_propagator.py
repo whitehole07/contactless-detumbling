@@ -8,7 +8,7 @@ class IndexesNotSet(BaseException):
 class ElectromagnetEndEffector(object):
     mu0: float = 4 * np.pi * 1e-7
 
-    def __init__(self, n_turns: int, radius: float, current: float, pose_sign):
+    def __init__(self, n_turns: int, radius: float, current: float):
         # Save physical properties
         self.current = current  # TODO: transform in terms of power (research electromagnets)
         self.n_turns = n_turns
@@ -24,7 +24,6 @@ class ElectromagnetEndEffector(object):
         self._timestamps = None  # Propagation timestamps
         self.locations = None  # Propagation solution
         self.poses = None
-        self.pose_sign = pose_sign
 
 
     def magnetic_field(self, _, y) -> np.ndarray:
@@ -91,7 +90,7 @@ class ArmPropagator(object):
         cls._count += 1
         return super().__new__(cls)
 
-    def __init__(self, *, joints: list[Joint], end_effector) -> None:
+    def __init__(self, *, joints: list[Joint], end_effector: ElectromagnetEndEffector, base_offset: np.ndarray) -> None:
         """
         Initialize the robotic arm end effector.
 
@@ -103,6 +102,7 @@ class ArmPropagator(object):
         # Save parameters
         self.joints = joints
         self.end_effector = end_effector
+        self.base_offset = base_offset
 
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps

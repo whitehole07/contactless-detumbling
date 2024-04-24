@@ -1,10 +1,8 @@
 import numpy as np
 
 from post_processing.attitude.attitude_conversion import quaternion_to_euler
-from post_processing.attitude.attitude_animation import animate_attitude
 from post_processing.attitude.attitude_plot import plot_evolution
 from post_processing.attitude.torques.base import TorqueObject
-from post_processing.robotics.arm_propagator import ArmPropagator
 
 
 class AttitudePropagator(object):
@@ -47,15 +45,3 @@ class AttitudePropagator(object):
 
     def plot(self, quantities: list, ncols: int = 2) -> None:
         plot_evolution(self, quantities, ncols)
-
-    def animate(self, *, dpi: int = 300, arms: list[ArmPropagator] = ()) -> None:
-        # Plot Cylinder attitude #TODO: Remove from here
-        animate_attitude(
-            self.t,
-            self.q,
-            self.euler_angles,
-            self._entity.height,
-            self._entity.radius,
-            dpi,
-            arms=arms
-        )

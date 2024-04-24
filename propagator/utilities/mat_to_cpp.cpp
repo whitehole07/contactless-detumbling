@@ -22,8 +22,8 @@ void cpp_out(DenseMatrix mat, string name);
 
 int main() {
     /* Load matrices */
-    DenseMatrix D = load_matrix_from_JSON("/home/whitehole/PycharmProjects/master_thesis/robotics/equations_of_motion/D.json");
-    DenseMatrix C = load_matrix_from_JSON("/home/whitehole/PycharmProjects/master_thesis/robotics/equations_of_motion/C.json");
+    DenseMatrix D = load_matrix_from_JSON("/home/whitehole/PycharmProjects/master_thesis/robotics/D.json");
+    DenseMatrix C = load_matrix_from_JSON("/home/whitehole/PycharmProjects/master_thesis/robotics/C.json");
 
     /* Out Matrices*/
     cpp_out(D, "D");

@@ -13,8 +13,8 @@
 #include "robotic_arms.h"
 
 // Solver settings
-#define RTOL    SUN_RCONST(1.0e-2)      /* scalar relative tolerance            */
-#define ATOL    SUN_RCONST(1.0e-3)      /* vector absolute tolerance components */
+#define RTOL    SUN_RCONST(1.0e-4)      /* scalar relative tolerance            */
+#define ATOL    SUN_RCONST(1.0e-8)      /* vector absolute tolerance components */
 
 // Time settings
 #define T0      SUN_RCONST(0.0)         /* Initial time */
@@ -25,7 +25,7 @@
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
 /* Private functions to output results */
-static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, bool init);
+static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, UserData data, bool init);
 
 static void PrintOutput(int i, sunrealtype t, N_Vector y);
 
@@ -59,6 +59,7 @@ int main(void)
     /* Set the pointer to user-defined data */
     user_data = (UserData)malloc(sizeof *user_data); /* Allocate data memory */
     user_data->sunctx = &sunctx;
+    user_data->additional = N_VNew_Serial(ADDITIONAL_SIZE, sunctx);
 
     /* Initial conditions */
     y = N_VNew_Serial(NEQ, sunctx);
@@ -109,8 +110,8 @@ int main(void)
     printf(" \nPropagation\n\n");
 
     // Open CSV file for writing and save first row
-    FILE *csv_file = fopen("prop_result.csv", "w");
-    save_to_CSV(csv_file, t, y, true);
+    FILE *csv_file = fopen("./csv/prop_result.csv", "w");
+    save_to_CSV(csv_file, t, y, user_data, true);
 
     iout = 0;
     tout = T0 + TSTEP;
@@ -126,7 +127,7 @@ int main(void)
     }
 
     // Save row
-    save_to_CSV(csv_file, t, y, false);
+    save_to_CSV(csv_file, t, y, user_data, false);
 
     }
     // Close CSV file
@@ -175,7 +176,7 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
  *-------------------------------
  */
 
-static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, bool init) {
+static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, UserData data, bool init) {
 
     if (init) {
       // Write header row
@@ -183,12 +184,18 @@ static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, bool init) {
       for (int i = 0; i < NEQ; i++) {
           fprintf(csv_file, "Component %d,", i + 1);
       }
+      for (int i = 0; i < ADDITIONAL_SIZE; i++) {
+          fprintf(csv_file, "Additional %d,", i + 1);
+      }
       fprintf(csv_file, "\n");
     }
 
     fprintf(csv_file, "%f,", t); // Write time value
     for (int i = 0; i < NEQ; i++) {
             fprintf(csv_file, "%e,", Ith(y, i)); // Write each component
+    }
+    for (int i = 0; i < ADDITIONAL_SIZE; i++) {
+            fprintf(csv_file, "%e,", Ith(data->additional, i)); // Write each component
     }
     fprintf(csv_file, "\n"); // Write newline
 
