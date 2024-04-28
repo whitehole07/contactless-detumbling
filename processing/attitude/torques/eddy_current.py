@@ -12,7 +12,7 @@ class EddyCurrentTorque(object):
         # Return TorqueObject
         return TorqueObject(this_torque_instance, this_torque_instance.eval_torque, *args, **kwargs)
 
-    def __init__(self, *, entity, chaser_w0: np.ndarray, electromagnets: list[ElectromagnetEndEffector]):
+    def __init__(self, *, entity, chaser_w0: np.ndarray, electromagnets: list):
         """
         Initializes the eddy current torque class.
 

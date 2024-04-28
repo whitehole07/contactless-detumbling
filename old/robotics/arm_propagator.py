@@ -93,7 +93,7 @@ class Joint(object):
 
 
 class Arm(object):
-    def __init__(self, joints: list[Joint], end_effector: ElectromagnetEndEffector):
+    def __init__(self, joints: list, end_effector: ElectromagnetEndEffector):
         self.joints = joints
         self.end_effector = end_effector
 

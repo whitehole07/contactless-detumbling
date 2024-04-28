@@ -17,15 +17,6 @@
 #define ZERO  SUN_RCONST(0.0)
 #define MU0   4 * PI * 1e-7
 
-/* Problem IV */
-#define WX0   SUN_RCONST(0.1)
-#define WY0   SUN_RCONST(0.2)
-#define WZ0   SUN_RCONST(0.0)
-#define Q10   SUN_RCONST(0.0)
-#define Q20   SUN_RCONST(0.0)
-#define Q30   SUN_RCONST(0.0)
-#define Q40   SUN_RCONST(1.0)
-
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data);
 
@@ -37,42 +28,33 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data);
 
 N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b);
 
-static void save_settings();
-
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
-  // Save parameters
-  save_settings();
-  
-  /* Variables */
-  SUNMatrix I;
+
+  // Get user data
+  UserData data = (UserData)user_data;
 
   /* Initialize y_attitude */
-  Ith(y, INIT_SLICE_ATTITUDE + 0) = WX0;
-  Ith(y, INIT_SLICE_ATTITUDE + 1) = WY0;
-  Ith(y, INIT_SLICE_ATTITUDE + 2) = WZ0;
-  Ith(y, INIT_SLICE_ATTITUDE + 3) = Q10;
-  Ith(y, INIT_SLICE_ATTITUDE + 4) = Q20;
-  Ith(y, INIT_SLICE_ATTITUDE + 5) = Q30;
-  Ith(y, INIT_SLICE_ATTITUDE + 6) = Q40;
+  for (size_t i = 0; i < NEQ_ATTITUDE; i++)
+  {
+    Ith(y, INIT_SLICE_ATTITUDE + i) = data->y0[INIT_SLICE_ATTITUDE + i];
+  }
 
   /* Generate Inertia matrix*/
-  I = SUNDenseMatrix(3, 3, sunctx);
-  IJth(I, 0, 0) = DEBRIS_IXX; 
-  IJth(I, 1, 1) = DEBRIS_IYY; 
-  IJth(I, 2, 2) = DEBRIS_IZZ;
+  SUNMatrix I = SUNDenseMatrix(3, 3, sunctx);
+  IJth(I, 0, 0) = data->debris_Ixx; 
+  IJth(I, 1, 1) = data->debris_Iyy; 
+  IJth(I, 2, 2) = data->debris_Izz;
 
   // Get magnetic tensor
   SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
-  sunrealtype gamma  = 1 - ((2*DEBRIS_RADIUS/DEBRIS_HEIGHT) * tanh(DEBRIS_HEIGHT/(2*DEBRIS_RADIUS)));
-  sunrealtype magn   = PI * DEBRIS_SIGMA * pow(DEBRIS_RADIUS, 3) * DEBRIS_THICK * DEBRIS_HEIGHT;
+  sunrealtype gamma  = 1 - ((2*data->debris_radius/data->debris_height) * tanh(data->debris_height/(2*data->debris_radius)));
+  sunrealtype magn   = PI * data->debris_sigma * pow(data->debris_radius, 3) * data->debris_thick * data->debris_height;
   IJth(M, 0, 0) = gamma * magn;
   IJth(M, 1, 1) = gamma * magn;
   IJth(M, 2, 2) = 0.5   * magn;
 
   // Set user data
-  UserData data  = (UserData)user_data;
-  data->I = I;
   data->M = M;
 
   return(0);
@@ -82,13 +64,11 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   SUNContext* sunctx;
   sunrealtype wx, wy, wz, q1, q2, q3, q4;
-  SUNMatrix I;
   UserData data;
 
   /* Retrieve user data */
   data  = (UserData)user_data;
   sunctx = data->sunctx;
-  I = data->I;
   
   wx = Ith(y, INIT_SLICE_ATTITUDE + 0);
   wy = Ith(y, INIT_SLICE_ATTITUDE + 1);
@@ -98,15 +78,12 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   q3 = Ith(y, INIT_SLICE_ATTITUDE + 5);
   q4 = Ith(y, INIT_SLICE_ATTITUDE + 6);
 
-  // Retrieve Inertia matrix columns
-  sunrealtype** I_cols = SUNDenseMatrix_Cols(I);
-
   // Compute eddy current torque
   N_Vector T_eddy = eddy_current_torque(*sunctx, y, data);
 
-  Ith(ydot, INIT_SLICE_ATTITUDE + 0) = (Ith(T_eddy, 0) - (I_cols[2][2] - I_cols[1][1]) * wz * wy) / I_cols[0][0];
-  Ith(ydot, INIT_SLICE_ATTITUDE + 1) = (Ith(T_eddy, 1) - (I_cols[0][0] - I_cols[2][2]) * wx * wz) / I_cols[1][1];
-  Ith(ydot, INIT_SLICE_ATTITUDE + 2) = (Ith(T_eddy, 2) - (I_cols[1][1] - I_cols[0][0]) * wy * wx) / I_cols[2][2];
+  Ith(ydot, INIT_SLICE_ATTITUDE + 0) = (Ith(T_eddy, 0) - (data->debris_Izz - data->debris_Iyy) * wz * wy) / data->debris_Ixx;
+  Ith(ydot, INIT_SLICE_ATTITUDE + 1) = (Ith(T_eddy, 1) - (data->debris_Ixx - data->debris_Izz) * wx * wz) / data->debris_Iyy;
+  Ith(ydot, INIT_SLICE_ATTITUDE + 2) = (Ith(T_eddy, 2) - (data->debris_Iyy - data->debris_Ixx) * wy * wx) / data->debris_Izz;
   Ith(ydot, INIT_SLICE_ATTITUDE + 3) = SUN_RCONST(0.5) * (wz * q2 - wy * q3 + wx * q4);
   Ith(ydot, INIT_SLICE_ATTITUDE + 4) = SUN_RCONST(0.5) * (-wz * q1 + wx * q3 + wy * q4);
   Ith(ydot, INIT_SLICE_ATTITUDE + 5) = SUN_RCONST(0.5) * (wy * q1 - wx * q2 + wz * q4);
@@ -121,21 +98,21 @@ N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data) {
   N_Vector B = N_VNew_Serial(3, sunctx);
 
   // Extract end effector location and save it to additional values
-  N_Vector location = end_effector_position(y, sunctx);
+  N_Vector location = end_effector_position(y, sunctx, user_data);
   for (size_t i = 0; i < 3; i++)
   {
     Ith(user_data->additional, EE_LOC_INIT_SLICE + i) = Ith(location, i);
   }
   
   // Extract end effector pose and save it to additional values
-  N_Vector moment = end_effector_pose(y, sunctx);
+  N_Vector moment = end_effector_pose(y, sunctx, user_data);
   for (size_t i = 0; i < 3; i++)
   {
     Ith(user_data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
   }
 
   // Scalar components
-  sunrealtype mag = (MU0 * MAG_N_TURNS * MAG_CURRENT * (PI*pow(MAG_RADIUS, 2))) / (4 * PI);
+  sunrealtype mag = (MU0 * user_data->mag_n_turns * user_data->mag_current * (PI*pow(user_data->mag_radius, 2))) / (4 * PI);
   sunrealtype r = sqrt(N_VDotProd(location, location));
 
   // Compute the dot product: dot(moment,location)
@@ -197,18 +174,4 @@ N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b) {
     Ith(result, 2) = Ith(a, 0) * Ith(b, 1) - Ith(a, 1) * Ith(b, 0);
     
     return result;
-}
-
-static void save_settings(){
-  FILE *settings_file = fopen("./csv/settings.csv", "w");
-
-  // Write header row
-  fprintf(settings_file, "Debris mass,Debris radius,Debris height,Debris thickness,Debris sigma,Magnet turns,Magnet radius,Magnet current,Base x offset, Base y offset, Base z offset,\n");
-
-  // Save values
-  fprintf(settings_file, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,\n", DEBRIS_MASS, DEBRIS_RADIUS, DEBRIS_HEIGHT, DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, \
-  MAG_RADIUS, MAG_CURRENT, ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS);
-
-  fclose(settings_file);
-  return;
 }

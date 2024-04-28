@@ -1,8 +1,8 @@
 import numpy as np
 
-from post_processing.attitude.attitude_conversion import quaternion_to_euler
-from post_processing.attitude.attitude_plot import plot_evolution
-from post_processing.attitude.torques.base import TorqueObject
+from processing.attitude.attitude_conversion import quaternion_to_euler
+from processing.attitude.attitude_plot import plot_evolution
+from processing.attitude.torques.base import TorqueObject
 
 
 class AttitudePropagator(object):

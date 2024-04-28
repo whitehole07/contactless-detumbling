@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <iostream>
 
+/* PyBind11 */
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 /* Sundials */
 #include <cvode/cvode.h>
 #include <nvector/nvector_serial.h>
@@ -12,20 +16,46 @@
 #include "attitude.h"
 #include "robotic_arms.h"
 
+namespace py = pybind11;
+
 // Solver settings
 #define RTOL    SUN_RCONST(1.0e-4)      /* scalar relative tolerance            */
 #define ATOL    SUN_RCONST(1.0e-8)      /* vector absolute tolerance components */
 
 // Time settings
-#define T0      SUN_RCONST(0.0)         /* Initial time */
-#define T1      SUN_RCONST(200)        /* Final time */
+#define TI      SUN_RCONST(0.0)         /* Initial time */
+#define TF      SUN_RCONST(2000)        /* Final time */
 #define TSTEP   1                       /* Time step */
+
+/* Debris Properties */
+#define DEBRIS_MASS     950.0        // [kg]
+#define DEBRIS_HEIGHT   5.0          // [m]
+#define DEBRIS_RADIUS   2.5          // [m]
+#define DEBRIS_SIGMA    35000000.0  
+#define DEBRIS_THICK    0.1
+
+#define DEBRIS_IXX   (0.083333333333333) * DEBRIS_MASS * (pow(DEBRIS_HEIGHT, 2) + 3 * pow(DEBRIS_RADIUS, 2))   // SUN_RCONST(3463.542)
+#define DEBRIS_IYY   (0.083333333333333) * DEBRIS_MASS * (pow(DEBRIS_HEIGHT, 2) + 3 * pow(DEBRIS_RADIUS, 2))   // SUN_RCONST(3463.542)
+#define DEBRIS_IZZ   (0.500000000000000) * DEBRIS_MASS * (                            pow(DEBRIS_RADIUS, 2))   // SUN_RCONST(2968.75)
+
+/* Eddy Current Torque */
+#define MAG_N_TURNS  500.0
+#define MAG_RADIUS   1.0
+#define MAG_CURRENT  50.0
+
+/* Global Variables: Robot's Base Frame to Target's Body Frame */
+#define ORIGIN_XDISTANCE_TO_DEBRIS  10.0  // [m]
+#define ORIGIN_YDISTANCE_TO_DEBRIS  0.0   // [m]
+#define ORIGIN_ZDISTANCE_TO_DEBRIS  5.0   // [m]
+
+/* Denavit-Hartenberg Parameters */
+#define SCALE       10
+#define DH_A        {           0, SCALE*-0.6127, SCALE*-0.57155,             0,             0,             0}
+#define DH_D        {SCALE*0.1807,             0,              0, SCALE*0.17415, SCALE*0.11985, SCALE*0.11655}
+#define DH_ALPHA    {        PI/2,             0,              0,          PI/2,         -PI/2,             0}
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
-
-/* Private functions to output results */
-static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, UserData data, bool init);
 
 static void PrintOutput(int i, sunrealtype t, N_Vector y);
 
@@ -38,32 +68,46 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
  *-------------------------------
  */
 
-int main(void)
-{
-    SUNContext sunctx;
-    sunrealtype t, tout;
-    N_Vector y;
-    N_Vector abstol;
-    SUNMatrix A;
-    UserData user_data;
-    SUNLinearSolver LS;
-    void* cvode_mem;
-    int retval, iout;
+Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
+                double debris_radius, double debris_height, double debris_thick, double debris_sigma,
+                 double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
+                  double base_to_body_y, double base_to_body_z, double scale, vector<double> dh_a,
+                   vector<double> dh_d, vector<double> dh_alpha) {
+    // Save problem values
+    user_data = (UserData)malloc(sizeof *user_data); /* Allocate data memory */
+    user_data->y0 = y0;     
+    user_data->debris_Ixx = debris_Ixx;
+    user_data->debris_Iyy = debris_Iyy;
+    user_data->debris_Izz = debris_Izz;
+    user_data->debris_radius = debris_radius;
+    user_data->debris_height = debris_height;
+    user_data->debris_thick = debris_thick;
+    user_data->debris_sigma = debris_sigma;
+    user_data->mag_n_turns = mag_n_turns;
+    user_data->mag_current = mag_current;
+    user_data->mag_radius = mag_radius;
+    user_data->base_to_body_x = base_to_body_x;
+    user_data->base_to_body_y = base_to_body_y;
+    user_data->base_to_body_z = base_to_body_z;
+    user_data->scale = scale;
+    user_data->dh_a = dh_a;
+    user_data->dh_d = dh_d;
+    user_data->dh_alpha = dh_alpha;
 
-    sunrealtype t_stop = T1;
+    // Initialize environment 
+    initialize();
+}
 
+void Environment::initialize() {
     /* Create the SUNDIALS context */
-    retval = SUNContext_Create(SUN_COMM_NULL, &sunctx);
-    if (check_retval(&retval, "SUNContext_Create", 1)) { return (1); }
+    SUNContext_Create(SUN_COMM_NULL, &sunctx);
 
     /* Set the pointer to user-defined data */
-    user_data = (UserData)malloc(sizeof *user_data); /* Allocate data memory */
     user_data->sunctx = &sunctx;
     user_data->additional = N_VNew_Serial(ADDITIONAL_SIZE, sunctx);
 
     /* Initial conditions */
     y = N_VNew_Serial(NEQ, sunctx);
-    if (check_retval((void*)y, "N_VNew_Serial", 0)) { return (1); }
 
     /* Initiate external propagators */
     initiate_manipulator(sunctx, y, user_data);
@@ -71,72 +115,40 @@ int main(void)
 
     /* Set the vector absolute tolerance */
     abstol = N_VNew_Serial(NEQ, sunctx);
-    if (check_retval((void*)abstol, "N_VNew_Serial", 0)) { return (1); }
-
     for (size_t i = 0; i < NEQ; i++) { Ith(abstol, i) = ATOL; }
 
     /* Call CVodeCreate to create the solver memory and specify the
     * Backward Differentiation Formula */
     cvode_mem = CVodeCreate(CV_ADAMS, sunctx);
-    if (check_retval((void*)cvode_mem, "CVodeCreate", 0)) { return (1); }
 
     /* Call CVodeInit to initialize the integrator memory and specify the
-    * user's right hand side function in y'=f(t,y), the initial time T0, and
+    * user's right hand side function in y'=f(t,y), the initial time TI, and
     * the initial dependent variable vector y. */
-    retval = CVodeInit(cvode_mem, f, T0, y);
-    if (check_retval(&retval, "CVodeInit", 1)) { return (1); }
+    CVodeInit(cvode_mem, f, TI, y);
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
     * and vector absolute tolerances */
-    retval = CVodeSVtolerances(cvode_mem, RTOL, abstol);
-    if (check_retval(&retval, "CVodeSVtolerances", 1)) { return (1); }
+    CVodeSVtolerances(cvode_mem, RTOL, abstol);
 
-      // Increase the maximum number of steps
+    // Increase the maximum number of steps
     long int max_num_steps = 1000; // Set the desired maximum number of steps
-    retval = CVodeSetMaxNumSteps(cvode_mem, max_num_steps);
-    if (check_retval(&retval, "CVodeSetMaxNumSteps", 1)) { return (1); }
+    CVodeSetMaxNumSteps(cvode_mem, max_num_steps);
 
-    retval = CVodeSetUserData(cvode_mem, user_data);
-    if (check_retval(&retval, "CVodeSetUserData", 1)) { return (1); }
+    CVodeSetUserData(cvode_mem, user_data);
 
     // Attach linear solver
     A = SUNDenseMatrix(NEQ, NEQ, sunctx);
     LS = SUNLinSol_Dense(y, A, sunctx);
 
-    retval = CVodeSetLinearSolver(cvode_mem, LS, A);
-    if (check_retval(&retval, "CVodeSetLinearSolver", 1)) { return 1; }
-    
-    /* Loop */
-    printf(" \nPropagation\n\n");
-
-    // Open CSV file for writing and save first row
-    FILE *csv_file = fopen("./csv/prop_result.csv", "w");
-    save_to_CSV(csv_file, t, y, user_data, true);
+    CVodeSetLinearSolver(cvode_mem, LS, A);
 
     iout = 0;
-    tout = T0 + TSTEP;
-    while (t < T1) {
-    retval = CVode(cvode_mem, tout, y, &t, CV_NORMAL);
-    PrintOutput(iout, t, y);
+    tout = 0;
+}
 
-    if (check_retval(&retval, "CVode", 1)) { break; }
-    if (retval == CV_SUCCESS)
-    {
-        iout++;
-        tout += TSTEP;
-    }
-
-    // Save row
-    save_to_CSV(csv_file, t, y, user_data, false);
-
-    }
-    // Close CSV file
-    fclose(csv_file);
-
-    /* Print final statistics to the screen */
-    printf("\nFinal Statistics:\n");
-    retval = CVodePrintAllStats(cvode_mem, stdout, SUN_OUTPUTFORMAT_TABLE);
-
+// Method to reset the environment
+void Environment::reset() {
+    // Reset the environment to its initial state
     /* Free memory */
     N_VDestroy(y);            /* Free y vector */
     N_VDestroy(abstol);       /* Free abstol vector */
@@ -146,8 +158,91 @@ int main(void)
     SUNContext_Free(&sunctx); /* Free the SUNDIALS context */
     free(user_data);
 
-    return (retval);
+    initialize();
 }
+
+tuple<double, vector<double>> Environment::current_state() {
+    // Convert N_vector into vector
+    vector<double> state_vector(NV_LENGTH_S(y) + NV_LENGTH_S(user_data->additional));
+    for (sunindextype i = 0; i < NV_LENGTH_S(y); ++i) {
+        state_vector[i] = Ith(y, i);
+    }
+    for (sunindextype i = 0; i < NV_LENGTH_S(user_data->additional); ++i) {
+        state_vector[NV_LENGTH_S(y) + i] = Ith(user_data->additional, i);
+    }
+
+    // Time
+    double return_time = iout == 0 ? 0 : t;
+    return make_tuple(return_time, state_vector);
+}
+
+// Method to execute one step in the environment
+tuple<double, vector<double>> Environment::step(double t_step, vector<double>action) {
+    // Set next action
+    for (size_t i = 0; i < NEQ_MANIP/2; i++)
+    {
+      Ith(user_data->tau, i) = action[i];
+    }
+
+    // Execute one step in the environment
+    tout += t_step;
+    int retval = CVode(cvode_mem, tout, y, &t, CV_NORMAL);
+    PrintOutput(iout, t, y);
+
+    if (check_retval(&retval, "CVode", 1)) {
+      }
+    if (retval == CV_SUCCESS)
+    {
+        iout++;
+    }
+
+    return current_state();
+}
+
+
+/*int main(void)
+{
+    printf(" \nPropagation\n\n");
+
+    // Create a vector<double> y0 with NEQ elements initialized to 0.0
+    vector<double> y0(NEQ, 0.0f);
+
+    // Set the first 12 elements in the vector y0
+    y0[0] = 0.0f;
+    y0[1] = -0.7f;
+    y0[2] = -0.3f;
+    y0[3] = 0.0f;
+    y0[4] = 0.0f;
+    y0[5] = 0.0f;
+    y0[6] = -0.02f;
+    y0[7] = 0.0f;
+    y0[8] = 0.0f;
+    y0[9] = 0.0f;
+    y0[10] = 0.0f;
+    y0[11] = 0.0f;
+
+    // Set the last 7 elements in the vector y0 with the new values
+    y0[12] = 0.1f;
+    y0[13] = 0.2f;
+    y0[14] = 0.0f;
+    y0[15] = 0.0f;
+    y0[16] = 0.0f;
+    y0[17] = 0.0f;
+    y0[18] = 1.0f;
+
+    Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, DEBRIS_RADIUS, DEBRIS_HEIGHT, 
+    DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
+     ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, SCALE, DH_A, DH_D, DH_ALPHA);
+
+    test.step(TSTEP, {0,0,0,0,0,0});
+    test.step(TSTEP, {0,0,0,0,0,0});
+    test.step(TSTEP, {0,0,0,0,0,0});
+    test.reset();
+    test.step(TSTEP, {0,0,0,0,0,0});
+
+    return (0);
+}*/
+
 
 /*
  *-------------------------------
@@ -160,7 +255,6 @@ int main(void)
  */
 
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
-
   // Robotic Arm
   f_manipulator(t, y, ydot, user_data);
 
@@ -176,32 +270,6 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
  *-------------------------------
  */
 
-static void save_to_CSV(FILE* csv_file, sunrealtype t, N_Vector y, UserData data, bool init) {
-
-    if (init) {
-      // Write header row
-      fprintf(csv_file, "Time,");
-      for (int i = 0; i < NEQ; i++) {
-          fprintf(csv_file, "Component %d,", i + 1);
-      }
-      for (int i = 0; i < ADDITIONAL_SIZE; i++) {
-          fprintf(csv_file, "Additional %d,", i + 1);
-      }
-      fprintf(csv_file, "\n");
-    }
-
-    fprintf(csv_file, "%f,", t); // Write time value
-    for (int i = 0; i < NEQ; i++) {
-            fprintf(csv_file, "%e,", Ith(y, i)); // Write each component
-    }
-    for (int i = 0; i < ADDITIONAL_SIZE; i++) {
-            fprintf(csv_file, "%e,", Ith(data->additional, i)); // Write each component
-    }
-    fprintf(csv_file, "\n"); // Write newline
-
-
-  return;
-}
 
 static void PrintOutput(int i, sunrealtype t, N_Vector y)
 {
@@ -254,4 +322,17 @@ static int check_retval(void* returnvalue, const char* funcname, int opt)
   }
 
   return (0);
+}
+
+
+PYBIND11_MODULE(environment, m) {
+    py::class_<Environment>(m, "Environment")
+        .def(py::init<vector<double>, double, double, double, double, 
+                      double, double, double, double, double, 
+                      double, double, double, double, double, 
+                      vector<double>, vector<double>, vector<double>>())
+        .def("initialize", &Environment::initialize)
+        .def("reset", &Environment::reset)
+        .def("current_state", &Environment::current_state)
+        .def("step", &Environment::step, py::arg("t_step"), py::arg("action"));
 }

@@ -31,17 +31,61 @@ using namespace SymEngine;
 #define EE_LOC_INIT_SLICE 0
 #define EE_POS_INIT_SLICE 3
 
-typedef struct
+typedef struct function_data
 { 
   SUNContext* sunctx;
-  N_Vector additional;  // Vector of additional data to save to CSV
+  N_Vector additional;
+  vector<double> y0;  // Initial conditions
 
-  // Attitude
-  SUNMatrix I;
+  // Attitude (debris)
+  double debris_Ixx, debris_Iyy, debris_Izz;
+  double debris_radius, debris_height, debris_thick, debris_sigma;
   SUNMatrix M;
 
+  // Magnet
+  double mag_n_turns, mag_current, mag_radius;
+
   // Robotic arm
+  double base_to_body_x, base_to_body_y, base_to_body_z;
+  double scale;
+  vector<double> dh_a, dh_d, dh_alpha;
   N_Vector tau;
 }* UserData;
+
+
+class Environment {
+public:
+    // Constructor
+    Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
+                double debris_radius, double debris_height, double debris_thick, double debris_sigma,
+                 double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
+                  double base_to_body_y, double base_to_body_z, double scale, vector<double> dh_a,
+                   vector<double> dh_d, vector<double> dh_alpha);
+
+
+    // Initializer
+    void initialize();
+
+    // Method to reset the environment
+    void reset();
+
+    // Return current state
+    tuple<double, vector<double>> current_state();
+
+    // Method to execute one step in the environment
+    tuple<double, vector<double>> step(double t_step, vector<double> action);
+
+private:
+    // Define class variables
+    SUNContext sunctx;
+    UserData user_data;
+    sunrealtype t, tout;
+    N_Vector abstol;
+    N_Vector y;
+    SUNMatrix A;
+    SUNLinearSolver LS;
+    int iout;
+    void* cvode_mem;
+};
 
 #endif

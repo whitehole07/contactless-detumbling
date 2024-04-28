@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
-from post_processing.attitude.attitude_conversion import quaternion_to_rotation_matrix
-from post_processing.robotics.arm_propagator import ArmPropagator
+from processing.attitude.attitude_conversion import quaternion_to_rotation_matrix
+from processing.robotics.arm_propagator import ArmPropagator
 from old.utilities.ui import LoadingBarWithTime
 
 
@@ -33,7 +33,7 @@ def rotate_cylinder(longitudinal_axis_m):
     return rotation_matrix
 
 
-def animate_system(*, t, q, eu, h, r, dpi, dh_par, arms: list[ArmPropagator] = ()):
+def animate_system(*, t, q, eu, h, r, dpi, dh_par, arms: list = ()):
     # Initialize the figure and 3D axis
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')

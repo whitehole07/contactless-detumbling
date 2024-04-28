@@ -1,5 +1,6 @@
 import numpy as np
 
+from matplotlib import pyplot as plt
 
 class IndexesNotSet(BaseException):
     pass
@@ -24,31 +25,6 @@ class ElectromagnetEndEffector(object):
         self._timestamps = None  # Propagation timestamps
         self.locations = None  # Propagation solution
         self.poses = None
-
-
-    def magnetic_field(self, _, y) -> np.ndarray:
-        """
-        Compute magnetic field
-
-        Returns:
-        :return: magnetic field vector
-        """
-        # Compute location and pose
-        if self.indexes is not None:
-            # Retrieve location
-            location: np.ndarray = y[self.indexes]
-            r: float = np.linalg.norm(location)
-
-            # Compute moment
-            moment: np.ndarray = self.pose_sign * location / r  # Normalized moment
-        else:
-            raise IndexesNotSet("ElectromagnetEndEffector propagation indexes not set")
-
-        # Magnitude
-        mag: float = (self.mu0 * self.n_turns * self.current * self.area) / (4 * np.pi)
-
-        # Return magnetic field
-        return mag * ((np.dot(3 * location, np.dot(moment, location))) / (r ** 5) - moment / (r ** 3))
 
 
 class Joint(object):
@@ -90,7 +66,7 @@ class ArmPropagator(object):
         cls._count += 1
         return super().__new__(cls)
 
-    def __init__(self, *, joints: list[Joint], end_effector: ElectromagnetEndEffector, base_offset: np.ndarray) -> None:
+    def __init__(self, *, joints: np.ndarray, end_effector: ElectromagnetEndEffector, base_offset: np.ndarray) -> None:
         """
         Initialize the robotic arm end effector.
 
@@ -107,3 +83,32 @@ class ArmPropagator(object):
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps
         self._prop_sol = None  # Propagation solution
+
+    def plot(self) -> None:
+        # Get size of the problem
+        n: int = len(self.joints)
+
+        # Create figure
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+
+        # Plot angular evolution
+        ax1.plot(self._timestamps, np.rad2deg(self._prop_sol[:n, :].T), linewidth=2)
+        ax1.set_xlabel("Time [s]")
+        ax1.set_ylabel("Joint angle [deg]")
+        ax1.legend([r"$\theta_1$", r"$\theta_2$", r"$\theta_3$", r"$\theta_4$", r"$\theta_5$", r"$\theta_6$"],
+                   loc="upper right", fontsize="small")
+        ax1.grid(True)
+        ax1.set_title("Evolution of Joint Angles")
+
+        # Plot joint velocities
+        ax2.plot(self._timestamps, np.rad2deg(self._prop_sol[n:, :].T), linewidth=2)
+        ax2.set_xlabel("Time [s]")
+        ax2.set_ylabel("Joint angular velocity [deg/s]")
+        ax2.legend(
+            [r"$\dot{\theta}_1$", r"$\dot{\theta}_2$", r"$\dot{\theta}_3$", r"$\dot{\theta}_4$", r"$\dot{\theta}_5$",
+             r"$\dot{\theta}_6$"], loc="upper right", fontsize="small")
+        ax2.grid(True)
+        ax2.set_title("Evolution of Joint Angular Velocities")
+
+        plt.tight_layout()  # Improve spacing
+        plt.show()
