@@ -8,11 +8,11 @@ c++ -fdiagnostics-color=always \
     -std=c++14 \
     -fPIC \
     -I/opt/sundials/include \
-    -I/home/whitehole/PycharmProjects/master_thesis/propagator/lib/symengine/symengine \
-    -I/home/whitehole/PycharmProjects/master_thesis/propagator/lib/rapidjson/include \
+    -I./lib/symengine/symengine \
+    -I./lib/rapidjson/include \
     $(python3.8 -m pybind11 --includes) \
-    /home/whitehole/PycharmProjects/master_thesis/propagator/*.cpp \
-    -o /home/whitehole/PycharmProjects/master_thesis/propagator/bin/environment$(python3.8-config --extension-suffix) \
+    ./*.cpp \
+    -o ./bin/environment$(python3.8-config --extension-suffix) \
     -L/opt/sundials/lib \
     -lsundials_cvode \
     -lsundials_nvecserial \
