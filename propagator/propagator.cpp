@@ -74,7 +74,7 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
                   double base_to_body_y, double base_to_body_z, double scale, vector<double> dh_a,
                    vector<double> dh_d, vector<double> dh_alpha) {
     // Save problem values
-    user_data = (UserData)malloc(sizeof *user_data); /* Allocate data memory */
+    user_data = new function_data; /* Allocate data memory */
     user_data->y0 = y0;     
     user_data->debris_Ixx = debris_Ixx;
     user_data->debris_Iyy = debris_Iyy;

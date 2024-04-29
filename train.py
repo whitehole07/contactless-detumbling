@@ -45,9 +45,19 @@ def save_step(t: float, prop: list, at: AttitudePropagator, ar: ArmPropagator):
 
     return
 
+
+def evaluate_step(t, step_ret, state):
+    # Compute done (collision + tumbling rate)
+    done = 0
+
+    # Compute reward
+    reward = 0
+
+    return step_ret, reward, done
+
 # Propagation settings
 t_step = 1
-t_stop = 500
+t_stop = 200
 
 # Generate debris
 debris = Cylinder(
@@ -96,7 +106,7 @@ arm = ArmPropagator(joints=joints, end_effector=electromagnet, base_offset=base_
 
 # Generate environment
 # Initial conditions
-y0_arm = [0.0, -0.7, -0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+y0_arm = [0.0, -0.7, -0.3, 0.0, 0.0, 0.0, -0.02, 0.0, 0.0, 0.0, 0.0, 0.0]
 y0_debris = [0.1, 0.2, 0.0, 0.0, 0.0, 0.0, 1.0]
 env = Environment(
     y0_arm + y0_debris,
@@ -107,12 +117,8 @@ env = Environment(
     scale, list(map(float, arm.joints[:, 1])), list(map(float, arm.joints[:, 2])), list(map(float, arm.joints[:, 3]))
     )
 
-# Save initial conditions
-t, step_ret = env.current_state()
-save_step(t, step_ret, attitude, arm)
-
 # Init torch
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+"""device = 'cpu'
 
 # Define different parameters for training the agent
 max_episode = 100
@@ -133,7 +139,7 @@ np.random.seed(0)
 # Environment action ans states
 state_dim = 19
 action_dim = 6
-max_action = float(env.action_space.high[0])
+max_action = 0.1  # max torque
 min_Val = torch.tensor(1e-7).float().to(device)
 
 # Exploration Noise
@@ -146,16 +152,23 @@ agent = DDPG(state_dim, action_dim, hidden_actor=20, hidden_critic=64)
 for i in range(max_episode):
     total_reward = 0
     step = 0
-    state = env.reset()
-    for t in range(max_time_steps):
+
+    # Reset environment
+    env.reset()
+    state = env.current_state()
+    for _ in range(max_time_steps):
+        # Get action
         action = agent.select_action(state)
-        # Add Gaussian noise to actions for exploration
-        action = (action + np.random.normal(0, 1, size=action_dim)).clip(-max_action, max_action)
+        action = (action + np.random.normal(0, 1, size=action_dim)).clip(-max_action, max_action) # Noise and clip
         # action += ou_noise.sample()
-        next_state, reward, done, info = env.step(action)
+
+        # Perform step
+        t, step_ret = env.step(t_step=t_step, action=action)
+        next_state, reward, done = evaluate_step(t, step_ret, state)
+
+        # Retrieve reward
         total_reward += reward
-        if render and i >= render_interval: env.render()
-        agent.replay_buffer.push((state, next_state, action, reward, np.float(done)))
+        agent.replay_buffer.push((state, next_state, action, reward, done))
         state = next_state
         if done:
             break
@@ -164,22 +177,25 @@ for i in range(max_episode):
     score_hist.append(total_reward)
     total_step += step + 1
     print("Episode: \t{}  Total Reward: \t{:0.2f}".format(i, total_reward))
-    agent.update()
+    agent.update(update_iteration=200, gamma=0.99, tau=0.001, batch_size=64)
     if i % 10 == 0:
         agent.save("./")
-env.close()
+"""
+# Save initial conditions
+t, step_ret = env.current_state()
+save_step(t, step_ret, attitude, arm)
 
 # Perform step
 while t < t_stop:
     t, step_ret = env.step(t_step=t_step, action=[0,0,0,0,0,0])
     save_step(t, step_ret, attitude, arm)
 
-# Plots
+# Test
 attitude.plot(["angular_velocity", "quaternions", "energy", "euler_angles"])
 arm.plot()
 
 # Animate
-"""animate_system(
+animate_system(
     t=attitude.t,
     q=attitude.q,
     eu=attitude.euler_angles,
@@ -188,4 +204,4 @@ arm.plot()
     dpi=300,
     arms=[arm],
     dh_par=joints
-)"""
+)

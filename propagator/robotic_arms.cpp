@@ -30,6 +30,8 @@ SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNConte
 
 SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
+N_Vector solve_linear_system(SUNMatrix As, N_Vector bs, SUNContext sunctx);
+
 
 int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     // Save joints
@@ -77,7 +79,7 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
 int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
     SUNContext* sunctx;
-    SUNLinearSolver LS;
+    // SUNLinearSolver LS;
     N_Vector tau;
     UserData data;
     
@@ -94,15 +96,15 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     SUNMatrix Dv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
     SUNMatrix Cv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
     
-    /* Evaluate matrices */
+    // Evaluate matrices
     Dv = D(Dv, *sunctx, y_m, data->scale);
     Cv = C(Cv, *sunctx, y_m, data->scale);
 
-    /* Computations
-    EoM:
-        dq  = y(n+1:end)
-        ddq = -Dv\(Cv*y(n+1:end)) + Dv\tau;
-    */
+    // Computations
+    // EoM:
+    //    dq  = y(n+1:end)
+    //    ddq = -Dv\(Cv*y(n+1:end)) + Dv\tau;
+    //
 
     // Init vectors
     N_Vector y_s = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
@@ -116,19 +118,21 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     SUNMatMatvec(Cv, y_s, ddq);
     
     // Perform the operation - [A=Dv] \ [b = (Cv * y(n+1:end))] -> [Ax = b]
-    LS = SUNLinSol_Dense(ddq, Dv, *sunctx);
-    SUNLinSolSetup(LS, Dv);
-    SUNLinSolSolve(LS, Dv, ddq, ddq, 0.0);
+    // LS = SUNLinSol_Dense(ddq, Dv, *sunctx);
+    // SUNLinSolSetup(LS, Dv);
+    // SUNLinSolSolve(LS, Dv, ddq, ddq, 0.0);
+    ddq = solve_linear_system(Dv, ddq, *sunctx);
 
     // Perform the operation [A=Dv] \ [b = tau] -> [Ax = b]
-    LS = SUNLinSol_Dense(tau, Dv, *sunctx);
-    SUNLinSolSetup(LS, Dv);
-    SUNLinSolSolve(LS, Dv, tmp, tau, 0.0);
+    // LS = SUNLinSol_Dense(tau, Dv, *sunctx);
+    // SUNLinSolSetup(LS, Dv);
+    // SUNLinSolSolve(LS, Dv, tmp, tau, 0.0);
+    tmp = solve_linear_system(Dv, tau, *sunctx);
 
     // Perform summation
     N_VLinearSum(-1, ddq, 1, tmp, ddq);
 
-    /* Equations of motion */
+    // Equations of motion
     // dq
     Ith(ydot, INIT_SLICE_MANIP + 0) = Ith(y, INIT_SLICE_MANIP + 6);
     Ith(ydot, INIT_SLICE_MANIP + 1) = Ith(y, INIT_SLICE_MANIP + 7);
@@ -146,7 +150,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     Ith(ydot, INIT_SLICE_MANIP + 11) = Ith(ddq, INIT_SLICE_MANIP + 5);
 
     // Clean up
-    SUNLinSolFree(LS);
+    // SUNLinSolFree(LS);
     SUNMatDestroy(Dv);
     SUNMatDestroy(Cv);
     N_VDestroy_Serial(y_s);
@@ -286,4 +290,66 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx) {
     }
 
     return C;
+}
+
+N_Vector solve_linear_system(SUNMatrix As, N_Vector bs, SUNContext sunctx) {
+    // ONLY SQUARE MATRICES
+    // Define
+    int n = NV_LENGTH_S(bs);
+    vector<vector<double>> A(n, vector<double>(n, 0.0));
+    vector<double> b(n, 0.0);
+
+    // Convert
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            A[i][j] = IJth(As, i, j);
+        }
+        b[i] = Ith(bs, i);
+    }
+
+    n = A.size();
+    vector<vector<double>> augmentedMatrix = A;
+    for (size_t i = 0; i < A.size(); ++i) {
+        augmentedMatrix[i].push_back(b[i]);
+    }
+
+    // Gaussian elimination
+    for (int i = 0; i < n; ++i) {
+        int max_row = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (abs(augmentedMatrix[j][i]) > abs(augmentedMatrix[max_row][i])) {
+                max_row = j;
+            }
+        }
+        if (max_row != i) {
+            swap(augmentedMatrix[i], augmentedMatrix[max_row]);
+        }
+        for (int j = i + 1; j < n; ++j) {
+            double factor = augmentedMatrix[j][i] / augmentedMatrix[i][i];
+            for (int k = i; k <= n; ++k) {
+                augmentedMatrix[j][k] -= factor * augmentedMatrix[i][k];
+            }
+        }
+    }
+
+    // Back substitution
+    vector<double> x(n);
+    for (int i = n - 1; i >= 0; --i) {
+        x[i] = augmentedMatrix[i][n];
+        for (int j = i + 1; j < n; ++j) {
+            x[i] -= augmentedMatrix[i][j] * x[j];
+        }
+        x[i] /= augmentedMatrix[i][i];
+    }
+
+    // Convert
+    N_Vector xc = N_VNew_Serial(n, sunctx);
+    for (int i = 0; i < n; i++)
+    {
+        Ith(xc, i) = x[i];
+    }
+    
+    return xc;
 }

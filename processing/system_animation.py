@@ -4,7 +4,7 @@ from matplotlib.animation import FuncAnimation
 
 from processing.attitude.attitude_conversion import quaternion_to_rotation_matrix
 from processing.robotics.arm_propagator import ArmPropagator
-from old.utilities.ui import LoadingBarWithTime
+from processing.utilities.ui import LoadingBarWithTime
 
 
 def rotate_cylinder(longitudinal_axis_m):
