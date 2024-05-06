@@ -21,7 +21,7 @@ class Replay_buffer(object):
     https://github.com/openai/baselines/blob/master/baselines/deepq/replay_buffer.py
     Expects tuples of (state, next_state, action, reward, done)
     '''
-    def __init__(self, max_size=1000000):
+    def __init__(self, max_size=100000):
         """Create Replay buffer.
         Parameters
         ----------
@@ -89,17 +89,17 @@ class DDPG(object):
         """
         self.replay_buffer = Replay_buffer()
 
-        self.device = 'cpu'
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.actor = Actor(state_dim, action_dim, hidden_actor).to(self.device)
         self.actor_target = Actor(state_dim, action_dim, hidden_actor).to(self.device)
         self.actor_target.load_state_dict(self.actor.state_dict())
-        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=3e-3)
+        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=1e-3)
 
         self.critic = Critic(state_dim, action_dim, hidden_critic).to(self.device)
         self.critic_target = Critic(state_dim, action_dim, hidden_critic).to(self.device)
         self.critic_target.load_state_dict(self.critic.state_dict())
-        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=2e-2)
+        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=1e-3)
         # learning rate
 
         self.num_critic_update_iteration = 0

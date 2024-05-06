@@ -25,5 +25,7 @@ SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNConte
 
 SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
+N_Vector inv_dyn(N_Vector y, void* user_data);
+
 #endif
 

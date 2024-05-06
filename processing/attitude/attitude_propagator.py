@@ -43,5 +43,14 @@ class AttitudePropagator(object):
                 converted = np.hstack((converted, euler))
         return converted
 
+    def save_new(self, t: float, prop: np.ndarray) -> None:
+        # Save attitude
+        if self._prop_sol is None:
+            self._timestamps = np.array([t])
+            self._prop_sol = prop[12:19].reshape(-1, 1)
+        else:
+            self._timestamps = np.hstack((self._timestamps, np.array([t])))
+            self._prop_sol = np.hstack((self._prop_sol, prop[12:19].reshape(-1, 1)))
+
     def plot(self, quantities: list, ncols: int = 2) -> None:
         plot_evolution(self, quantities, ncols)

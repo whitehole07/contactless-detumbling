@@ -26,10 +26,12 @@ using namespace SymEngine;
 /* Init additional values to be saved 
     3x - end effector position
     3x - end effector pose
+    6x - joint torques
 */
-#define ADDITIONAL_SIZE   6
+#define ADDITIONAL_SIZE   12
 #define EE_LOC_INIT_SLICE 0
 #define EE_POS_INIT_SLICE 3
+#define EE_TOR_INIT_SLICE 6
 
 typedef struct function_data
 { 
@@ -47,9 +49,14 @@ typedef struct function_data
 
   // Robotic arm
   double base_to_body_x, base_to_body_y, base_to_body_z;
-  double scale;
   vector<double> dh_a, dh_d, dh_alpha;
-  N_Vector tau;
+  SUNMatrix Dv, Cv;
+
+  // Control
+  N_Vector yD;
+  vector<double> tau_max;
+  bool control;
+
 }* UserData;
 
 
@@ -59,8 +66,8 @@ public:
     Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
                 double debris_radius, double debris_height, double debris_thick, double debris_sigma,
                  double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
-                  double base_to_body_y, double base_to_body_z, double scale, vector<double> dh_a,
-                   vector<double> dh_d, vector<double> dh_alpha);
+                  double base_to_body_y, double base_to_body_z, vector<double> dh_a,
+                   vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max);
 
 
     // Initializer
@@ -69,11 +76,14 @@ public:
     // Method to reset the environment
     void reset();
 
+    // Compute control torque
+    void set_control_torque(vector<double> yD);
+
     // Return current state
     tuple<double, vector<double>> current_state();
 
     // Method to execute one step in the environment
-    tuple<double, vector<double>> step(double t_step, vector<double> action);
+    tuple<double, vector<double>> step(double t_step);
 
 private:
     // Define class variables

@@ -118,7 +118,7 @@ env = Environment(
     )
 
 # Init torch
-"""device = 'cpu'
+device = 'cpu'
 
 # Define different parameters for training the agent
 max_episode = 100
@@ -180,7 +180,7 @@ for i in range(max_episode):
     agent.update(update_iteration=200, gamma=0.99, tau=0.001, batch_size=64)
     if i % 10 == 0:
         agent.save("./")
-"""
+
 # Save initial conditions
 t, step_ret = env.current_state()
 save_step(t, step_ret, attitude, arm)

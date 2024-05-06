@@ -32,6 +32,8 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
 N_Vector solve_linear_system(SUNMatrix As, N_Vector bs, SUNContext sunctx);
 
+N_Vector inv_dyn(N_Vector y, void* user_data);
+
 
 int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     // Save joints
@@ -46,16 +48,11 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     Ith(y, INIT_SLICE_MANIP + i) = data->y0[INIT_SLICE_MANIP + i];
     }
 
-    // Initialize tau (temporary) 
-    N_Vector tau = N_VNew_Serial(NEQ_MANIP/2, sunctx);
-
-    Ith(tau, 0)  = 0.0;
-    Ith(tau, 1)  = 0.0;
-    Ith(tau, 2)  = 0.0;
-    Ith(tau, 3)  = 0.0;
-    Ith(tau, 4)  = 0.0;
-    Ith(tau, 5)  = 0.0;
-    data->tau = tau;
+    // Init torque
+    for (size_t i = 0; i < NEQ_MANIP/2; i++)
+    {
+        Ith(data->additional, EE_TOR_INIT_SLICE + i) = 0.0;
+    }
 
     // Init end effector position and pose
     // Extract end effector location and save it to additional values
@@ -75,6 +72,79 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     return 0;
 }
 
+N_Vector inv_dyn(N_Vector y, void* user_data) {
+
+    SUNContext* sunctx;
+    vector<double> tau_max;
+    N_Vector yD;
+    UserData data;
+    SUNMatrix Dv, Cv;    
+    
+    // Retrieve user data
+    data = (UserData)user_data;
+    sunctx = data->sunctx;
+    tau_max = data->tau_max;
+    yD = data->yD;
+    Dv = data->Dv;
+    Cv = data->Cv;
+
+    // Evaluate matrices
+    N_Vector y_m = N_VNew_Serial(NEQ_MANIP, *sunctx);
+    for (size_t i = 0; i < NEQ_MANIP; i++) { Ith(y_m, i) = Ith(y, INIT_SLICE_MANIP + i); }
+
+    // Init vectors
+    N_Vector u_bar = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    N_Vector tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+
+    // Extract from general y and yD
+    N_Vector yv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    N_Vector dyv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    N_Vector yDv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    N_Vector dyDv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    for (size_t i = 0; i < NEQ_MANIP/2; i++) { 
+        Ith(yv, i) = Ith(y_m, i);
+        Ith(dyv, i) = Ith(y_m, NEQ_MANIP/2 + i);
+        Ith(yDv, i) = Ith(yD, i);
+        Ith(dyDv, i) = Ith(yD, NEQ_MANIP/2 + i);
+    }
+    
+    // Compute max difference
+    double max_diff = 0.0;
+    for (size_t j = 0; j < NEQ_MANIP/2; j++) {
+        double diff = abs(Ith(yD, j) - Ith(yv, j));
+
+        // Check for maximum
+        max_diff = (max_diff < diff) ? diff : max_diff;
+    }
+
+    // Compute u_bar
+    for (size_t i = 0; i < NEQ_MANIP/2; i++)
+    {
+        // Compute gains
+        double KP = tau_max[i]/max_diff;
+        double KD = sqrt(2)*KP;
+
+        // Compute u_bar
+        Ith(u_bar, i) = KD*(Ith(dyDv, i) - Ith(dyv, i)) + KP*(Ith(yDv, i) - Ith(yv, i));    
+    }
+    
+    // Compute torque
+    N_Vector tmp = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    SUNMatMatvec(Dv, u_bar, tau);
+    SUNMatMatvec(Cv, dyv, tmp);
+    N_VLinearSum(1, tau, 1, tmp, tau);
+
+    // Clean up
+    N_VDestroy_Serial(tmp);
+    N_VDestroy_Serial(u_bar);
+    N_VDestroy_Serial(yv);
+    N_VDestroy_Serial(dyv);
+    N_VDestroy_Serial(yDv);
+    N_VDestroy_Serial(dyDv);
+
+    return tau;
+}
+
 /* Integration functions */
 int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -86,7 +156,6 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     // Retrieve user data
     data = (UserData)user_data;
     sunctx = data->sunctx;
-    tau = data->tau;
 
     // Extract from general y
     N_Vector y_m = N_VNew_Serial(NEQ_MANIP, *sunctx);
@@ -97,8 +166,27 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     SUNMatrix Cv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
     
     // Evaluate matrices
-    Dv = D(Dv, *sunctx, y_m, data->scale);
-    Cv = C(Cv, *sunctx, y_m, data->scale);
+    Dv = D(Dv, *sunctx, y_m);
+    Cv = C(Cv, *sunctx, y_m);
+
+    // Save matrices
+    data->Dv = Dv;
+    data->Cv = Cv;
+
+    // Compute Torque Control (if required)
+    if (data->control) {
+        tau = inv_dyn(y, data);
+    } else {
+        // Set tau to zero
+        tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+        N_VConst(0.0, tau);
+    }
+
+    // Save torque
+    for (size_t i = 0; i < NEQ_MANIP/2; i++)
+    {
+        Ith(data->additional, EE_TOR_INIT_SLICE + i) = Ith(tau, i);
+    }
 
     // Computations
     // EoM:
@@ -151,8 +239,8 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
     // Clean up
     // SUNLinSolFree(LS);
-    SUNMatDestroy(Dv);
-    SUNMatDestroy(Cv);
+    // SUNMatDestroy(Dv);
+    // SUNMatDestroy(Cv);
     N_VDestroy_Serial(y_s);
     N_VDestroy_Serial(y_m);
     N_VDestroy_Serial(ddq);

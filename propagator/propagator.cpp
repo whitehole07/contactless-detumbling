@@ -49,10 +49,9 @@ namespace py = pybind11;
 #define ORIGIN_ZDISTANCE_TO_DEBRIS  5.0   // [m]
 
 /* Denavit-Hartenberg Parameters */
-#define SCALE       10
-#define DH_A        {           0, SCALE*-0.6127, SCALE*-0.57155,             0,             0,             0}
-#define DH_D        {SCALE*0.1807,             0,              0, SCALE*0.17415, SCALE*0.11985, SCALE*0.11655}
-#define DH_ALPHA    {        PI/2,             0,              0,          PI/2,         -PI/2,             0}
+#define DH_A        {0, 5/2, 5/2, 0, 0, 0}
+#define DH_D        {1/2, 0, 0, 1/2, 1/4, 1/4}
+#define DH_ALPHA    {PI/2, 0, 0, PI/2, -PI/2, 0}
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -71,8 +70,8 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
                 double debris_radius, double debris_height, double debris_thick, double debris_sigma,
                  double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
-                  double base_to_body_y, double base_to_body_z, double scale, vector<double> dh_a,
-                   vector<double> dh_d, vector<double> dh_alpha) {
+                  double base_to_body_y, double base_to_body_z, vector<double> dh_a,
+                   vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max) {
     // Save problem values
     user_data = new function_data; /* Allocate data memory */
     user_data->y0 = y0;     
@@ -89,10 +88,11 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
     user_data->base_to_body_x = base_to_body_x;
     user_data->base_to_body_y = base_to_body_y;
     user_data->base_to_body_z = base_to_body_z;
-    user_data->scale = scale;
     user_data->dh_a = dh_a;
     user_data->dh_d = dh_d;
     user_data->dh_alpha = dh_alpha;
+    user_data->tau_max = tau_max;
+    user_data->control = false;
 
     // Initialize environment 
     initialize();
@@ -156,9 +156,21 @@ void Environment::reset() {
     CVodeFree(&cvode_mem);    /* Free CVODE memory */
     SUNMatDestroy(A);
     SUNContext_Free(&sunctx); /* Free the SUNDIALS context */
-    free(user_data);
+    // free(user_data);
 
     initialize();
+}
+
+void Environment::set_control_torque(vector<double> yD) {
+    // Convert vector into N_Vector
+    N_Vector yD_sun = N_VNew_Serial(NEQ_MANIP, sunctx);
+    for (size_t i = 0; i < yD.size(); i++) { Ith(yD_sun, i) = yD[i]; }
+
+    // Set parameters
+    user_data->yD = yD_sun;
+    user_data->control = true;
+
+    return;
 }
 
 tuple<double, vector<double>> Environment::current_state() {
@@ -177,12 +189,7 @@ tuple<double, vector<double>> Environment::current_state() {
 }
 
 // Method to execute one step in the environment
-tuple<double, vector<double>> Environment::step(double t_step, vector<double>action) {
-    // Set next action
-    for (size_t i = 0; i < NEQ_MANIP/2; i++)
-    {
-      Ith(user_data->tau, i) = action[i];
-    }
+tuple<double, vector<double>> Environment::step(double t_step) {
 
     // Execute one step in the environment
     tout += t_step;
@@ -200,7 +207,7 @@ tuple<double, vector<double>> Environment::step(double t_step, vector<double>act
 }
 
 
-/*int main(void)
+/* int main(void)
 {
     printf(" \nPropagation\n\n");
 
@@ -232,16 +239,14 @@ tuple<double, vector<double>> Environment::step(double t_step, vector<double>act
 
     Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, DEBRIS_RADIUS, DEBRIS_HEIGHT, 
     DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
-     ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, SCALE, DH_A, DH_D, DH_ALPHA);
+     ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, DH_A, DH_D, DH_ALPHA,
+     {10, 10, 10, 10, 10, 10});
 
-    test.step(TSTEP, {0,0,0,0,0,0});
-    test.step(TSTEP, {0,0,0,0,0,0});
-    test.step(TSTEP, {0,0,0,0,0,0});
-    test.reset();
-    test.step(TSTEP, {0,0,0,0,0,0});
+    test.step(0.1);
+    test.set_control_torque({0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
     return (0);
-}*/
+} */
 
 
 /*
@@ -329,10 +334,11 @@ PYBIND11_MODULE(environment, m) {
     py::class_<Environment>(m, "Environment")
         .def(py::init<vector<double>, double, double, double, double, 
                       double, double, double, double, double, 
-                      double, double, double, double, double, 
-                      vector<double>, vector<double>, vector<double>>())
+                      double, double, double, double, vector<double>,
+                       vector<double>, vector<double>, vector<double>>())
         .def("initialize", &Environment::initialize)
         .def("reset", &Environment::reset)
         .def("current_state", &Environment::current_state)
-        .def("step", &Environment::step, py::arg("t_step"), py::arg("action"));
+        .def("set_control_torque", &Environment::set_control_torque, py::arg("yD"))
+        .def("step", &Environment::step, py::arg("t_step"));
 }

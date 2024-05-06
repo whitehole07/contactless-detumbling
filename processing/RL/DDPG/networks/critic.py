@@ -21,7 +21,7 @@ class Critic(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden2, hidden2),
             nn.ReLU(),
-            nn.Linear(hidden2, action_dim)
+            nn.Linear(hidden2, 1)
         )
 
     def forward(self, state, action):

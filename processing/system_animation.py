@@ -98,12 +98,12 @@ def animate_system(*, t, q, eu, h, r, dpi, dh_par, arms: list = ()):
             ax.scatter(*magnet.locations[:, frame], color="orange")
 
             # Plot robotic arm
-            num_joints = dh_par.shape[0]
+            num_joints = len(arm.joints)
             T = [np.eye(4) for _ in range(num_joints)]
 
             angles = arm._prop_sol[:, frame]
             for i in range(num_joints):
-                a, d, alpha = dh_par[i, 1], dh_par[i, 2], dh_par[i, 3]
+                a, d, alpha = arm.dh_a[i], arm.dh_d[i], arm.dh_alpha[i]
                 dh_theta = angles[i]
 
                 T[i] = np.array(
