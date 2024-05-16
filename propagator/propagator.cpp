@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 
 /* PyBind11 */
 #include <pybind11/pybind11.h>
@@ -21,11 +22,6 @@ namespace py = pybind11;
 // Solver settings
 #define RTOL    SUN_RCONST(1.0e-4)      /* scalar relative tolerance            */
 #define ATOL    SUN_RCONST(1.0e-8)      /* vector absolute tolerance components */
-
-// Time settings
-#define TI      SUN_RCONST(0.0)         /* Initial time */
-#define TF      SUN_RCONST(2000)        /* Final time */
-#define TSTEP   1                       /* Time step */
 
 /* Debris Properties */
 #define DEBRIS_MASS     950.0        // [kg]
@@ -49,9 +45,9 @@ namespace py = pybind11;
 #define ORIGIN_ZDISTANCE_TO_DEBRIS  5.0   // [m]
 
 /* Denavit-Hartenberg Parameters */
-#define DH_A        {0, 5/2, 5/2, 0, 0, 0}
-#define DH_D        {1/2, 0, 0, 1/2, 1/4, 1/4}
-#define DH_ALPHA    {PI/2, 0, 0, PI/2, -PI/2, 0}
+#define DH_A        {0, 2.5, 2.5, 0, 0, 0}
+#define DH_D        {0.5, 0, 0, 0.5, 0.25, 0.25}
+#define DH_ALPHA    {1.5708, 0, 0, 1.5708, -1.5708, 0}
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -71,7 +67,7 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
                 double debris_radius, double debris_height, double debris_thick, double debris_sigma,
                  double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
                   double base_to_body_y, double base_to_body_z, vector<double> dh_a,
-                   vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max) {
+                   vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max, vector<vector<double>> com) {
     // Save problem values
     user_data = new function_data; /* Allocate data memory */
     user_data->y0 = y0;     
@@ -93,6 +89,7 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
     user_data->dh_alpha = dh_alpha;
     user_data->tau_max = tau_max;
     user_data->control = false;
+    user_data->com = com;
 
     // Initialize environment 
     initialize();
@@ -124,7 +121,7 @@ void Environment::initialize() {
     /* Call CVodeInit to initialize the integrator memory and specify the
     * user's right hand side function in y'=f(t,y), the initial time TI, and
     * the initial dependent variable vector y. */
-    CVodeInit(cvode_mem, f, TI, y);
+    CVodeInit(cvode_mem, f, 0.0, y);
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
     * and vector absolute tolerances */
@@ -159,6 +156,24 @@ void Environment::reset() {
     // free(user_data);
 
     initialize();
+}
+
+vector<double> Environment::inverse_kinematics(vector<vector<double>> TD, double tol, int max_iter) {
+
+  // Convert TD to SUNMatrix
+  SUNMatrix TD_sun = SUNDenseMatrix(4, 4, sunctx);
+  for (size_t i = 0; i < 4; i++) { for (size_t j = 0; j < 4; j++){ IJth(TD_sun, i, j) = TD[i][j]; } }
+
+  // Generate null initial guess
+  N_Vector q0 = N_VNew_Serial(NEQ_MANIP/2, sunctx); for (size_t i = 0; i < NEQ_MANIP/2; i++) { Ith(q0, i) = 0.0; }
+  
+  // Run inverse kinematics
+  N_Vector q_ik = inv_kin(q0, TD_sun, tol, max_iter, user_data);
+
+  // Convert to vector
+  vector<double> q_ik_vec(NEQ_MANIP/2, 0.0); for (size_t i = 0; i < NEQ_MANIP/2; i++) { q_ik_vec[i] = Ith(q_ik, i); }
+  
+  return q_ik_vec;
 }
 
 void Environment::set_control_torque(vector<double> yD) {
@@ -207,7 +222,7 @@ tuple<double, vector<double>> Environment::step(double t_step) {
 }
 
 
-/* int main(void)
+int main(void)
 {
     printf(" \nPropagation\n\n");
 
@@ -237,16 +252,33 @@ tuple<double, vector<double>> Environment::step(double t_step) {
     y0[17] = 0.0f;
     y0[18] = 1.0f;
 
+    // Define com
+    vector<vector<double>> com = {
+      {  0, -0.25,    0},
+      {1.25,    0,    0},
+      {1.25,    0,    0},
+      {  0, -0.25,    0},
+      {  0,  0.125,    0},
+      {  0,    0, -0.125}
+    };
+
     Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, DEBRIS_RADIUS, DEBRIS_HEIGHT, 
     DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
      ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, DH_A, DH_D, DH_ALPHA,
-     {10, 10, 10, 10, 10, 10});
+     {10, 10, 10, 10, 10, 10}, com);
 
-    test.step(0.1);
-    test.set_control_torque({0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    vector<vector<double>> TD = {
+         {1.0000,      0,         0,    4.0000},
+         {0     ,      0,   -1.0000,   -0.7500},
+         {0     , 1.0000,         0,    0.2500},
+         {0     ,      0,         0,    1.0000}
+    };
+
+    test.inverse_kinematics(TD, 1e-8, 100);
+
 
     return (0);
-} */
+}
 
 
 /*
@@ -335,10 +367,11 @@ PYBIND11_MODULE(environment, m) {
         .def(py::init<vector<double>, double, double, double, double, 
                       double, double, double, double, double, 
                       double, double, double, double, vector<double>,
-                       vector<double>, vector<double>, vector<double>>())
+                       vector<double>, vector<double>, vector<double>, vector<vector<double>>>())
         .def("initialize", &Environment::initialize)
         .def("reset", &Environment::reset)
         .def("current_state", &Environment::current_state)
+        .def("inverse_kinematics", &Environment::inverse_kinematics, py::arg("TD"), py::arg("tol"), py::arg("max_iter"))
         .def("set_control_torque", &Environment::set_control_torque, py::arg("yD"))
         .def("step", &Environment::step, py::arg("t_step"));
 }

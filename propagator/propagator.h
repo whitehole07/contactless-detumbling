@@ -1,8 +1,6 @@
 #include <sunmatrix/sunmatrix_dense.h>
 #include <nvector/nvector_serial.h>
-
-#include <symengine/symbol.h>
-#include <symengine/matrix.h>
+#include <vector>
 
 #include "robotic_arms.h"
 #include "attitude.h"
@@ -20,7 +18,6 @@
 #define INIT_SLICE_ATTITUDE   NEQ_MANIP
 
 using namespace std;
-using namespace SymEngine;
 
 /* User data */
 /* Init additional values to be saved 
@@ -51,6 +48,7 @@ typedef struct function_data
   double base_to_body_x, base_to_body_y, base_to_body_z;
   vector<double> dh_a, dh_d, dh_alpha;
   SUNMatrix Dv, Cv;
+  vector<vector<double>> com;
 
   // Control
   N_Vector yD;
@@ -67,7 +65,7 @@ public:
                 double debris_radius, double debris_height, double debris_thick, double debris_sigma,
                  double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
                   double base_to_body_y, double base_to_body_z, vector<double> dh_a,
-                   vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max);
+                   vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max, vector<vector<double>> com);
 
 
     // Initializer
@@ -78,6 +76,9 @@ public:
 
     // Compute control torque
     void set_control_torque(vector<double> yD);
+
+    // Inverse kinematics
+    vector<double> inverse_kinematics(vector<vector<double>> TD, double tol, int max_iter);
 
     // Return current state
     tuple<double, vector<double>> current_state();

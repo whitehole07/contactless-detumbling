@@ -10,6 +10,7 @@ c++ -fdiagnostics-color=always \
     -I/opt/sundials/include \
     -I./lib/symengine/symengine \
     -I./lib/rapidjson/include \
+    -I./lib/Eigen \
     $(python3.8 -m pybind11 --includes) \
     ./*.cpp \
     -o ./bin/environment$(python3.8-config --extension-suffix) \

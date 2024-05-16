@@ -1,5 +1,6 @@
 #include <nvector/nvector_serial.h>
 #include <sunmatrix/sunmatrix_dense.h>
+#include <cmath>
 
 #include "mat.h"
 #include "propagator.h"

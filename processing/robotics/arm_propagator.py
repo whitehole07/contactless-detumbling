@@ -60,7 +60,7 @@ class ArmPropagator(object):
         cls._count += 1
         return super().__new__(cls)
 
-    def __init__(self, *, joints: list, end_effector: ElectromagnetEndEffector, base_offset: np.ndarray, max_torques: np.ndarray) -> None:
+    def __init__(self, *, joints: list, com:list, end_effector: ElectromagnetEndEffector, base_offset: np.ndarray, max_torques: np.ndarray) -> None:
         """
         Initialize the robotic arm end effector.
 
@@ -71,6 +71,7 @@ class ArmPropagator(object):
         """
         # Save parameters
         self.joints: list = joints
+        self.com: list = com
         self.end_effector = end_effector
         self.base_offset: np.ndarray = base_offset
 

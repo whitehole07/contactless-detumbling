@@ -26,8 +26,6 @@ N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data);
 
 N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data);
 
-N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b);
-
 
 int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
 
@@ -166,12 +164,3 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
   return T;
 }
 
-N_Vector cross (SUNContext sunctx, N_Vector a, N_Vector b) {
-    N_Vector result = N_VNew_Serial(3, sunctx);
-
-    Ith(result, 0) = Ith(a, 1) * Ith(b, 2) - Ith(a, 2) * Ith(b, 1);
-    Ith(result, 1) = Ith(a, 2) * Ith(b, 0) - Ith(a, 0) * Ith(b, 2);
-    Ith(result, 2) = Ith(a, 0) * Ith(b, 1) - Ith(a, 1) * Ith(b, 0);
-    
-    return result;
-}
