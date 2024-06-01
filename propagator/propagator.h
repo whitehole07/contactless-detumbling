@@ -77,6 +77,9 @@ public:
     // Compute control torque
     void set_control_torque(vector<double> yD);
 
+    // Disabe torque
+    void unset_control_torque();
+
     // Inverse kinematics
     vector<double> inverse_kinematics(vector<vector<double>> TD, double tol, int max_iter);
 

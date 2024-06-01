@@ -202,7 +202,7 @@ N_Vector inv_kin(N_Vector q_init, SUNMatrix TD, double tol, int max_iter, void* 
         {
             Ith(y, i) = Ith(q, i - INIT_SLICE_MANIP);
         }   
-
+        
         // Get current transformation matrix
         TC = get_transformation_matrix(NEQ_MANIP/2, y, *sunctx, user_data);
         
@@ -238,7 +238,7 @@ N_Vector inv_kin(N_Vector q_init, SUNMatrix TD, double tol, int max_iter, void* 
         // Compute Jacobian
         J = compute_jacobian(y, user_data);
 
-        // Compute pseudoinvers
+        // Compute pseudoinverse
         pinv_J = pseudo_inverse(*sunctx, J);
         
         // Find delta q
@@ -275,14 +275,13 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     sunctx = data->sunctx;
     com_vec = data->com;
 
+    SUNMatrix J = SUNDenseMatrix(6, 6, *sunctx);
+
     N_Vector pli = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
     SUNMatrix com = SUNDenseMatrix(NEQ_MANIP/2, 3, *sunctx);
 
     // Convert CoM to SUNMatrix
     for (size_t i = 0; i < NEQ_MANIP/2; i++) { for (size_t j = 0; j < 3; j++) { IJth(com, i, j) = com_vec[i][j]; } }
-
-    // Initialize Jacobian matrices
-    SUNMatrix J = SUNDenseMatrix(6, NEQ_MANIP/2, *sunctx); // Jacobian
 
     // Get end effector transformation matrix
     SUNMatrix T0e = get_transformation_matrix(NEQ_MANIP/2, y, *sunctx, user_data);
@@ -292,6 +291,7 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     N_Vector tr = N_VNew_Serial(3, *sunctx);
     N_Vector tmp = N_VNew_Serial(3, *sunctx);
     N_Vector com_n = N_VNew_Serial(3, *sunctx);
+    N_Vector diff = N_VNew_Serial(3, *sunctx);
 
     // Extract translation, rotation, and last com
     sub_mat(T0e, R, {0, 2}, {0, 2});
@@ -305,12 +305,11 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     // Compute Jacobian
     SUNMatrix T0j = SUNDenseMatrix(4, 4, *sunctx); for (size_t i = 0; i < 4; i++) {IJth(T0j, i, i) = 1.0;}
 
-    for (size_t j = 0; j < NEQ_MANIP/2; j++)
+    for (int j = 0; j < NEQ_MANIP/2; j++)
     {
         // Update position jacobian
-        N_Vector diff = N_VNew_Serial(3, *sunctx);
         sub_mat_to_vec(T0j, diff, 3, {0, 2});
-        N_VLinearSum(1, pli, -1, diff, diff); // CHECK TRANSF MATRCES
+        N_VLinearSum(1, pli, -1, diff, diff); // CHECK TRANSF MATRICES
 
         IJth(J, 0, j) = IJth(T0j, 1, 2) * Ith(diff, 2) - IJth(T0j, 2, 2) * Ith(diff, 1);
         IJth(J, 1, j) = IJth(T0j, 2, 2) * Ith(diff, 0) - IJth(T0j, 0, 2) * Ith(diff, 2);
@@ -323,7 +322,6 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
 
         // Get new transformation matrix
         T0j = get_transformation_matrix(j+1, y, *sunctx, user_data);
-    
     }
 
     SUNMatDestroy(com);
@@ -331,10 +329,11 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     SUNMatDestroy(R);
     SUNMatDestroy(T0j);
     N_VDestroy_Serial(pli);
+    N_VDestroy_Serial(diff);
     N_VDestroy_Serial(tr);
     N_VDestroy_Serial(tmp);
     N_VDestroy_Serial(com_n);
-    
+
     return J;
 }
 
@@ -368,7 +367,30 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
     // Compute Torque Control (if required)
     if (data->control) {
-        tau = inv_dyn(y, data);
+        // Get vectors
+        N_Vector yD = data->yD;
+        N_Vector yv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+        for (size_t i = 0; i < NEQ_MANIP/2; i++) { 
+            Ith(yv, i) = Ith(y, INIT_SLICE_MANIP + i);
+        }
+
+        double max_diff = 0.0;
+        for (size_t j = 0; j < NEQ_MANIP/2; j++) {
+            double diff = abs(Ith(yD, j) - Ith(yv, j));
+
+            // Check for maximum
+            max_diff = (max_diff < diff) ? diff : max_diff;
+        }
+
+        if (max_diff > 1e-5)
+        {
+            tau = inv_dyn(y, data);   
+        } else {
+            tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+            N_VConst(0.0, tau);
+        }
+        
+             
     } else {
         // Set tau to zero
         tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);

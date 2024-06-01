@@ -167,7 +167,7 @@ vector<double> Environment::inverse_kinematics(vector<vector<double>> TD, double
   // Generate null initial guess
   N_Vector q0 = N_VNew_Serial(NEQ_MANIP/2, sunctx); for (size_t i = 0; i < NEQ_MANIP/2; i++) { Ith(q0, i) = 0.0; }
   
-  // Run inverse kinematics
+  // Run inverse kinematic
   N_Vector q_ik = inv_kin(q0, TD_sun, tol, max_iter, user_data);
 
   // Convert to vector
@@ -184,6 +184,13 @@ void Environment::set_control_torque(vector<double> yD) {
     // Set parameters
     user_data->yD = yD_sun;
     user_data->control = true;
+
+    return;
+}
+
+void Environment::unset_control_torque() {
+    // Set parameters
+    user_data->control = false;
 
     return;
 }
@@ -231,12 +238,12 @@ int main(void)
 
     // Set the first 12 elements in the vector y0
     y0[0] = 0.0f;
-    y0[1] = -0.7f;
-    y0[2] = -0.3f;
+    y0[1] = 0.7f;
+    y0[2] = 0.3f;
     y0[3] = 0.0f;
     y0[4] = 0.0f;
     y0[5] = 0.0f;
-    y0[6] = -0.02f;
+    y0[6] = 0.02f;
     y0[7] = 0.0f;
     y0[8] = 0.0f;
     y0[9] = 0.0f;
@@ -265,17 +272,21 @@ int main(void)
     Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, DEBRIS_RADIUS, DEBRIS_HEIGHT, 
     DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
      ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, DH_A, DH_D, DH_ALPHA,
-     {10, 10, 10, 10, 10, 10}, com);
+     {0.05, 0.05, 0.05, 0.05, 0.05, 0.05}, com);
 
     vector<vector<double>> TD = {
-         {1.0000,      0,         0,    4.0000},
-         {0     ,      0,   -1.0000,   -0.7500},
+         {1.0000,      0,         0,    3.0000},
+         {0     ,      0,   -1.0000,    0.7500},
          {0     , 1.0000,         0,    0.2500},
          {0     ,      0,         0,    1.0000}
     };
 
-    test.inverse_kinematics(TD, 1e-8, 100);
+    test.set_control_torque({ 2.80971772, 5.72204454, 1.14000493, 0.55878602, 2.20809644, 0.88186717 });
 
+    for (size_t i = 0; i < 1000; i++)
+    {
+      test.step(0.1);
+    }
 
     return (0);
 }

@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 from matplotlib import pyplot as plt
@@ -129,7 +131,7 @@ class ArmPropagator(object):
         """ Compute the transformation matrix for the i-th joint. """
         T: np.ndarray = np.eye(4, 4)
         for i in range(joint_number):
-            T = np.dot(T, self.joints[i].dh_transform(thetas[i]))
+            T = T @ self.joints[i].dh_transform(thetas[i])
         return T
 
     def get_joint_position(self, thetas: np.ndarray, joint_number: int) -> np.ndarray:
@@ -139,13 +141,96 @@ class ArmPropagator(object):
         # Extract joint position
         return self.base_offset + T[:3, -1]
 
+    def inverse_kinematics(self, T_desired, q_initial, threshold, max_iter):
+        # Initialize joint angles
+        q = q_initial
+
+        # Iterate until convergence or maximum iterations reached
+        for iter in range(max_iter):
+            # Compute end-effector transformation matrix based on current joint angles
+            T_current = self.get_transformation(q, 6)
+
+            # Compute error in end-effector pose
+            error = self.compute_error(T_desired, T_current)
+
+            # Check if error is below threshold
+            if np.linalg.norm(error) < threshold:
+                print('Converged: ', error)
+                break
+
+            # Compute Jacobian matrix
+            J_current = self.compute_jacobian(q)
+
+            # Compute pseudo-inverse of Jacobian matrix
+            J_pseudo_inv = np.linalg.pinv(J_current)
+
+            # Compute joint angle increments
+            delta_q = J_pseudo_inv @ error
+
+            # Update joint angles
+            q = np.mod(q + delta_q, 2*np.pi)
+        else:
+            raise ArithmeticError("Inverse kinematics did not converge within max_iter iterations.")
+        return q
+
+    def compute_error(self, T_desired, T_current):
+        R_current = T_current[:3, :3]
+        R_desired = T_desired[:3, :3]
+
+        R_error = R_desired.T @ R_current
+        axis, angle = self.custom_rotm2axang(R_error)
+
+        r_error = T_desired[:3, 3] - T_current[:3, 3]
+
+        error = np.concatenate((r_error, angle * axis))
+
+        return error
+
+    @staticmethod
+    def custom_rotm2axang(R):
+        assert R.shape == (3, 3), 'Input must be a 3x3 matrix'
+
+        trace_R = np.trace(R)
+
+        if trace_R > 2 - np.finfo(float).eps:
+            angle = 0
+            axis = np.array([0, 0, 1])
+        elif trace_R < -1 + np.finfo(float).eps:
+            i = np.argmax([R[0, 0], R[1, 1], R[2, 2]])
+            v = np.sqrt((R[i, i] + 1) / 2) * np.array([R[0, i], R[1, i], R[2, i]]) / 2
+            angle = np.pi
+            axis = v / np.linalg.norm(v)
+        else:
+            angle = np.arccos((trace_R - 1) / 2)
+            axis = 1 / (2 * np.sin(angle)) * np.array([R[2, 1] - R[1, 2], R[0, 2] - R[2, 0], R[1, 0] - R[0, 1]])
+
+        return axis, angle
+
+    def compute_jacobian(self, q):
+        n = len(q)
+
+        JPi = np.zeros((3, n))
+        JOi = np.zeros((3, n))
+
+        T0i = self.get_transformation(q, 6)
+        pli = T0i[:3, 3] + (T0i[:3, :3] @ self.com[n - 1])
+
+        T0jp = np.eye(4)
+        for j in range(n):
+            JPi[:, j] = np.cross(T0jp[:3, 2], pli - T0jp[:3, 3])
+            JOi[:, j] = T0jp[:3, 2]
+            T0jp = self.get_transformation(q, j+1)
+
+        J = np.vstack((JPi, JOi))
+
+        return J
 
     def plot(self) -> None:
         # Get size of the problem
         n: int = len(self.joints)
 
         # Create figure
-        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 10))
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(10, 10))
 
         # Plot angular evolution
         ax1.plot(self._timestamps, np.rad2deg(self._prop_sol[:n, :].T), linewidth=2)
@@ -171,10 +256,18 @@ class ArmPropagator(object):
         ax3.set_xlabel("Time [s]")
         ax3.set_ylabel("Joint torques [Nm]")
         ax3.legend(
-            [r"$\dot{\tau}_1$", r"$\dot{\tau}_2$", r"$\dot{\tau}_3$", r"$\dot{\tau}_4$", r"$\dot{\tau}_5$",
-             r"$\dot{\tau}_6$"], loc="upper right", fontsize="small")
+            [r"$\tau_1$", r"$\tau_2$", r"$\tau_3$", r"$\tau_4$", r"$\tau_5$",
+             r"$\tau_6$"], loc="upper right", fontsize="small")
         ax3.grid(True)
         ax3.set_title("Evolution of Joint Torques")
+
+        # Plot end effector position
+        ax4.plot(self._timestamps, self.end_effector.locations.T, linewidth=2)
+        ax4.set_xlabel("Time [s]")
+        ax4.set_ylabel("End effector position [m]")
+        ax4.legend([r"$x_e$", r"$y_e$", r"$z_e$"], loc="upper right", fontsize="small")
+        ax4.grid(True)
+        ax4.set_title("Evolution of End effector position")
 
         plt.tight_layout()  # Improve spacing
         plt.show()
