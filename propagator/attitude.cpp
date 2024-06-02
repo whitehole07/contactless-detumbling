@@ -148,7 +148,7 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
   SUNMatrix M = user_data->M;
 
   // Extract relative angular velocity
-  N_Vector wr = N_VNew_Serial(3, sunctx);  // ASSUMPTION: no chaser contribution to wr
+  N_Vector wr = N_VNew_Serial(3, sunctx);  // ASSUMPTION: no chaser contribution to wr (to be removed)
   N_Vector tmp = N_VNew_Serial(3, sunctx);
   for (size_t i = 0; i < 3; i++) { Ith(wr, i) = Ith(y, INIT_SLICE_ATTITUDE + i); }
 
