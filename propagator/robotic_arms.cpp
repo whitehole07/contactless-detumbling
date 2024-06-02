@@ -36,7 +36,7 @@ N_Vector solve_linear_system(SUNMatrix As, N_Vector bs, SUNContext sunctx);
 
 N_Vector inv_dyn(N_Vector y, void* user_data);
 
-N_Vector inv_kin(N_Vector q_init, SUNMatrix TD, double tol, int max_iter, void* user_data);
+N_Vector end_effector_linang_velocity(N_Vector y, SUNContext sunctx, void* user_data);
 
 SUNMatrix compute_jacobian(N_Vector y, void* user_data);
 
@@ -85,6 +85,13 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     for (size_t i = 0; i < 3; i++)
     {
         Ith(data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
+    }
+
+    // Extract end effector linear and angular velocity and save it to additional values
+    N_Vector vel = end_effector_linang_velocity(y, sunctx, user_data);
+    for (size_t i = 0; i < 6; i++)
+    {
+        Ith(data->additional, EE_LAV_INIT_SLICE + i) = Ith(vel, i);
     }
 
     return 0;
@@ -163,107 +170,6 @@ N_Vector inv_dyn(N_Vector y, void* user_data) {
     return tau;
 }
 
-N_Vector inv_kin(N_Vector q_init, SUNMatrix TD, double tol, int max_iter, void* user_data) {
-    
-    N_Vector q = q_init;
-    SUNContext* sunctx;
-    UserData data;
-
-    // Retrieve user data
-    data = (UserData)user_data;
-    sunctx = data->sunctx;
-
-    SUNMatrix TC = SUNDenseMatrix(4, 4, *sunctx);
-    SUNMatrix J = SUNDenseMatrix(6, 6, *sunctx);
-    SUNMatrix pinv_J = SUNDenseMatrix(6, 6, *sunctx);
-
-    N_Vector dq = N_VNew_Serial(6, *sunctx);
-
-    N_Vector trC = N_VNew_Serial(3, *sunctx);
-    N_Vector trD = N_VNew_Serial(3, *sunctx);
-    N_Vector tr_error = N_VNew_Serial(3, *sunctx);
-
-    SUNMatrix RC = SUNDenseMatrix(3, 3, *sunctx);
-    SUNMatrix RD = SUNDenseMatrix(3, 3, *sunctx);
-    SUNMatrix R_error = SUNDenseMatrix(3, 3, *sunctx);
-
-    double angle;
-    N_Vector axis = N_VNew_Serial(3, *sunctx);
-
-    N_Vector error = N_VNew_Serial(6, *sunctx);
-
-    // Build y-like array
-    N_Vector y = N_VNew_Serial(NEQ, *sunctx); for (size_t i = 0; i < NEQ; i++) { Ith(y, i) = 0.0; }    
-
-    for (int iter = 0; iter < max_iter; iter++)
-    {   
-        // Build y-like array
-        for (size_t i = INIT_SLICE_MANIP; i < INIT_SLICE_MANIP + NEQ_MANIP/2; i++)
-        {
-            Ith(y, i) = Ith(q, i - INIT_SLICE_MANIP);
-        }   
-        
-        // Get current transformation matrix
-        TC = get_transformation_matrix(NEQ_MANIP/2, y, *sunctx, user_data);
-        
-        // Compute error
-        // Position error
-        sub_mat_to_vec(TC, trC, 3, {0, 2});
-        sub_mat_to_vec(TD, trD, 3, {0, 2});
-
-        N_VLinearSum(1, trD, -1, trC, tr_error);
-
-        // Orientation error
-        sub_mat(TC, RC, {0, 2}, {0, 2});
-        sub_mat(TD, RD, {0, 2}, {0, 2});
-
-        R_error = mat_mul(transpose(*sunctx, RD), RC, *sunctx);
-
-        rotm2axang(R_error, angle, axis);
-
-        // Get error        
-        Ith(error, 0) = Ith(tr_error, 0);
-        Ith(error, 1) = Ith(tr_error, 1);
-        Ith(error, 2) = Ith(tr_error, 2);
-        Ith(error, 3) = angle * Ith(axis, 0);
-        Ith(error, 4) = angle * Ith(axis, 1);
-        Ith(error, 5) = angle * Ith(axis, 2);
-
-        // Verify convergence
-        if ( sqrt(N_VDotProd(error, error)) < tol )
-        {
-            break;
-        }
-        
-        // Compute Jacobian
-        J = compute_jacobian(y, user_data);
-
-        // Compute pseudoinverse
-        pinv_J = pseudo_inverse(*sunctx, J);
-        
-        // Find delta q
-        SUNMatMatvec(pinv_J, error, dq);
-
-        // Update q
-        N_VLinearSum(1, q, 1, dq, q);
-    }
-
-    SUNMatDestroy(RC);
-    SUNMatDestroy(RD);
-    SUNMatDestroy(R_error);
-    SUNMatDestroy(TC);
-    SUNMatDestroy(J);
-    SUNMatDestroy(pinv_J);
-    N_VDestroy_Serial(dq);
-    N_VDestroy_Serial(trC);
-    N_VDestroy_Serial(trD);
-    N_VDestroy_Serial(tr_error);
-    N_VDestroy_Serial(axis);
-    N_VDestroy_Serial(error);
-    
-    return q;
-}
-
 SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
 
     SUNContext* sunctx;
@@ -276,6 +182,7 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     com_vec = data->com;
 
     SUNMatrix J = SUNDenseMatrix(6, 6, *sunctx);
+    SUNMatrix T0j = SUNDenseMatrix(4, 4, *sunctx);
 
     N_Vector pli = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
     SUNMatrix com = SUNDenseMatrix(NEQ_MANIP/2, 3, *sunctx);
@@ -292,6 +199,8 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     N_Vector tmp = N_VNew_Serial(3, *sunctx);
     N_Vector com_n = N_VNew_Serial(3, *sunctx);
     N_Vector diff = N_VNew_Serial(3, *sunctx);
+    N_Vector z_j = N_VNew_Serial(3, *sunctx);
+    N_Vector J_v = N_VNew_Serial(3, *sunctx);
 
     // Extract translation, rotation, and last com
     sub_mat(T0e, R, {0, 2}, {0, 2});
@@ -303,7 +212,9 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     N_VLinearSum(1, tr, 1, tmp, pli);
 
     // Compute Jacobian
-    SUNMatrix T0j = SUNDenseMatrix(4, 4, *sunctx); for (size_t i = 0; i < 4; i++) {IJth(T0j, i, i) = 1.0;}
+    for (size_t i = 0; i < 4; i++) {
+        IJth(T0j, i, i) = 1.0;
+    }
 
     for (int j = 0; j < NEQ_MANIP/2; j++)
     {
@@ -311,9 +222,12 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
         sub_mat_to_vec(T0j, diff, 3, {0, 2});
         N_VLinearSum(1, pli, -1, diff, diff); // CHECK TRANSF MATRICES
 
-        IJth(J, 0, j) = IJth(T0j, 1, 2) * Ith(diff, 2) - IJth(T0j, 2, 2) * Ith(diff, 1);
-        IJth(J, 1, j) = IJth(T0j, 2, 2) * Ith(diff, 0) - IJth(T0j, 0, 2) * Ith(diff, 2);
-        IJth(J, 2, j) = IJth(T0j, 0, 2) * Ith(diff, 1) - IJth(T0j, 1, 2) * Ith(diff, 0);
+        // sub_mat_to_vec(T0j, z_j, 2, {0, 2});
+        // N_Vector J_v = cross(*sunctx, z_j, diff);
+
+        IJth(J, 0, j) = Ith(J_v, 0);
+        IJth(J, 1, j) = Ith(J_v, 1);
+        IJth(J, 2, j) = Ith(J_v, 2);
 
         // Update orientation jacobian
         IJth(J, 3, j) = IJth(T0j, 0, 2);
@@ -481,6 +395,30 @@ N_Vector end_effector_position(N_Vector y, SUNContext sunctx, void* user_data) {
     SUNMatDestroy(T);
 
     return loc;
+}
+
+N_Vector end_effector_linang_velocity(N_Vector y, SUNContext sunctx, void* user_data) {
+    // Compute Jacobian
+    SUNMatrix J = compute_jacobian(y, user_data);
+    
+    // Init vectors
+    N_Vector vel = N_VNew_Serial(6, sunctx);
+    N_Vector q_dot = N_VNew_Serial(6, sunctx);
+
+    // Extract joint angular velocities
+    for (size_t i = 0; i < 6; i++)
+    {
+        Ith(q_dot, i) = Ith(y, INIT_SLICE_MANIP + 6 + i);
+    }
+
+    // Compute velocity
+    SUNMatMatvec(J, q_dot, vel);
+    
+    // Free up memory
+    SUNMatDestroy(J);
+    N_VDestroy_Serial(q_dot);
+
+    return vel;
 }
 
 N_Vector end_effector_pose(N_Vector y, SUNContext sunctx, void* user_data) {

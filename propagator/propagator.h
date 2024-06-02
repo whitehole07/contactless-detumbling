@@ -24,11 +24,13 @@ using namespace std;
     3x - end effector position
     3x - end effector pose
     6x - joint torques
+    6x - linear and angular velocity
 */
-#define ADDITIONAL_SIZE   12
+#define ADDITIONAL_SIZE   18
 #define EE_LOC_INIT_SLICE 0
 #define EE_POS_INIT_SLICE 3
 #define EE_TOR_INIT_SLICE 6
+#define EE_LAV_INIT_SLICE 12
 
 typedef struct function_data
 { 
@@ -79,9 +81,6 @@ public:
 
     // Disabe torque
     void unset_control_torque();
-
-    // Inverse kinematics
-    vector<double> inverse_kinematics(vector<vector<double>> TD, double tol, int max_iter);
 
     // Return current state
     tuple<double, vector<double>> current_state();

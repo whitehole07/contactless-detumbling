@@ -109,6 +109,13 @@ N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data) {
     Ith(user_data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
   }
 
+  // Extract end effector linear and angular velocity and save it to additional values
+  N_Vector linang_vel = end_effector_linang_velocity(y, sunctx, user_data);
+  for (size_t i = 0; i < 6; i++)
+  {
+    Ith(user_data->additional, EE_LAV_INIT_SLICE + i) = Ith(linang_vel, i);
+  }
+
   // Scalar components
   sunrealtype mag = (MU0 * user_data->mag_n_turns * user_data->mag_current * (PI*pow(user_data->mag_radius, 2))) / (4 * PI);
   sunrealtype r = sqrt(N_VDotProd(location, location));

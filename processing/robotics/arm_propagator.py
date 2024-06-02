@@ -225,6 +225,13 @@ class ArmPropagator(object):
 
         return J
 
+    def compute_end_effector_linang_velocity(self, q, q_dot) -> np.ndarray:
+        # Compute Jacobian
+        J = self.compute_jacobian(q)
+
+        # Compute velocities
+        return np.dot(J, q_dot)
+
     def plot(self) -> None:
         # Get size of the problem
         n: int = len(self.joints)

@@ -19,6 +19,8 @@ N_Vector end_effector_position(N_Vector y, SUNContext sunctx, void* user_data);
 
 N_Vector end_effector_pose(N_Vector y, SUNContext sunctx, void* user_data);
 
+N_Vector end_effector_linang_velocity(N_Vector y, SUNContext sunctx, void* user_data);
+
 SUNMatrix get_joint_matrix(int joint_number, N_Vector y, SUNContext sunctx, void* user_data);
 
 SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNContext sunctx, void* user_data);
@@ -28,8 +30,6 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 N_Vector cross(SUNContext sunctx, N_Vector a, N_Vector b);
 
 N_Vector inv_dyn(N_Vector y, void* user_data);
-
-N_Vector inv_kin(N_Vector q_init, SUNMatrix TD, double tol, int max_iter, void* user_data);
 
 #endif
 

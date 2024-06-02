@@ -158,24 +158,6 @@ void Environment::reset() {
     initialize();
 }
 
-vector<double> Environment::inverse_kinematics(vector<vector<double>> TD, double tol, int max_iter) {
-
-  // Convert TD to SUNMatrix
-  SUNMatrix TD_sun = SUNDenseMatrix(4, 4, sunctx);
-  for (size_t i = 0; i < 4; i++) { for (size_t j = 0; j < 4; j++){ IJth(TD_sun, i, j) = TD[i][j]; } }
-
-  // Generate null initial guess
-  N_Vector q0 = N_VNew_Serial(NEQ_MANIP/2, sunctx); for (size_t i = 0; i < NEQ_MANIP/2; i++) { Ith(q0, i) = 0.0; }
-  
-  // Run inverse kinematic
-  N_Vector q_ik = inv_kin(q0, TD_sun, tol, max_iter, user_data);
-
-  // Convert to vector
-  vector<double> q_ik_vec(NEQ_MANIP/2, 0.0); for (size_t i = 0; i < NEQ_MANIP/2; i++) { q_ik_vec[i] = Ith(q_ik, i); }
-  
-  return q_ik_vec;
-}
-
 void Environment::set_control_torque(vector<double> yD) {
     // Convert vector into N_Vector
     N_Vector yD_sun = N_VNew_Serial(NEQ_MANIP, sunctx);
@@ -382,7 +364,6 @@ PYBIND11_MODULE(environment, m) {
         .def("initialize", &Environment::initialize)
         .def("reset", &Environment::reset)
         .def("current_state", &Environment::current_state)
-        .def("inverse_kinematics", &Environment::inverse_kinematics, py::arg("TD"), py::arg("tol"), py::arg("max_iter"))
         .def("set_control_torque", &Environment::set_control_torque, py::arg("yD"))
         .def("step", &Environment::step, py::arg("t_step"));
 }
