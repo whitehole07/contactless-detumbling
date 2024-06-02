@@ -27,6 +27,8 @@ class ElectromagnetEndEffector(object):
         self._timestamps = None  # Propagation timestamps
         self.locations = None  # Propagation solution
         self.poses = None
+        self.lin_vel = None
+        self.ang_vel = None
 
 
 class RevoluteJoint(object):
@@ -120,12 +122,16 @@ class ArmPropagator(object):
             self.joint_torques = prop[25:31].reshape(-1, 1)
             self.end_effector.locations = prop[19:22].reshape(-1, 1)
             self.end_effector.poses = prop[22:25].reshape(-1, 1)
+            self.end_effector.lin_vel = prop[31:34].reshape(-1, 1)
+            self.end_effector.ang_vel = prop[34:37].reshape(-1, 1)
         else:
             self._timestamps = np.hstack((self._timestamps, np.array([t])))
             self._prop_sol = np.hstack((self._prop_sol, prop[0:12].reshape(-1, 1)))
             self.joint_torques = np.hstack((self.joint_torques, prop[25:31].reshape(-1, 1)))
             self.end_effector.locations = np.hstack((self.end_effector.locations, prop[19:22].reshape(-1, 1)))
             self.end_effector.poses = np.hstack((self.end_effector.poses, prop[22:25].reshape(-1, 1)))
+            self.end_effector.lin_vel = np.hstack((self.end_effector.lin_vel, prop[31:34].reshape(-1, 1)))
+            self.end_effector.ang_vel = np.hstack((self.end_effector.ang_vel, prop[34:37].reshape(-1, 1)))
 
     def get_transformation(self, thetas: np.ndarray, joint_number: int) -> np.ndarray:
         """ Compute the transformation matrix for the i-th joint. """
@@ -237,7 +243,7 @@ class ArmPropagator(object):
         n: int = len(self.joints)
 
         # Create figure
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(10, 10))
+        fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(10, 10))
 
         # Plot angular evolution
         ax1.plot(self._timestamps, np.rad2deg(self._prop_sol[:n, :].T), linewidth=2)
@@ -274,7 +280,23 @@ class ArmPropagator(object):
         ax4.set_ylabel("End effector position [m]")
         ax4.legend([r"$x_e$", r"$y_e$", r"$z_e$"], loc="upper right", fontsize="small")
         ax4.grid(True)
-        ax4.set_title("Evolution of End effector position")
+        ax4.set_title("Evolution of End-effector Position")
+
+        # Plot end effector linear velocity
+        ax5.plot(self._timestamps, self.end_effector.lin_vel.T, linewidth=2)
+        ax5.set_xlabel("Time [s]")
+        ax5.set_ylabel("End effector linear velocity [m/s]")
+        ax5.legend([r"$\dot{x}_e$", r"$\dot{y}_e$", r"$\dot{z}_e$"], loc="upper right", fontsize="small")
+        ax5.grid(True)
+        ax5.set_title("Evolution of End-effector Linear Velocity")
+
+        # Plot end effector angular velocity
+        ax6.plot(self._timestamps, self.end_effector.ang_vel.T, linewidth=2)
+        ax6.set_xlabel("Time [s]")
+        ax6.set_ylabel("End effector angular velocity [rad/s]")
+        ax6.legend([r"$\omega_{xe}$", r"$\omega_{ye}$", r"$\omega_{ze}$"], loc="upper right", fontsize="small")
+        ax6.grid(True)
+        ax6.set_title("Evolution of End-effector Angular Velocity")
 
         plt.tight_layout()  # Improve spacing
         plt.show()

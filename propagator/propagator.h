@@ -62,6 +62,9 @@ typedef struct function_data
 
 class Environment {
 public:
+
+    SUNContext sunctx;
+    
     // Constructor
     Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
                 double debris_radius, double debris_height, double debris_thick, double debris_sigma,
@@ -90,7 +93,6 @@ public:
 
 private:
     // Define class variables
-    SUNContext sunctx;
     UserData user_data;
     sunrealtype t, tout;
     N_Vector abstol;

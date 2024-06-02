@@ -183,24 +183,21 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
 
     SUNMatrix J = SUNDenseMatrix(6, 6, *sunctx);
     SUNMatrix T0j = SUNDenseMatrix(4, 4, *sunctx);
-
-    N_Vector pli = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    SUNMatrix R = SUNDenseMatrix(3, 3, *sunctx);
     SUNMatrix com = SUNDenseMatrix(NEQ_MANIP/2, 3, *sunctx);
+
+    N_Vector z_j = N_VNew_Serial(3, *sunctx);
+    N_Vector diff = N_VNew_Serial(3, *sunctx);
+    N_Vector tr = N_VNew_Serial(3, *sunctx);
+    N_Vector tmp = N_VNew_Serial(3, *sunctx);
+    N_Vector com_n = N_VNew_Serial(3, *sunctx);
+    N_Vector pli = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
 
     // Convert CoM to SUNMatrix
     for (size_t i = 0; i < NEQ_MANIP/2; i++) { for (size_t j = 0; j < 3; j++) { IJth(com, i, j) = com_vec[i][j]; } }
 
     // Get end effector transformation matrix
     SUNMatrix T0e = get_transformation_matrix(NEQ_MANIP/2, y, *sunctx, user_data);
-
-    // Compute pli
-    SUNMatrix R = SUNDenseMatrix(3, 3, *sunctx);
-    N_Vector tr = N_VNew_Serial(3, *sunctx);
-    N_Vector tmp = N_VNew_Serial(3, *sunctx);
-    N_Vector com_n = N_VNew_Serial(3, *sunctx);
-    N_Vector diff = N_VNew_Serial(3, *sunctx);
-    N_Vector z_j = N_VNew_Serial(3, *sunctx);
-    N_Vector J_v = N_VNew_Serial(3, *sunctx);
 
     // Extract translation, rotation, and last com
     sub_mat(T0e, R, {0, 2}, {0, 2});
@@ -209,7 +206,7 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
 
     // Extract relative CoM (tr + R*com_n)
     SUNMatMatvec(R, com_n, tmp);
-    N_VLinearSum(1, tr, 1, tmp, pli);
+    N_VLinearSum(1, tr, 1, tmp, pli); // CHECK TRANSF MATRICES 
 
     // Compute Jacobian
     for (size_t i = 0; i < 4; i++) {
@@ -220,19 +217,16 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     {
         // Update position jacobian
         sub_mat_to_vec(T0j, diff, 3, {0, 2});
-        N_VLinearSum(1, pli, -1, diff, diff); // CHECK TRANSF MATRICES
+        sub_mat_to_vec(T0j, z_j, 2, {0, 2});
 
-        // sub_mat_to_vec(T0j, z_j, 2, {0, 2});
-        // N_Vector J_v = cross(*sunctx, z_j, diff);
-
-        IJth(J, 0, j) = Ith(J_v, 0);
-        IJth(J, 1, j) = Ith(J_v, 1);
-        IJth(J, 2, j) = Ith(J_v, 2);
+        IJth(J, 0, j) = Ith(z_j, 1) * (Ith(pli, 2) - Ith(diff, 2)) - Ith(z_j, 2) * (Ith(pli, 1) - Ith(diff, 1));
+        IJth(J, 1, j) = Ith(z_j, 2) * (Ith(pli, 0) - Ith(diff, 0)) - Ith(z_j, 0) * (Ith(pli, 2) - Ith(diff, 2));
+        IJth(J, 2, j) = Ith(z_j, 0) * (Ith(pli, 1) - Ith(diff, 1)) - Ith(z_j, 1) * (Ith(pli, 0) - Ith(diff, 0));
 
         // Update orientation jacobian
-        IJth(J, 3, j) = IJth(T0j, 0, 2);
-        IJth(J, 4, j) = IJth(T0j, 1, 2);
-        IJth(J, 5, j) = IJth(T0j, 2, 2);
+        IJth(J, 3, j) = Ith(z_j, 0);
+        IJth(J, 4, j) = Ith(z_j, 1);
+        IJth(J, 5, j) = Ith(z_j, 2);
 
         // Get new transformation matrix
         T0j = get_transformation_matrix(j+1, y, *sunctx, user_data);
@@ -243,9 +237,10 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     SUNMatDestroy(R);
     SUNMatDestroy(T0j);
     N_VDestroy_Serial(pli);
-    N_VDestroy_Serial(diff);
-    N_VDestroy_Serial(tr);
     N_VDestroy_Serial(tmp);
+    N_VDestroy_Serial(diff);
+    N_VDestroy_Serial(z_j);
+    N_VDestroy_Serial(tr);
     N_VDestroy_Serial(com_n);
 
     return J;
@@ -400,7 +395,7 @@ N_Vector end_effector_position(N_Vector y, SUNContext sunctx, void* user_data) {
 N_Vector end_effector_linang_velocity(N_Vector y, SUNContext sunctx, void* user_data) {
     // Compute Jacobian
     SUNMatrix J = compute_jacobian(y, user_data);
-    
+
     // Init vectors
     N_Vector vel = N_VNew_Serial(6, sunctx);
     N_Vector q_dot = N_VNew_Serial(6, sunctx);

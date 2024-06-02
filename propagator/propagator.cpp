@@ -263,12 +263,12 @@ int main(void)
          {0     ,      0,         0,    1.0000}
     };
 
-    test.set_control_torque({ 2.80971772, 5.72204454, 1.14000493, 0.55878602, 2.20809644, 0.88186717 });
+    // test.set_control_torque({ 2.80971772, 5.72204454, 1.14000493, 0.55878602, 2.20809644, 0.88186717 });
+    
+    double t;
+    vector<double> y;
 
-    for (size_t i = 0; i < 1000; i++)
-    {
-      test.step(0.1);
-    }
+    tie(t, y) = test.step(0.1);
 
     return (0);
 }
