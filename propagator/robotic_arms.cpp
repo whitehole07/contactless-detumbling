@@ -60,6 +60,10 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
     // Save symbols and linear solver
     UserData data = (UserData)user_data;
 
+    // Initialize Dv and Cv
+    data->Dv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, sunctx);
+    data->Cv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, sunctx);
+
     // Initialize y_manip
     for (size_t i = 0; i < NEQ_MANIP; i++)
     {
@@ -250,59 +254,57 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
 int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
     SUNContext* sunctx;
-    // SUNLinearSolver LS;
-    N_Vector tau;
     UserData data;
-    
+    N_Vector tau, y_s, ddq, tmp, y_m;
+
     // Retrieve user data
     data = (UserData)user_data;
     sunctx = data->sunctx;
 
+    // Init vectors
+    tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    y_s = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    ddq = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
+    tmp = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
+
     // Extract from general y
-    N_Vector y_m = N_VNew_Serial(NEQ_MANIP, *sunctx);
+    y_m = N_VNew_Serial(NEQ_MANIP, *sunctx);
     for (size_t i = 0; i < NEQ_MANIP; i++) { Ith(y_m, i) = Ith(y, INIT_SLICE_MANIP + i); }
     
-    // Init matrices
-    SUNMatrix Dv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
-    SUNMatrix Cv = SUNDenseMatrix(NEQ_MANIP/2, NEQ_MANIP/2, *sunctx);
-    
-    // Evaluate matrices
-    Dv = D(Dv, *sunctx, y_m);
-    Cv = C(Cv, *sunctx, y_m);
-
-    // Save matrices
-    data->Dv = Dv;
-    data->Cv = Cv;
+    // Compute matrices
+    D(data->Dv, *sunctx, y_m);
+    C(data->Cv, *sunctx, y_m);
 
     // Compute Torque Control (if required)
     if (data->control) {
         // Get vectors
-        N_Vector yD = data->yD;
         N_Vector yv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
         for (size_t i = 0; i < NEQ_MANIP/2; i++) { 
             Ith(yv, i) = Ith(y, INIT_SLICE_MANIP + i);
         }
 
+        // Compute max difference
         double max_diff = 0.0;
         for (size_t j = 0; j < NEQ_MANIP/2; j++) {
-            double diff = abs(Ith(yD, j) - Ith(yv, j));
+            double diff = abs(Ith(data->yD, j) - Ith(yv, j));
 
             // Check for maximum
             max_diff = (max_diff < diff) ? diff : max_diff;
         }
 
+        // Check if torque is required
         if (max_diff > 1e-5)
         {
             tau = inv_dyn(y, data);   
         } else {
-            tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
             N_VConst(0.0, tau);
         }
         
+        // Clean up
+        N_VDestroy_Serial(yv);
              
     } else {
         // Set tau to zero
-        tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
         N_VConst(0.0, tau);
     }
 
@@ -318,28 +320,23 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     //    ddq = -Dv\(Cv*y(n+1:end)) + Dv\tau;
     //
 
-    // Init vectors
-    N_Vector y_s = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
-    N_Vector ddq = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
-    N_Vector tmp = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
-
     // Extract slice of y
     for (size_t i = NEQ_MANIP/2; i < NEQ_MANIP; i++) { Ith(y_s, i - NEQ_MANIP/2) = Ith(y_m, i); }
 
     // Perform the operation Cv * y(n+1:end)
-    SUNMatMatvec(Cv, y_s, ddq);
+    SUNMatMatvec(data->Cv, y_s, ddq);
     
     // Perform the operation - [A=Dv] \ [b = (Cv * y(n+1:end))] -> [Ax = b]
     // LS = SUNLinSol_Dense(ddq, Dv, *sunctx);
     // SUNLinSolSetup(LS, Dv);
     // SUNLinSolSolve(LS, Dv, ddq, ddq, 0.0);
-    ddq = solve_linear_system(Dv, ddq, *sunctx);
+    ddq = solve_linear_system(data->Dv, ddq, *sunctx);
 
     // Perform the operation [A=Dv] \ [b = tau] -> [Ax = b]
     // LS = SUNLinSol_Dense(tau, Dv, *sunctx);
     // SUNLinSolSetup(LS, Dv);
     // SUNLinSolSolve(LS, Dv, tmp, tau, 0.0);
-    tmp = solve_linear_system(Dv, tau, *sunctx);
+    tmp = solve_linear_system(data->Dv, tau, *sunctx);
 
     // Perform summation
     N_VLinearSum(-1, ddq, 1, tmp, ddq);
@@ -362,9 +359,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     Ith(ydot, INIT_SLICE_MANIP + 11) = Ith(ddq, INIT_SLICE_MANIP + 5);
 
     // Clean up
-    // SUNLinSolFree(LS);
-    // SUNMatDestroy(Dv);
-    // SUNMatDestroy(Cv);
+    N_VDestroy_Serial(tau);
     N_VDestroy_Serial(y_s);
     N_VDestroy_Serial(y_m);
     N_VDestroy_Serial(ddq);

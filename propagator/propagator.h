@@ -25,12 +25,14 @@ using namespace std;
     3x - end effector pose
     6x - joint torques
     6x - linear and angular velocity
+    3x - eddy current torque
 */
-#define ADDITIONAL_SIZE   18
+#define ADDITIONAL_SIZE   21
 #define EE_LOC_INIT_SLICE 0
 #define EE_POS_INIT_SLICE 3
 #define EE_TOR_INIT_SLICE 6
 #define EE_LAV_INIT_SLICE 12
+#define EE_ECT_INIT_SLICE 18
 
 typedef struct function_data
 { 

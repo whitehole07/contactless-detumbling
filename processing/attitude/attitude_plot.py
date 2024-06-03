@@ -112,15 +112,12 @@ def plot_evolution(attitude_propagator, quantities: list, ncols: int = 2) -> Non
             ax[index].set_xlabel('Time [s]')
             ax[index].set_ylabel('Torque [Nm]')
 
-            # Generate torque history
-            attitude_propagator._ext_torque.generate_history(t, attitude_propagator._prop_sol)
-
             # Plot every torque
             for torque in attitude_propagator._ext_torque:
                 # Plot the vectors with customized appearance
-                ax[index].plot(t, torque.history[0, :], linestyle='-', label=r'$%s_{(x)}$' % torque.name)
-                ax[index].plot(t, torque.history[1, :], linestyle='--', label=r'$%s_{(y)}$' % torque.name)
-                ax[index].plot(t, torque.history[2, :], linestyle='-.', label=r'$%s_{(z)}$' % torque.name)
+                ax[index].plot(t, torque.history[0, :], linestyle='-', color='blue', label=r'$%s_{(x)}$' % torque.name)
+                ax[index].plot(t, torque.history[1, :], linestyle='--', color='green', label=r'$%s_{(y)}$' % torque.name)
+                ax[index].plot(t, torque.history[2, :], linestyle='-.', color='red', label=r'$%s_{(z)}$' % torque.name)
 
             # Add a title and grid
             ax[index].legend()

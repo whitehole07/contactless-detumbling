@@ -109,13 +109,6 @@ N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data) {
     Ith(user_data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
   }
 
-  // Extract end effector linear and angular velocity and save it to additional values
-  N_Vector linang_vel = end_effector_linang_velocity(y, sunctx, user_data);
-  for (size_t i = 0; i < 6; i++)
-  {
-    Ith(user_data->additional, EE_LAV_INIT_SLICE + i) = Ith(linang_vel, i);
-  }
-
   // Scalar components
   sunrealtype mag = (MU0 * user_data->mag_n_turns * user_data->mag_current * (PI*pow(user_data->mag_radius, 2))) / (4 * PI);
   sunrealtype r = sqrt(N_VDotProd(location, location));
@@ -147,10 +140,17 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
   // Get magnetic tensor
   SUNMatrix M = user_data->M;
 
+  // Extract end effector linear and angular velocity and save it to additional values
+  N_Vector linang_vel = end_effector_linang_velocity(y, sunctx, user_data);
+  for (size_t i = 0; i < 6; i++)
+  {
+    Ith(user_data->additional, EE_LAV_INIT_SLICE + i) = Ith(linang_vel, i);
+  }
+
   // Extract relative angular velocity
-  N_Vector wr = N_VNew_Serial(3, sunctx);  // ASSUMPTION: no chaser contribution to wr (to be removed)
+  N_Vector wr = N_VNew_Serial(3, sunctx);  // ASSUMPTION: no chaser contribution to wr (done, check and remove comment)
   N_Vector tmp = N_VNew_Serial(3, sunctx);
-  for (size_t i = 0; i < 3; i++) { Ith(wr, i) = Ith(y, INIT_SLICE_ATTITUDE + i); }
+  for (size_t i = 0; i < 3; i++) { Ith(wr, i) = Ith(y, INIT_SLICE_ATTITUDE + i) - Ith(linang_vel, i + 3); }
 
   // Compute torque
   // Compute cross product: cross(wr, B)
@@ -162,6 +162,12 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
 
   // Torque, perform the cross product: cross(M * cross(wr, B), B)
   N_Vector T = cross(sunctx, tmp, B);
+
+  // Save EC torque to additional values
+  for (size_t i = 0; i < 3; i++)
+  {
+    Ith(user_data->additional, EE_ECT_INIT_SLICE + i) = Ith(T, i);
+  }
 
   // Free memory
   N_VDestroy(B);

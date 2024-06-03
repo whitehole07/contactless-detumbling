@@ -5,11 +5,11 @@
 #include "mat.h"
 #include "propagator.h"
 
-SUNMatrix D(SUNMatrix D, SUNContext sunctx, N_Vector y);
+void D(SUNMatrix D, SUNContext sunctx, N_Vector y);
 
-SUNMatrix C(SUNMatrix C, SUNContext sunctx, N_Vector y);
+void C(SUNMatrix C, SUNContext sunctx, N_Vector y);
 
-SUNMatrix D(SUNMatrix D, SUNContext sunctx, N_Vector y) {
+void D(SUNMatrix D, SUNContext sunctx, N_Vector y) {
     /* Extract variables */
     sunrealtype t1  = Ith(y, 0);
     sunrealtype t2  = Ith(y, 1);
@@ -56,10 +56,10 @@ SUNMatrix D(SUNMatrix D, SUNContext sunctx, N_Vector y) {
     IJth(D, 5, 4) = 0;
     IJth(D, 5, 5) = 63.0/10000.0;
 
-    return D;
+    return;
 }
 
-SUNMatrix C(SUNMatrix C, SUNContext sunctx, N_Vector y) {
+void C(SUNMatrix C, SUNContext sunctx, N_Vector y) {
     /* Extract variables */
     sunrealtype t1  = Ith(y, 0);
     sunrealtype t2  = Ith(y, 1);
@@ -112,5 +112,5 @@ SUNMatrix C(SUNMatrix C, SUNContext sunctx, N_Vector y) {
     IJth(C, 5, 4) = -((-63.0/40000.0)*sin(-t2 - t3 - t4 + t5) + (63.0/40000.0)*sin(t2 + t3 + t4 + t5))*dt1 + (-63.0/20000.0)*sin(t5)*dt2 + (-63.0/20000.0)*sin(t5)*dt3 + (-63.0/20000.0)*sin(t5)*dt4;
     IJth(C, 5, 5) = 0;
 
-    return C;
+    return;
 }
