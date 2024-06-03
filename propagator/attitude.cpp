@@ -38,12 +38,6 @@ int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
     Ith(y, INIT_SLICE_ATTITUDE + i) = data->y0[INIT_SLICE_ATTITUDE + i];
   }
 
-  /* Generate Inertia matrix*/
-  SUNMatrix I = SUNDenseMatrix(3, 3, sunctx);
-  IJth(I, 0, 0) = data->debris_Ixx; 
-  IJth(I, 1, 1) = data->debris_Iyy; 
-  IJth(I, 2, 2) = data->debris_Izz;
-
   // Get magnetic tensor
   SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
   sunrealtype gamma  = 1 - ((2*data->debris_radius/data->debris_height) * tanh(data->debris_height/(2*data->debris_radius)));
@@ -148,7 +142,7 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
   }
 
   // Extract relative angular velocity
-  N_Vector wr = N_VNew_Serial(3, sunctx);  // ASSUMPTION: no chaser contribution to wr (done, check and remove comment)
+  N_Vector wr = N_VNew_Serial(3, sunctx);
   N_Vector tmp = N_VNew_Serial(3, sunctx);
   for (size_t i = 0; i < 3; i++) { Ith(wr, i) = Ith(y, INIT_SLICE_ATTITUDE + i) - Ith(linang_vel, i + 3); }
 

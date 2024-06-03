@@ -308,6 +308,8 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
         N_VConst(0.0, tau);
     }
 
+    // Add eddy current torque (TODO)
+
     // Save torque
     for (size_t i = 0; i < NEQ_MANIP/2; i++)
     {
