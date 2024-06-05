@@ -1,4 +1,4 @@
 # contactless-detumbling
 ## Contactless detumbling using induced eddy currents
 
-![rotation_animation](https://github.com/whitehole07/contactless-detumbling/assets/34631826/ecc8fe33-e83a-4d34-b8cb-2dcb9feab447)
+![ezgif-2-62ea212937](https://github.com/whitehole07/contactless-detumbling/assets/34631826/bf6171a6-3cfc-4437-ba3d-d089e5488292)
