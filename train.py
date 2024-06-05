@@ -116,7 +116,7 @@ attitude = AttitudePropagator(entity=debris, M_ext=eddy)
 
 # Save robotic arm results
 base_offset = np.array([10, 0, 5])
-max_torques = np.array([.025, .025, .025, .025, .025, .025])
+max_torques = np.array([.1, .1, .1, .1, .1, .1])
 arm = ArmPropagator(joints=joints, com=com, end_effector=electromagnet, base_offset=base_offset, max_torques=max_torques)
 
 # Set propagation settings
@@ -124,7 +124,7 @@ t_step = .1  # Propagation time step [s]
 
 # Set initial conditions
 y0_arm = [
-    0, 0.7, 0.3, 0.0, 0.0, 0.0,   # Initial joint angles
+    5, 3.14, 5, 1.5, 1.5, 1.5,   # Initial joint angles
     0.02, 0.0, 0.0, 0.0, 0.0, 0.0   # Initial joint velocities
 ]
 
@@ -187,11 +187,11 @@ score_hist = []
 # pos_EE (3), vel_EE (3), om_EE (3), om_DEB (3)
 #
 # Actions:
-# d_EE (3), r_EE (3)
+# d_EE (3)
 #
 state_dim = 12
-action_dim = 6
-min_Val = torch.tensor(1e-7).float().to(device)
+action_dim = 3
+max_range = np.array([0.1, 0.1, 0.1])
 
 # Create a DDPG instance
 agent = DDPG(state_dim, action_dim, hidden_actor=256, hidden_critic=256)
@@ -208,6 +208,9 @@ for i in range(max_episode):
         noise = max_range * np.random.normal(0, 1, size=action_dim)
         action = (agent.select_action(state) + noise).clip(-max_range, max_range)  # Noise and clip
         # action += ou_noise.sample()
+
+        # Inverse kinematics
+
 
         # Set control parameters
         env.set_control_torque(yD=list(action) + [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
