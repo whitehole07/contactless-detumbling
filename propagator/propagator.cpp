@@ -128,8 +128,10 @@ void Environment::initialize() {
     CVodeSVtolerances(cvode_mem, RTOL, abstol);
 
     // Increase the maximum number of steps
-    long int max_num_steps = 1000; // Set the desired maximum number of steps
+    int max_num_steps = 1000; // Set the desired maximum number of steps
+    double max_step_size = 0.1; // Set the desired maximum number of steps
     CVodeSetMaxNumSteps(cvode_mem, max_num_steps);
+    CVodeSetMaxStep(cvode_mem, max_step_size);
 
     CVodeSetUserData(cvode_mem, user_data);
 

@@ -65,7 +65,7 @@ attitude = AttitudePropagator(entity=debris, M_ext=eddy)
 
 # Save robotic arm results
 base_offset = np.array([10, 0, 5])
-max_torques = np.array([.05, .05, .05, .05, .05, .05])
+max_torques = np.array([.1, .1, .1, .1, .1, .1])
 arm = ArmPropagator(joints=joints, com=com, end_effector=electromagnet, base_offset=base_offset, max_torques=max_torques)
 
 # Set propagation settings
