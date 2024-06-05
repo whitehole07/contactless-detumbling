@@ -147,50 +147,79 @@ class ArmPropagator(object):
         # Extract joint position
         return self.base_offset + T[:3, -1]
 
-    def inverse_kinematics(self, T_desired, q_initial, threshold, max_iter):
+    def inverse_kinematics(self, T_desired, q_initial, threshold, max_search, max_iter):
         # Initialize joint angles
         q = q_initial
 
         # Iterate until convergence or maximum iterations reached
-        for iter in range(max_iter):
-            # Compute end-effector transformation matrix based on current joint angles
-            T_current = self.get_transformation(q, 6)
+        for search in range(max_search):
+            for iter in range(max_iter):
+                # Compute end-effector transformation matrix based on current joint angles
+                T_current = self.get_transformation(q, 6)
 
-            # Compute error in end-effector pose
-            error = self.compute_error(T_desired, T_current)
+                # Compute error in end-effector pose
+                error = self.compute_error(T_current, T_desired)
 
-            # Check if error is below threshold
-            if np.linalg.norm(error) < threshold:
-                print('Converged: ', error)
-                break
+                # Check if error is below threshold
+                if np.linalg.norm(error) < threshold:
+                    print('Converged: ', error)
+                    return q
 
-            # Compute Jacobian matrix
-            J_current = self.compute_jacobian(q)
+                # Compute Jacobian matrix
+                J_current = self.compute_jacobian(q)
 
-            # Compute pseudo-inverse of Jacobian matrix
-            J_pseudo_inv = np.linalg.pinv(J_current)
+                # Compute pseudo-inverse of Jacobian matrix
+                J_pseudo_inv = np.linalg.pinv(J_current)
 
-            # Compute joint angle increments
-            delta_q = J_pseudo_inv @ error
+                # Compute joint angle increments
+                delta_q = J_pseudo_inv @ error
 
-            # Update joint angles
-            q = np.mod(q + delta_q, 2*np.pi)
+                # Update joint angles
+                q = np.mod(q + delta_q, 2*np.pi)
+
+            # Search: Use random q if solution not found with initial q
+            a = 0  # Lower boundary
+            b = 2 * np.pi  # Upper boundary
+            n = 6  # Number of random values
+
+            # Generate uniform random values and ensure they are within [a, b]
+            q = a + (b - a) * np.random.rand(n)
         else:
             raise ArithmeticError("Inverse kinematics did not converge within max_iter iterations.")
-        return q
 
-    def compute_error(self, T_desired, T_current):
-        R_current = T_current[:3, :3]
-        R_desired = T_desired[:3, :3]
+    @staticmethod
+    def compute_error(T: np.ndarray, Td: np.ndarray) -> np.ndarray:
+        """
+        Returns the error vector between T and Td in angle-axis form.
 
-        R_error = R_desired.T @ R_current
-        axis, angle = self.custom_rotm2axang(R_error)
+        :param T: The current pose
+        :param Td: The desired pose
 
-        r_error = T_desired[:3, 3] - T_current[:3, 3]
+        :returns e: the error vector between T and Td
+        """
+        e = np.empty(6)
 
-        error = np.concatenate((r_error, angle * axis))
+        # Position error
+        e[:3] = Td[:3, -1] - T[:3, -1]
 
-        return error
+        # Orientation error
+        R = Td[:3, :3] @ T[:3, :3].T
+        li = np.array([R[2, 1] - R[1, 2], R[0, 2] - R[2, 0], R[1, 0] - R[0, 1]])
+        if np.linalg.norm(li) < 1e-6:
+            # If li is a zero vector (or very close to it)
+            # diagonal matrix case
+            if np.trace(R) > 0:
+                # (1,1,1) case
+                a = np.zeros((3,))
+            else:
+                a = np.pi / 2 * (np.diag(R) + 1)
+        else:
+            # non-diagonal matrix case
+            ln = np.linalg.norm(li)
+            a = math.atan2(ln, np.trace(R) - 1) * (li / ln)
+
+        e[3:] = a
+        return e
 
     @staticmethod
     def custom_rotm2axang(R):
@@ -231,13 +260,6 @@ class ArmPropagator(object):
 
         return J
 
-    def compute_end_effector_linang_velocity(self, q, q_dot) -> np.ndarray:
-        # Compute Jacobian
-        J = self.compute_jacobian(q)
-
-        # Compute velocities
-        return np.dot(J, q_dot)
-
     def plot(self) -> None:
         # Get size of the problem
         n: int = len(self.joints)
@@ -274,13 +296,23 @@ class ArmPropagator(object):
         ax3.grid(True)
         ax3.set_title("Evolution of Joint Torques")
 
-        # Plot end effector position
+        # Plot end effector position and pose
+        poses = None
+        for angle in self._prop_sol[:n, :].T:
+            T = self.get_transformation(angle, 6)
+            scaled = T[:3, 2]*np.linalg.norm(self.base_offset + T[:3, 3])
+            if poses is None:
+                poses = scaled.reshape(-1, 1)
+            else:
+                poses = np.hstack((poses, scaled.reshape(-1, 1)))
+
         ax4.plot(self._timestamps, self.end_effector.locations.T, linewidth=2)
+        ax4.plot(self._timestamps, poses.T, '--', linewidth=1)
         ax4.set_xlabel("Time [s]")
-        ax4.set_ylabel("End effector position [m]")
-        ax4.legend([r"$x_e$", r"$y_e$", r"$z_e$"], loc="upper right", fontsize="small")
+        ax4.set_ylabel("End effector position and pose [m]")
+        ax4.legend([r"$x_e$", r"$y_e$", r"$z_e$", r"$p_x$", r"$p_y$", r"$p_z$"], loc="upper right", fontsize="small")
         ax4.grid(True)
-        ax4.set_title("Evolution of End-effector Position")
+        ax4.set_title("Evolution of End-effector Position and Pose")
 
         # Plot end effector linear velocity
         ax5.plot(self._timestamps, self.end_effector.lin_vel.T, linewidth=2)

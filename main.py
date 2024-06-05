@@ -63,25 +63,6 @@ def evaluate_step(step_ret, prev_state):
     angle = np.arccos(np.dot(ee_loc / np.linalg.norm(ee_loc), ee_pos / np.linalg.norm(ee_pos)))
     reward -= abs(angle)
 
-    """# Check: joint angles beyond a certain threshold
-    if np.any(np.abs(step_ret[6:12]) > max_joint_vel):
-        reward -= 5
-        return state, reward, done  # Joint angular velocity too high, simulation over"""
-
-    """# Check: range beyond a certain value
-    if np.any(np.abs(step_ret[:6]) > max_range):
-        reward -= 5
-        return step_ret, reward, done  # Joint max range too high, simulation over
-
-    # Reward: Detumbling rate
-    dwx = abs(step_ret[12]) - abs(prev_state[12]) / t_step
-    dwy = abs(step_ret[13]) - abs(prev_state[13]) / t_step
-    dwz = abs(step_ret[14]) - abs(prev_state[14]) / t_step
-
-    if sum(1 for grad in [dwx, dwy, dwz] if grad < 0) < 2:
-        reward -= 0.25  # no component decreasing
-    """
-
     return state, reward, done
 
 
@@ -173,7 +154,7 @@ env = Environment(
     arm.dh_alpha,                         # Arm joint alpha parameters
     arm.max_torques,                      # Arm joint max torques
     arm.com                               # Arm link CoMs
-    )
+)
 
 
 # Get initial state
@@ -202,8 +183,14 @@ score_hist = []
 # np.random.seed(0)
 
 # Environment action and states
-state_dim = 3+3
-action_dim = 3
+# States:
+# pos_EE (3), vel_EE (3), om_EE (3), om_DEB (3)
+#
+# Actions:
+# d_EE (3), r_EE (3)
+#
+state_dim = 12
+action_dim = 6
 min_Val = torch.tensor(1e-7).float().to(device)
 
 # Create a DDPG instance

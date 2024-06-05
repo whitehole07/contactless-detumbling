@@ -49,14 +49,14 @@ n = size(dh, 1);
 
 % Test inverse kinematics
 T_desired = [
-    1.0000         0         0    4.0000
-         0         0   -1.0000   -0.7500
-         0    1.0000         0    0.2500
+         1         0         0   -3.0000
+         0         1         0    0.0000
+         0         0         1    0.0000
          0         0         0    1.0000
 ];
-q_desired = inverseKinematics(dh, com, T_desired, [0 0 0 0 0 0]', 1e-8, 100)
+q_desired = inverseKinematics(dh, com, T_desired, 1e-3, 100, 20)
 
-% Load matrices
+% Load matrices 
 load("C.mat")
 load("D.mat")
 

@@ -13,6 +13,8 @@ from processing.attitude.torques.eddy_current import EddyCurrentTorque
 # Environment
 from propagator.bin.environment import Environment
 
+from processing.utilities.rotations import construct_rotation_matrix
+
 # Generate debris
 debris = Cylinder(
     mass=950.0,
@@ -63,7 +65,7 @@ attitude = AttitudePropagator(entity=debris, M_ext=eddy)
 
 # Save robotic arm results
 base_offset = np.array([10, 0, 5])
-max_torques = np.array([.025, .025, .025, .025, .025, .025])
+max_torques = np.array([.05, .05, .05, .05, .05, .05])
 arm = ArmPropagator(joints=joints, com=com, end_effector=electromagnet, base_offset=base_offset, max_torques=max_torques)
 
 # Set propagation settings
@@ -71,7 +73,7 @@ t_step = .1  # Propagation time step [s]
 
 # Set initial conditions
 y0_arm = [
-    0, 0.7, 0.3, 0.0, 0.0, 0.0,   # Initial joint angles
+    5, 3.14, 5, 1.5, 1.5, 1.5,   # Initial joint angles
     0.02, 0.0, 0.0, 0.0, 0.0, 0.0   # Initial joint velocities
 ]
 
@@ -101,7 +103,7 @@ env = Environment(
     arm.dh_alpha,                         # Arm joint alpha parameters
     arm.max_torques,                      # Arm joint max torques
     arm.com                               # Arm link CoMs
-    )
+)
 
 
 def save(tf, prop):
@@ -118,23 +120,22 @@ t, s = env.current_state()
 save(t, s)
 
 # Solve inverse kinematics
-TD = np.array([
-         [1,      0,         0,   -4.5000],
-         [0,      0,         0,    0.0000],
-         [0,      1,         1,   -1.5000],
-         [0,      0,         0,    1.0000]
-    ])
-yD_arm = arm.inverse_kinematics(TD, np.array([0,0,0,0,0,0]), 1e-13, 100)
+TD = np.eye(4)
+TD[:3, -1] = [-4, 0, 3]
+TD[:3, :3] = construct_rotation_matrix(-(TD[:3, -1] + arm.base_offset))
+
+yD_arm = arm.inverse_kinematics(TD, np.array(y0_arm[:6]), 1e-5, 100, 20)
 T_c = arm.get_transformation(yD_arm, 6)
 
 print("Final angles [deg]: ", np.rad2deg(yD_arm))
 print("Final angles [rad]: ", yD_arm)
 print("Final EE position: ", T_c[:3, -1] + arm.base_offset)
+
 # Set control parameters
 env.set_control_torque(yD=list(yD_arm))
 
 # Perform steps
-while t < 100:
+while t < 35:
     # Perform step
     t, s = env.step(t_step=t_step)
     save(t, s)
@@ -142,3 +143,19 @@ while t < 100:
 attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
 
 arm.plot()
+
+print("Supposed:\n", TD)
+print("\nAfter IK:\n", T_c)
+print("\nReached:\n", arm.get_transformation(s[:6], 6))
+
+animate_system(
+    t=attitude.t,
+    q=attitude.q,
+    eu=attitude.euler_angles,
+    h=debris.height,
+    r=debris.radius,
+    dpi=300,
+    arms=[arm],
+    dh_par=joints
+)
+

@@ -1,35 +1,43 @@
-function q = inverseKinematics(dh, com, T_desired, q_initial, threshold, max_iter)
-    % Initialize joint angles
-    q = q_initial;
-    
+function q = inverseKinematics(dh, com, T_desired, threshold, max_search, max_iter)
     % Define maximum number of iterations
     max_iterations = max_iter;
     
     % Iterate until convergence or maximum iterations reached
-    for iter = 1:max_iterations
-        % Compute end-effector transformation matrix based on current joint angles
-        T_current = forwardKinematics(q, dh);
-        
-        % Compute error in end-effector pose
-        error = computeError(T_desired, T_current);
-        
-        % Check if error is below threshold
-        if norm(error) < threshold
-            disp('Converged')
-            break;
+    for search = 1:max_search
+        a = 0; % Lower boundary
+        b = 2*pi; % Upper boundary
+        n = 6; % Number of random values
+        % Generate uniform random values and ensure they are within [a, b]
+        q = a + (b-a) * rand(1, n).';
+
+        disp("new search")
+
+        for iter = 1:max_iterations
+            % Compute end-effector transformation matrix based on current joint angles
+            T_current = forwardKinematics(q, dh);
+            
+            % Compute error in end-effector pose
+            error = angle_axis(T_current, T_desired);
+            
+            % Check if error is below threshold
+            if norm(error) < threshold
+                disp('Converged')
+                Tf = forwardKinematics(q, dh)
+                return;
+            end
+            
+            % Compute Jacobian matrix
+            J_current = computeJacobian(q, dh, com);
+            
+            % Compute pseudo-inverse of Jacobian matrix
+            J_pseudo_inv = pinv(J_current);
+            
+            % Compute joint angle increments
+            delta_q = J_pseudo_inv * error;
+            
+            % Update joint angles
+            q = q + delta_q;
         end
-        
-        % Compute Jacobian matrix
-        J_current = computeJacobian(q, dh, com);
-        
-        % Compute pseudo-inverse of Jacobian matrix
-        J_pseudo_inv = pinv(J_current);
-        
-        % Compute joint angle increments
-        delta_q = J_pseudo_inv * error;
-        
-        % Update joint angles
-        q = q + delta_q;
     end
 end
 
@@ -63,56 +71,6 @@ function Ti = transformation(i, qi, dh)
     Ti = double(Ti);
 end
 
-function error = computeError(T_desired, T_current)
-    % Compute error between desired and current end-effector pose
-    % Convert transformation matrices to homogeneous matrices
-    % Compute the error as the difference between the desired and current
-    % transformation matrices
-    % Orientation error
-    R_current = T_current(1:3, 1:3);
-    R_desired = T_desired(1:3, 1:3);
-
-    R_error = R_desired' * R_current;
-    [axis, angle] = custom_rotm2axang(R_error);
-
-    % Position error
-    r_error = T_desired(1:3, 4) - T_current(1:3, 4);
-    
-    % Extract the position and orientation errors from the error_homog matrix
-    error = [r_error; angle * axis];
-end
-
-function [axis, angle] = custom_rotm2axang(R)
-    % Compute the axis and angle from the rotation matrix
-    % Handling singularities using the method described in:
-    % https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation#Conversion_from_rotation_matrix
-
-    % Ensure R is a valid rotation matrix
-    assert(isequal(size(R), [3 3]), 'Input must be a 3x3 matrix');
-
-    % Calculate the trace of the rotation matrix
-    trace_R = trace(R);
-    
-    if trace_R > 2 - eps
-        % Case when trace is greater than 2
-        % This corresponds to the rotation angle being close to zero
-        angle = 0;
-        axis = [0; 0; 1]; % Any axis can be chosen since angle is zero
-    elseif trace_R < -1 + eps
-        % Case when trace is less than -1
-        % This corresponds to the rotation angle being close to pi
-        [~, i] = max([R(1, 1), R(2, 2), R(3, 3)]);
-        v = sqrt((R(i, i) + 1) / 2) * [R(1, i); R(2, i); R(3, i)] / 2;
-        angle = pi;
-        axis = v / norm(v);
-    else
-        % Case when the angle is between 0 and pi
-        angle = acos((trace_R - 1) / 2);
-        axis = 1 / (2 * sin(angle)) * [R(3, 2) - R(2, 3); R(1, 3) - R(3, 1); R(2, 1) - R(1, 2)];
-    end
-end
-
-
 function J = computeJacobian(q, dh, com)
     % Compute Jacobian matrix
     % Example implementation:
@@ -145,3 +103,41 @@ function J = computeJacobian(q, dh, com)
         JOi
     ];
 end
+
+function e = angle_axis(T, Td)
+    % angle_axis calculates the error vector between T and Td in angle-axis form.
+    %
+    % Inputs:
+    %   T  - The current pose (4x4 transformation matrix)
+    %   Td - The desired pose (4x4 transformation matrix)
+    %
+    % Output:
+    %   e - The error vector between T and Td (6x1 vector)
+
+    e = zeros(6, 1);
+
+    % The position error
+    e(1:3) = Td(1:3, 4) - T(1:3, 4);
+    
+    % Orientation error
+    R = Td(1:3, 1:3) * T(1:3, 1:3)';
+    li = [R(3, 2) - R(2, 3), R(1, 3) - R(3, 1), R(2, 1) - R(1, 2)];
+
+    if norm(li) < 1e-6
+        % If li is a zero vector (or very close to it)
+        % diagonal matrix case
+        if trace(R) > 0
+            % (1,1,1) case
+            a = zeros(3, 1);
+        else
+            a = (pi / 2) * (diag(R) + 1);
+        end
+    else
+        % non-diagonal matrix case
+        ln = norm(li);
+        a = atan2(ln, trace(R) - 1) * (li / ln);
+    end
+
+    e(4:6) = a;
+end
+
