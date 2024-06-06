@@ -180,6 +180,19 @@ void Environment::unset_control_torque() {
 }
 
 tuple<double, vector<double>> Environment::current_state() {
+    /*
+    Output states:
+    1-6: joint angle
+    7-12: joint angular velocity
+    13-15: debris angular velocity
+    16-19: debris quaternons
+    20-22: end-effector position
+    23-25: end-effector pose
+    26-31: joint torques
+    32-37: end-effector linear and angular velocity
+    38-40: eddy current torque
+    */
+   
     // Convert N_vector into vector
     vector<double> state_vector(NV_LENGTH_S(y) + NV_LENGTH_S(user_data->additional));
     for (sunindextype i = 0; i < NV_LENGTH_S(y); ++i) {
@@ -221,12 +234,12 @@ int main(void)
     vector<double> y0(NEQ, 0.0f);
 
     // Set the first 12 elements in the vector y0
-    y0[0] = 0.0f;
-    y0[1] = 0.7f;
-    y0[2] = 0.3f;
-    y0[3] = 0.0f;
-    y0[4] = 0.0f;
-    y0[5] = 0.0f;
+    y0[0] = 5.0f;
+    y0[1] = 3.14f;
+    y0[2] = 5.0f;
+    y0[3] = 1.5f;
+    y0[4] = 1.5f;
+    y0[5] = 1.5f;
     y0[6] = 0.02f;
     y0[7] = 0.0f;
     y0[8] = 0.0f;
@@ -256,18 +269,11 @@ int main(void)
     Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, DEBRIS_RADIUS, DEBRIS_HEIGHT, 
     DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
      ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, DH_A, DH_D, DH_ALPHA,
-     {0.05, 0.05, 0.05, 0.05, 0.05, 0.05}, com);
+     {0.1, 0.1, 0.1, 0.1, 0.1, 0.1}, com);
 
-    vector<vector<double>> TD = {
-         {1.0000,      0,         0,    3.0000},
-         {0     ,      1,    0.0000,    0.7500},
-         {0     , 0.0000,         1,    0.2500},
-         {0     ,      0,         0,    1.0000}
-    };
-
-    test.set_control_torque({ 3.21794922, 0.40665031, 5.22354881, 5.82290684, 2.46463441, 4.82573021 });
+    test.set_control_torque({ 6.14991239, 3.95688279, 6.0450804, 2.88883968, 1.4444002, 1.5284258 });
     
-    for (size_t i = 0; i < 500; i++)
+    for (size_t i = 0; i < 100000; i++)
     {
       test.step(0.1);
     }

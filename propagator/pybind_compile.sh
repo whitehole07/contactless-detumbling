@@ -2,7 +2,10 @@
 
 c++ -fdiagnostics-color=always \
     -g \
+    -O3 \
+    -Wall \
     -shared \
+    -std=c++14 \
     -fPIC \
     -I/opt/sundials/include \
     -I./lib/symengine/symengine \
@@ -20,7 +23,3 @@ c++ -fdiagnostics-color=always \
     -lsymengine \
     -lgmp \
     -lpython3.8
-
-#    -std=c++14 \
-#    -O3 \
-#    -Wall \

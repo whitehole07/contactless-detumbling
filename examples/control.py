@@ -10,10 +10,40 @@ from processing.attitude.attitude_propagator import AttitudePropagator
 from processing.attitude.torques.base import TorqueObject
 from processing.attitude.torques.eddy_current import EddyCurrentTorque
 
-# Environment
-from propagator.bin.environment import Environment
-
 from processing.utilities.rotations import construct_rotation_matrix
+
+# Environment
+import cppyy
+
+# Add include paths
+cppyy.add_include_path('/opt/sundials/include')
+cppyy.add_include_path('./propagator/lib/symengine/symengine')
+cppyy.add_include_path('./propagator/lib/rapidjson/include')
+cppyy.add_include_path('./propagator/lib/Eigen')
+cppyy.add_include_path('/usr/include/python3.8')
+cppyy.add_include_path('/home/whitehole/.local/lib/python3.8/site-packages/pybind11/include')
+
+# Add library paths
+cppyy.add_library_path('/opt/sundials/lib')
+
+# Load libraries
+cppyy.load_library('sundials_cvode')
+cppyy.load_library('sundials_nvecserial')
+cppyy.load_library('sundials_sunmatrixdense')
+cppyy.load_library('sundials_sunlinsoldense')
+cppyy.load_library('sundials_core')
+cppyy.load_library('gmp')
+cppyy.load_library('python3.8')
+
+# Include local headers
+cppyy.include("./propagator/propagator.h")
+
+# Load local library
+cppyy.load_library("./propagator/bin/libpropagator.so")
+
+# Retrieve Class
+Environment = cppyy.gbl.Environment
+
 
 # Generate debris
 debris = Cylinder(
@@ -84,25 +114,26 @@ y0_debris = [
 
 # Initialize environment
 env = Environment(
-    y0_arm + y0_debris,                   # Initial conditions
-    debris.Ixx,                           # Debris Ixx
-    debris.Iyy,                           # Debris Iyy
-    debris.Izz,                           # Debris Izz
-    debris.radius,                        # Debris cylinder radius
-    debris.height,                        # Debris cylinder height
-    debris.thickness,                     # Debris cylinder thickness
-    debris.sigma,                         # Debris conductivity
-    electromagnet.n_turns,                # Coil number of turns
-    electromagnet.current,                # Coil current
-    electromagnet.radius,                 # Coil radius
-    arm.base_offset_x,                    # Arm base x-offset
-    arm.base_offset_y,                    # Arm base y-offset
-    arm.base_offset_z,                    # Arm base z-offset
-    arm.dh_a,                             # Arm joint a parameters
-    arm.dh_d,                             # Arm joint d parameters
-    arm.dh_alpha,                         # Arm joint alpha parameters
-    arm.max_torques,                      # Arm joint max torques
-    arm.com                               # Arm link CoMs
+    cppyy.gbl.std.vector[float](y0_arm + y0_debris),               # Initial conditions
+    debris.Ixx,                                                    # Debris Ixx
+    debris.Iyy,                                                    # Debris Iyy
+    debris.Izz,                                                    # Debris Izz
+    debris.radius,                                                 # Debris cylinder radius
+    debris.height,                                                 # Debris cylinder height
+    debris.thickness,                                              # Debris cylinder thickness
+    debris.sigma,                                                  # Debris conductivity
+    electromagnet.n_turns,                                         # Coil number of turns
+    electromagnet.current,                                         # Coil current
+    electromagnet.radius,                                          # Coil radius
+    arm.base_offset_x,                                             # Arm base x-offset
+    arm.base_offset_y,                                             # Arm base y-offset
+    arm.base_offset_z,                                             # Arm base z-offset
+    cppyy.gbl.std.vector[float](arm.dh_a),                         # Arm joint a parameters
+    cppyy.gbl.std.vector[float](arm.dh_d),                         # Arm joint d parameters
+    cppyy.gbl.std.vector[float](arm.dh_alpha),                     # Arm joint alpha parameters
+    cppyy.gbl.std.vector[float](arm.max_torques),                  # Arm joint max torques
+    cppyy.gbl.std.vector[cppyy.gbl.std.vector[float]]
+    ([cppyy.gbl.std.vector[float](row) for row in arm.com])        # Arm link CoMs
 )
 
 
@@ -121,7 +152,7 @@ save(t, s)
 
 # Solve inverse kinematics
 TD = np.eye(4)
-TD[:3, -1] = [-4, 0, 3]
+TD[:3, -1] = [-4, 0, -3]
 TD[:3, :3] = construct_rotation_matrix(-(TD[:3, -1] + arm.base_offset))
 
 yD_arm = arm.inverse_kinematics(TD, np.array(y0_arm[:6]), 1e-5, 100, 20)
@@ -132,10 +163,10 @@ print("Final angles [rad]: ", yD_arm)
 print("Final EE position: ", T_c[:3, -1] + arm.base_offset)
 
 # Set control parameters
-env.set_control_torque(yD=list(yD_arm))
+env.set_control_torque(yD=cppyy.gbl.std.vector[float](list(yD_arm)))
 
 # Perform steps
-while t < 35:
+while t < 20:
     # Perform step
     t, s = env.step(t_step=t_step)
     save(t, s)
@@ -148,7 +179,7 @@ print("Supposed:\n", TD)
 print("\nAfter IK:\n", T_c)
 print("\nReached:\n", arm.get_transformation(s[:6], 6))
 
-animate_system(
+"""animate_system(
     t=attitude.t,
     q=attitude.q,
     eu=attitude.euler_angles,
@@ -158,4 +189,4 @@ animate_system(
     arms=[arm],
     dh_par=joints
 )
-
+"""

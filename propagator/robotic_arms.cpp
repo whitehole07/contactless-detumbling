@@ -34,7 +34,7 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
 N_Vector solve_linear_system(SUNMatrix As, N_Vector bs, SUNContext sunctx);
 
-N_Vector inv_dyn(N_Vector y, void* user_data);
+void inv_dyn(N_Vector y, N_Vector tau, void* user_data);
 
 N_Vector end_effector_linang_velocity(N_Vector y, SUNContext sunctx, void* user_data);
 
@@ -76,32 +76,10 @@ int initiate_manipulator(SUNContext sunctx, N_Vector y, void* user_data) {
         Ith(data->additional, EE_TOR_INIT_SLICE + i) = 0.0;
     }
 
-    // Init end effector position and pose
-    // Extract end effector location and save it to additional values
-    N_Vector location = end_effector_position(y, sunctx, user_data);
-    for (size_t i = 0; i < 3; i++)
-    {
-        Ith(data->additional, EE_LOC_INIT_SLICE + i) = Ith(location, i);
-    }
-    
-    // Extract end effector pose and save it to additional values
-    N_Vector moment = end_effector_pose(y, sunctx, user_data);
-    for (size_t i = 0; i < 3; i++)
-    {
-        Ith(data->additional, EE_POS_INIT_SLICE + i) = Ith(moment, i);
-    }
-
-    // Extract end effector linear and angular velocity and save it to additional values
-    N_Vector vel = end_effector_linang_velocity(y, sunctx, user_data);
-    for (size_t i = 0; i < 6; i++)
-    {
-        Ith(data->additional, EE_LAV_INIT_SLICE + i) = Ith(vel, i);
-    }
-
     return 0;
 }
 
-N_Vector inv_dyn(N_Vector y, void* user_data) {
+void inv_dyn(N_Vector y, N_Vector tau, void* user_data) {
 
     SUNContext* sunctx;
     vector<double> tau_max;
@@ -123,7 +101,6 @@ N_Vector inv_dyn(N_Vector y, void* user_data) {
 
     // Init vectors
     N_Vector u_bar = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
-    N_Vector tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
 
     // Extract from general y and yD
     N_Vector yv = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
@@ -164,14 +141,15 @@ N_Vector inv_dyn(N_Vector y, void* user_data) {
     N_VLinearSum(1, tau, 1, tmp, tau);
 
     // Clean up
-    N_VDestroy_Serial(tmp);
-    N_VDestroy_Serial(u_bar);
-    N_VDestroy_Serial(yv);
-    N_VDestroy_Serial(dyv);
-    N_VDestroy_Serial(yDv);
-    N_VDestroy_Serial(dyDv);
+    N_VDestroy(tmp);
+    N_VDestroy(u_bar);
+    N_VDestroy(yv);
+    N_VDestroy(y_m);
+    N_VDestroy(dyv);
+    N_VDestroy(yDv);
+    N_VDestroy(dyDv);
 
-    return tau;
+    return;
 }
 
 SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
@@ -206,7 +184,9 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
     // Extract translation, rotation, and last com
     sub_mat(T0e, R, {0, 2}, {0, 2});
     sub_mat_to_vec(T0e, tr, 3, {0, 2});
-    sub_mat_to_vec(transpose(*sunctx, com), com_n, (NEQ_MANIP/2) - 1, {0, 2});
+
+    SUNMatrix com_transpose = transpose(*sunctx, com);
+    sub_mat_to_vec(com_transpose, com_n, (NEQ_MANIP/2) - 1, {0, 2});
 
     // Extract relative CoM (tr + R*com_n)
     SUNMatMatvec(R, com_n, tmp);
@@ -233,19 +213,24 @@ SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
         IJth(J, 5, j) = Ith(z_j, 2);
 
         // Get new transformation matrix
-        T0j = get_transformation_matrix(j+1, y, *sunctx, user_data);
+        SUNMatrix T = get_transformation_matrix(j+1, y, *sunctx, user_data);
+
+        // Clean up
+        SUNMatCopy(T, T0j);
+        SUNMatDestroy(T);
     }
 
     SUNMatDestroy(com);
     SUNMatDestroy(T0e);
     SUNMatDestroy(R);
     SUNMatDestroy(T0j);
-    N_VDestroy_Serial(pli);
-    N_VDestroy_Serial(tmp);
-    N_VDestroy_Serial(diff);
-    N_VDestroy_Serial(z_j);
-    N_VDestroy_Serial(tr);
-    N_VDestroy_Serial(com_n);
+    SUNMatDestroy(com_transpose);
+    N_VDestroy(pli);
+    N_VDestroy(tmp);
+    N_VDestroy(diff);
+    N_VDestroy(z_j);
+    N_VDestroy(tr);
+    N_VDestroy(com_n);
 
     return J;
 }
@@ -255,17 +240,17 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
     SUNContext* sunctx;
     UserData data;
-    N_Vector tau, y_s, ddq, tmp, y_m;
+    N_Vector tau, y_s, ddq, tmp, y_m, sol1, sol2;
 
     // Retrieve user data
     data = (UserData)user_data;
     sunctx = data->sunctx;
 
     // Init vectors
-    tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
     y_s = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
-    ddq = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
-    tmp = N_VNew_Serial(NEQ_MANIP/2, *sunctx); 
+    tau = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    ddq = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
+    sol2 = N_VNew_Serial(NEQ_MANIP/2, *sunctx);
 
     // Extract from general y
     y_m = N_VNew_Serial(NEQ_MANIP, *sunctx);
@@ -295,13 +280,13 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
         // Check if torque is required
         if (max_diff > 1e-5)
         {
-            tau = inv_dyn(y, data);   
+            inv_dyn(y, tau, data);
         } else {
             N_VConst(0.0, tau);
         }
         
         // Clean up
-        N_VDestroy_Serial(yv);
+        N_VDestroy(yv);
              
     } else {
         // Set tau to zero
@@ -332,7 +317,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     // LS = SUNLinSol_Dense(ddq, Dv, *sunctx);
     // SUNLinSolSetup(LS, Dv);
     // SUNLinSolSolve(LS, Dv, ddq, ddq, 0.0);
-    ddq = solve_linear_system(data->Dv, ddq, *sunctx);
+    sol1 = solve_linear_system(data->Dv, ddq, *sunctx);
 
     // Perform the operation [A=Dv] \ [b = tau] -> [Ax = b]
     // LS = SUNLinSol_Dense(tau, Dv, *sunctx);
@@ -341,7 +326,7 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     tmp = solve_linear_system(data->Dv, tau, *sunctx);
 
     // Perform summation
-    N_VLinearSum(-1, ddq, 1, tmp, ddq);
+    N_VLinearSum(-1, sol1, 1, tmp, sol2);
 
     // Equations of motion
     // dq
@@ -353,19 +338,21 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
     Ith(ydot, INIT_SLICE_MANIP + 5) = Ith(y, INIT_SLICE_MANIP + 11);
 
     // ddq
-    Ith(ydot, INIT_SLICE_MANIP + 6)  = Ith(ddq, INIT_SLICE_MANIP + 0);
-    Ith(ydot, INIT_SLICE_MANIP + 7)  = Ith(ddq, INIT_SLICE_MANIP + 1);
-    Ith(ydot, INIT_SLICE_MANIP + 8)  = Ith(ddq, INIT_SLICE_MANIP + 2);
-    Ith(ydot, INIT_SLICE_MANIP + 9)  = Ith(ddq, INIT_SLICE_MANIP + 3);
-    Ith(ydot, INIT_SLICE_MANIP + 10) = Ith(ddq, INIT_SLICE_MANIP + 4);
-    Ith(ydot, INIT_SLICE_MANIP + 11) = Ith(ddq, INIT_SLICE_MANIP + 5);
+    Ith(ydot, INIT_SLICE_MANIP + 6)  = Ith(sol2, INIT_SLICE_MANIP + 0);
+    Ith(ydot, INIT_SLICE_MANIP + 7)  = Ith(sol2, INIT_SLICE_MANIP + 1);
+    Ith(ydot, INIT_SLICE_MANIP + 8)  = Ith(sol2, INIT_SLICE_MANIP + 2);
+    Ith(ydot, INIT_SLICE_MANIP + 9)  = Ith(sol2, INIT_SLICE_MANIP + 3);
+    Ith(ydot, INIT_SLICE_MANIP + 10) = Ith(sol2, INIT_SLICE_MANIP + 4);
+    Ith(ydot, INIT_SLICE_MANIP + 11) = Ith(sol2, INIT_SLICE_MANIP + 5);
 
     // Clean up
-    N_VDestroy_Serial(tau);
-    N_VDestroy_Serial(y_s);
-    N_VDestroy_Serial(y_m);
-    N_VDestroy_Serial(ddq);
-    N_VDestroy_Serial(tmp);
+    N_VDestroy(tau);
+    N_VDestroy(y_s);
+    N_VDestroy(y_m);
+    N_VDestroy(ddq);
+    N_VDestroy(tmp);
+    N_VDestroy(sol1);
+    N_VDestroy(sol2);
 
     return (0);
 }
@@ -408,7 +395,7 @@ N_Vector end_effector_linang_velocity(N_Vector y, SUNContext sunctx, void* user_
     
     // Free up memory
     SUNMatDestroy(J);
-    N_VDestroy_Serial(q_dot);
+    N_VDestroy(q_dot);
 
     return vel;
 }
@@ -425,7 +412,7 @@ N_Vector end_effector_pose(N_Vector y, SUNContext sunctx, void* user_data) {
     }
 
     // Normalize pose
-    sunrealtype norm = sqrt(N_VDotProd(pos, pos));
+    double norm = sqrt(N_VDotProd(pos, pos));
     N_VScale(1.0 / norm, pos, pos);
     
     // Free up memory
@@ -487,7 +474,10 @@ SUNMatrix get_transformation_matrix(int final_joint_number, N_Vector y, SUNConte
         if (i > 0)
         {
             // Compute transformation matrix
-            T0i = mat_mul(T0i, Ti, sunctx);
+            SUNMatrix mat_mul_mat = mat_mul(T0i, Ti, sunctx);
+            SUNMatCopy(mat_mul_mat, T0i);
+
+            SUNMatDestroy(mat_mul_mat);
 
         } else
         {   
@@ -514,7 +504,7 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx) {
     // Perform matrix-matrix multiplication: C = A * B
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < p; j++) {
-            sunrealtype sum = 0.0;
+            double sum = 0.0;
             for (int k = 0; k < n; k++) {
                 sum += IJth(A, i, k) * IJth(B, k, j);
             }

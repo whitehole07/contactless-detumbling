@@ -189,6 +189,9 @@ score_hist = []
 # Actions:
 # d_EE (3)
 #
+def state_extractor(to_be_extracted):
+    return to_be_extracted[20:23] + to_be_extracted[32:38] + to_be_extracted[13:16]
+
 state_dim = 12
 action_dim = 3
 max_range = np.array([0.1, 0.1, 0.1])
@@ -202,7 +205,8 @@ for i in range(max_episode):
     step = 0
 
     # Reset environment
-    state = np.array(env.current_state()[-1])[:state_dim]  # discard time
+    t, global_state = env.current_state()
+    state = state_extractor(global_state)  # discard time
     for _ in range(max_time_steps):
         # Get action
         noise = max_range * np.random.normal(0, 1, size=action_dim)

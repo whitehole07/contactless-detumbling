@@ -40,14 +40,20 @@ int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
 
   // Get magnetic tensor
   SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
-  sunrealtype gamma  = 1 - ((2*data->debris_radius/data->debris_height) * tanh(data->debris_height/(2*data->debris_radius)));
-  sunrealtype magn   = PI * data->debris_sigma * pow(data->debris_radius, 3) * data->debris_thick * data->debris_height;
+  double gamma  = 1 - ((2*data->debris_radius/data->debris_height) * tanh(data->debris_height/(2*data->debris_radius)));
+  double magn   = PI * data->debris_sigma * pow(data->debris_radius, 3) * data->debris_thick * data->debris_height;
   IJth(M, 0, 0) = gamma * magn;
   IJth(M, 1, 1) = gamma * magn;
   IJth(M, 2, 2) = 0.5   * magn;
 
   // Set user data
   data->M = M;
+
+  // Initialize eddy current torque
+  N_Vector Tec = eddy_current_torque(sunctx, y, data);
+  
+  // Clean up
+  N_VDestroy(Tec);
 
   return(0);
 }
@@ -81,6 +87,9 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   Ith(ydot, INIT_SLICE_ATTITUDE + 5) = SUN_RCONST(0.5) * (wy * q1 - wx * q2 + wz * q4);
   Ith(ydot, INIT_SLICE_ATTITUDE + 6) = SUN_RCONST(0.5) * (-wx * q1 - wy * q2 - wz * q3);
 
+  // Clean up
+  N_VDestroy(T_eddy);
+
   return (0);
 }
 
@@ -104,11 +113,11 @@ N_Vector get_magnetic_field(N_Vector y, SUNContext sunctx, UserData user_data) {
   }
 
   // Scalar components
-  sunrealtype mag = (MU0 * user_data->mag_n_turns * user_data->mag_current * (PI*pow(user_data->mag_radius, 2))) / (4 * PI);
-  sunrealtype r = sqrt(N_VDotProd(location, location));
+  double mag = (MU0 * user_data->mag_n_turns * user_data->mag_current * (PI*pow(user_data->mag_radius, 2))) / (4 * PI);
+  double r = sqrt(N_VDotProd(location, location));
 
   // Compute the dot product: dot(moment,location)
-  sunrealtype dot_product = N_VDotProd(moment, location);
+  double dot_product = N_VDotProd(moment, location);
 
   // Compute 3 * location
   N_VScale(3.0, location, B);
@@ -148,7 +157,8 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
 
   // Compute torque
   // Compute cross product: cross(wr, B)
-  wr = cross(sunctx, wr, B);
+  N_Vector cross_res = cross(sunctx, wr, B);
+  N_VScale(1.0, cross_res, wr);
   
   // Perform the matrix-vector multiplication: M * temp1
   SUNMatMatvecSetup(M);
@@ -165,8 +175,10 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
 
   // Free memory
   N_VDestroy(B);
+  N_VDestroy(linang_vel);
   N_VDestroy(wr);
   N_VDestroy(tmp);
+  N_VDestroy(cross_res);
 
   return T;
 }

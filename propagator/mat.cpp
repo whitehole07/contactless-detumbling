@@ -1,6 +1,7 @@
 #include <nvector/nvector_serial.h>
 #include <sunmatrix/sunmatrix_dense.h>
 #include <cmath>
+#include <iostream>
 
 #include "mat.h"
 #include "propagator.h"
@@ -11,12 +12,12 @@ void C(SUNMatrix C, SUNContext sunctx, N_Vector y);
 
 void D(SUNMatrix D, SUNContext sunctx, N_Vector y) {
     /* Extract variables */
-    sunrealtype t1  = Ith(y, 0);
-    sunrealtype t2  = Ith(y, 1);
-    sunrealtype t3  = Ith(y, 2);
-    sunrealtype t4  = Ith(y, 3);
-    sunrealtype t5  = Ith(y, 4);
-    sunrealtype t6  = Ith(y, 5);
+    double t1  = Ith(y, 0);
+    double t2  = Ith(y, 1);
+    double t3  = Ith(y, 2);
+    double t4  = Ith(y, 3);
+    double t5  = Ith(y, 4);
+    double t6  = Ith(y, 5);
 
     /* C++ Expressions generated through mat_to_cpp.cpp */
     IJth(D, 0, 0) = 62257009.0/160000.0 + (25.0/16.0)*sin(t4) + (25.0/16.0)*sin(t3 + t4) + (25.0/32.0)*sin(-t4 + t5) + (25.0/32.0)*sin(t4 + t5) + (25.0/16.0)*sin(2*t2 + t3 + t4) + (25.0/16.0)*sin(2*t2 + 2*t3 + t4) + (25.0/32.0)*sin(-t3 - t4 + t5) + (25.0/32.0)*sin(t3 + t4 + t5) + (25.0/32.0)*sin(-2*t2 - 2*t3 - t4 + t5) + (25.0/32.0)*sin(-2*t2 - t3 - t4 + t5) + (25.0/32.0)*sin(2*t2 + t3 + t4 + t5) + (25.0/32.0)*sin(2*t2 + 2*t3 + t4 + t5) + (1125.0/4.0)*cos(t3) + (-5.0/8.0)*cos(t5) + (43333.0/160.0)*cos(2*t2) + (5.0/256.0)*cos(2*t5) + (1125.0/4.0)*cos(2*t2 + t3) + (18333.0/160.0)*cos(2*t2 + 2*t3) + (-10093.0/160000.0)*cos(2*t2 + 2*t3 + 2*t4) + (5.0/64.0)*cos(-2*t2 - 2*t3 - 2*t4 + t5) + (-5.0/64.0)*cos(2*t2 + 2*t3 + 2*t4 + t5) + (-5.0/512.0)*cos(-2*t2 - 2*t3 - 2*t4 + 2*t5) + (-5.0/512.0)*cos(2*t2 + 2*t3 + 2*t4 + 2*t5);
@@ -61,18 +62,18 @@ void D(SUNMatrix D, SUNContext sunctx, N_Vector y) {
 
 void C(SUNMatrix C, SUNContext sunctx, N_Vector y) {
     /* Extract variables */
-    sunrealtype t1  = Ith(y, 0);
-    sunrealtype t2  = Ith(y, 1);
-    sunrealtype t3  = Ith(y, 2);
-    sunrealtype t4  = Ith(y, 3);
-    sunrealtype t5  = Ith(y, 4);
-    sunrealtype t6  = Ith(y, 5);
-    sunrealtype dt1 = Ith(y, 6);
-    sunrealtype dt2 = Ith(y, 7);
-    sunrealtype dt3 = Ith(y, 8);
-    sunrealtype dt4 = Ith(y, 9);
-    sunrealtype dt5 = Ith(y, 10);
-    sunrealtype dt6 = Ith(y, 11);
+    double t1  = Ith(y, 0);
+    double t2  = Ith(y, 1);
+    double t3  = Ith(y, 2);
+    double t4  = Ith(y, 3);
+    double t5  = Ith(y, 4);
+    double t6  = Ith(y, 5);
+    double dt1 = Ith(y, 6);
+    double dt2 = Ith(y, 7);
+    double dt3 = Ith(y, 8);
+    double dt4 = Ith(y, 9);
+    double dt5 = Ith(y, 10);
+    double dt6 = Ith(y, 11);
 
     /* C++ Expressions generated through mat_to_cpp.cpp */
     IJth(C, 0, 0) = (-43333.0/160.0)*dt2*sin(2*t2) + (10093.0/160000.0)*dt2*sin(2*t2 + 2*t3 + 2*t4) + (25.0/16.0)*dt2*cos(2*t2 + t3 + t4) + (25.0/16.0)*dt2*cos(2*t2 + 2*t3 + t4) + (10093.0/160000.0)*dt3*sin(2*t2 + 2*t3 + 2*t4) + (25.0/32.0)*dt3*cos(2*t2 + t3 + t4) + (25.0/16.0)*dt3*cos(2*t2 + 2*t3 + t4) + (-25.0/64.0)*dt3*cos(-t3 - t4 + t5) + (25.0/64.0)*dt3*cos(t3 + t4 + t5) + (10093.0/160000.0)*dt4*sin(2*t2 + 2*t3 + 2*t4) + (25.0/32.0)*dt4*cos(2*t2 + t3 + t4) + (25.0/32.0)*dt4*cos(2*t2 + 2*t3 + t4) + (-25.0/64.0)*dt4*cos(-t3 - t4 + t5) + (25.0/64.0)*dt4*cos(t3 + t4 + t5) + (-5.0/256.0)*dt5*sin(2*t5) + (25.0/64.0)*dt5*cos(-t3 - t4 + t5) + (25.0/64.0)*dt5*cos(t3 + t4 + t5) + (-1125.0/8.0)*sin(t3)*dt3 + (5.0/16.0)*sin(t5)*dt5 + (-1125.0/4.0)*sin(2*t2 + t3)*dt2 + (-1125.0/8.0)*sin(2*t2 + t3)*dt3 + (-18333.0/160.0)*sin(2*t2 + 2*t3)*dt2 + (-18333.0/160.0)*sin(2*t2 + 2*t3)*dt3 + (5.0/64.0)*sin(-2*t2 - 2*t3 - 2*t4 + t5)*dt2 + (5.0/64.0)*sin(-2*t2 - 2*t3 - 2*t4 + t5)*dt3 + (5.0/64.0)*sin(-2*t2 - 2*t3 - 2*t4 + t5)*dt4 + (-5.0/128.0)*sin(-2*t2 - 2*t3 - 2*t4 + t5)*dt5 + (5.0/64.0)*sin(2*t2 + 2*t3 + 2*t4 + t5)*dt2 + (5.0/64.0)*sin(2*t2 + 2*t3 + 2*t4 + t5)*dt3 + (5.0/64.0)*sin(2*t2 + 2*t3 + 2*t4 + t5)*dt4 + (5.0/128.0)*sin(2*t2 + 2*t3 + 2*t4 + t5)*dt5 + (-5.0/512.0)*sin(-2*t2 - 2*t3 - 2*t4 + 2*t5)*dt2 + (-5.0/512.0)*sin(-2*t2 - 2*t3 - 2*t4 + 2*t5)*dt3 + (-5.0/512.0)*sin(-2*t2 - 2*t3 - 2*t4 + 2*t5)*dt4 + (5.0/512.0)*sin(-2*t2 - 2*t3 - 2*t4 + 2*t5)*dt5 + (5.0/512.0)*sin(2*t2 + 2*t3 + 2*t4 + 2*t5)*dt2 + (5.0/512.0)*sin(2*t2 + 2*t3 + 2*t4 + 2*t5)*dt3 + (5.0/512.0)*sin(2*t2 + 2*t3 + 2*t4 + 2*t5)*dt4 + (5.0/512.0)*sin(2*t2 + 2*t3 + 2*t4 + 2*t5)*dt5 + (25.0/32.0)*cos(t4)*dt4 + (25.0/32.0)*cos(t3 + t4)*dt3 + (25.0/32.0)*cos(t3 + t4)*dt4 + (-25.0/64.0)*cos(-t4 + t5)*dt4 + (25.0/64.0)*cos(-t4 + t5)*dt5 + (25.0/64.0)*cos(t4 + t5)*dt4 + (25.0/64.0)*cos(t4 + t5)*dt5 + (-25.0/32.0)*cos(-2*t2 - 2*t3 - t4 + t5)*dt2 + (-25.0/32.0)*cos(-2*t2 - 2*t3 - t4 + t5)*dt3 + (-25.0/64.0)*cos(-2*t2 - 2*t3 - t4 + t5)*dt4 + (25.0/64.0)*cos(-2*t2 - 2*t3 - t4 + t5)*dt5 + (-25.0/32.0)*cos(-2*t2 - t3 - t4 + t5)*dt2 + (-25.0/64.0)*cos(-2*t2 - t3 - t4 + t5)*dt3 + (-25.0/64.0)*cos(-2*t2 - t3 - t4 + t5)*dt4 + (25.0/64.0)*cos(-2*t2 - t3 - t4 + t5)*dt5 + (25.0/32.0)*cos(2*t2 + t3 + t4 + t5)*dt2 + (25.0/64.0)*cos(2*t2 + t3 + t4 + t5)*dt3 + (25.0/64.0)*cos(2*t2 + t3 + t4 + t5)*dt4 + (25.0/64.0)*cos(2*t2 + t3 + t4 + t5)*dt5 + (25.0/32.0)*cos(2*t2 + 2*t3 + t4 + t5)*dt2 + (25.0/32.0)*cos(2*t2 + 2*t3 + t4 + t5)*dt3 + (25.0/64.0)*cos(2*t2 + 2*t3 + t4 + t5)*dt4 + (25.0/64.0)*cos(2*t2 + 2*t3 + t4 + t5)*dt5;
