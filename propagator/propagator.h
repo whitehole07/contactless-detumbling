@@ -91,7 +91,7 @@ public:
     tuple<double, vector<double>> current_state();
 
     // Method to execute one step in the environment
-    tuple<double, vector<double>> step(double t_step);
+    tuple<int, double, vector<double>> step(double t_step);
 
 private:
     // Define class variables

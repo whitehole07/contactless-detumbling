@@ -26,6 +26,9 @@ class OU_Noise(object):
         """Reset the internal state (= noise) to mean (mu)."""
         self.state = copy.copy(self.mu)
 
+    def decay_noise(self, max_epoch, epoch):
+        self.sigma = self.sigma * (1 - (epoch/max_epoch))
+
     def sample(self):
         """Update internal state and return it as a noise sample.
         This method uses the current state of the noise and generates the next sample

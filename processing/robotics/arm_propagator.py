@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import numpy.linalg
 
 from matplotlib import pyplot as plt
 
@@ -162,14 +163,17 @@ class ArmPropagator(object):
 
                 # Check if error is below threshold
                 if np.linalg.norm(error) < threshold:
-                    print('Converged: ', error)
-                    return q
+                    # print('Converged: ', q)
+                    return True, q
 
                 # Compute Jacobian matrix
                 J_current = self.compute_jacobian(q)
 
                 # Compute pseudo-inverse of Jacobian matrix
-                J_pseudo_inv = np.linalg.pinv(J_current)
+                try:
+                    J_pseudo_inv = np.linalg.pinv(J_current)
+                except numpy.linalg.LinAlgError:
+                    return False, None
 
                 # Compute joint angle increments
                 delta_q = J_pseudo_inv @ error
@@ -185,7 +189,8 @@ class ArmPropagator(object):
             # Generate uniform random values and ensure they are within [a, b]
             q = a + (b - a) * np.random.rand(n)
         else:
-            raise ArithmeticError("Inverse kinematics did not converge within max_iter iterations.")
+            return False, None
+            # raise ArithmeticError("Inverse kinematics did not converge within max_iter iterations.")
 
     @staticmethod
     def compute_error(T: np.ndarray, Td: np.ndarray) -> np.ndarray:

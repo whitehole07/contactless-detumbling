@@ -90,6 +90,7 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
     user_data->tau_max = tau_max;
     user_data->control = false;
     user_data->com = com;
+    user_data->yD = NULL;
 
     // Initialize environment 
     initialize();
@@ -155,18 +156,29 @@ void Environment::reset() {
     CVodeFree(&cvode_mem);    /* Free CVODE memory */
     SUNMatDestroy(A);
     SUNContext_Free(&sunctx); /* Free the SUNDIALS context */
-    // free(user_data);
+    
+    // Reset user data
+    user_data->control = false;
 
+    // Re-init
     initialize();
 }
 
 void Environment::set_control_torque(vector<double> yD) {
-    // Convert vector into N_Vector
+    // Convert vector into N_Vector (velocities set to zero)
     N_Vector yD_sun = N_VNew_Serial(NEQ_MANIP, sunctx);
     for (size_t i = 0; i < yD.size(); i++) { Ith(yD_sun, i) = yD[i]; }
+    for (size_t i = 0; i < NEQ_MANIP/2; i++) { Ith(yD_sun, i + NEQ_MANIP/2) = 0.0; }
 
     // Set parameters
-    user_data->yD = yD_sun;
+    if (user_data->yD != NULL) {
+      N_VScale(1.0, yD_sun, user_data->yD);
+      
+      // Clean up
+      N_VDestroy(yD_sun);
+    } else {
+      user_data->yD = yD_sun;
+    }
     user_data->control = true;
 
     return;
@@ -208,12 +220,12 @@ tuple<double, vector<double>> Environment::current_state() {
 }
 
 // Method to execute one step in the environment
-tuple<double, vector<double>> Environment::step(double t_step) {
+tuple<int, double, vector<double>> Environment::step(double t_step) {
 
     // Execute one step in the environment
     tout += t_step;
     int retval = CVode(cvode_mem, tout, y, &t, CV_NORMAL);
-    PrintOutput(iout, t, y);
+    // PrintOutput(iout, t, y);
 
     if (check_retval(&retval, "CVode", 1)) {
       }
@@ -222,7 +234,19 @@ tuple<double, vector<double>> Environment::step(double t_step) {
         iout++;
     }
 
-    return current_state();
+    // Convert N_vector into vector
+    vector<double> state_vector(NV_LENGTH_S(y) + NV_LENGTH_S(user_data->additional));
+    for (sunindextype i = 0; i < NV_LENGTH_S(y); ++i) {
+        state_vector[i] = Ith(y, i);
+    }
+    for (sunindextype i = 0; i < NV_LENGTH_S(user_data->additional); ++i) {
+        state_vector[NV_LENGTH_S(y) + i] = Ith(user_data->additional, i);
+    }
+
+    // Time
+    double return_time = iout == 0 ? 0 : t;
+
+    return make_tuple(retval, return_time, state_vector);
 }
 
 
@@ -373,5 +397,6 @@ PYBIND11_MODULE(environment, m) {
         .def("reset", &Environment::reset)
         .def("current_state", &Environment::current_state)
         .def("set_control_torque", &Environment::set_control_torque, py::arg("yD"))
+        .def("unset_control_torque", &Environment::unset_control_torque)
         .def("step", &Environment::step, py::arg("t_step"));
 }

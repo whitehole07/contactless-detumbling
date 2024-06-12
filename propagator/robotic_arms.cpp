@@ -131,7 +131,8 @@ void inv_dyn(N_Vector y, N_Vector tau, void* user_data) {
         double KD = sqrt(2)*KP;
 
         // Compute u_bar
-        Ith(u_bar, i) = KD*(Ith(dyDv, i) - Ith(dyv, i)) + KP*(Ith(yDv, i) - Ith(yv, i));    
+        Ith(u_bar, i) = KD*(Ith(dyDv, i) - Ith(dyv, i)) + KP*(Ith(yDv, i) - Ith(yv, i));
+        // cout << KD << "*(" << Ith(dyDv, i) << " - " << Ith(dyv, i) << ") + " << KP << "*(" << Ith(yDv, i) << " - " << Ith(yv, i) << ") = " << Ith(u_bar, i) << endl;
     }
     
     // Compute torque
@@ -150,6 +151,107 @@ void inv_dyn(N_Vector y, N_Vector tau, void* user_data) {
     N_VDestroy(dyDv);
 
     return;
+}
+
+N_Vector inv_kin(N_Vector q_init, SUNMatrix TD, double tol, int max_iter, void* user_data) {
+
+    N_Vector q = q_init;
+    SUNContext* sunctx;
+    UserData data;
+
+    // Retrieve user data
+    data = (UserData)user_data;
+    sunctx = data->sunctx;
+
+    SUNMatrix TC = SUNDenseMatrix(4, 4, *sunctx);
+    SUNMatrix J = SUNDenseMatrix(6, 6, *sunctx);
+    SUNMatrix pinv_J = SUNDenseMatrix(6, 6, *sunctx);
+
+    N_Vector dq = N_VNew_Serial(6, *sunctx);
+
+    N_Vector trC = N_VNew_Serial(3, *sunctx);
+    N_Vector trD = N_VNew_Serial(3, *sunctx);
+    N_Vector tr_error = N_VNew_Serial(3, *sunctx);
+
+    SUNMatrix RC = SUNDenseMatrix(3, 3, *sunctx);
+    SUNMatrix RD = SUNDenseMatrix(3, 3, *sunctx);
+    SUNMatrix R_error = SUNDenseMatrix(3, 3, *sunctx);
+
+    double angle;
+    N_Vector axis = N_VNew_Serial(3, *sunctx);
+
+    N_Vector error = N_VNew_Serial(6, *sunctx);
+
+    // Build y-like array
+    N_Vector y = N_VNew_Serial(NEQ, *sunctx); for (size_t i = 0; i < NEQ; i++) { Ith(y, i) = 0.0; }    
+
+    for (int iter = 0; iter < max_iter; iter++)
+    {   
+        // Build y-like array
+        for (size_t i = INIT_SLICE_MANIP; i < INIT_SLICE_MANIP + NEQ_MANIP/2; i++)
+        {
+            Ith(y, i) = Ith(q, i - INIT_SLICE_MANIP);
+        }   
+
+        // Get current transformation matrix
+        TC = get_transformation_matrix(NEQ_MANIP/2, y, *sunctx, user_data);
+
+        // Compute error
+        // Position error
+        sub_mat_to_vec(TC, trC, 3, {0, 2});
+        sub_mat_to_vec(TD, trD, 3, {0, 2});
+
+        N_VLinearSum(1, trD, -1, trC, tr_error);
+
+        // Orientation error
+        sub_mat(TC, RC, {0, 2}, {0, 2});
+        sub_mat(TD, RD, {0, 2}, {0, 2});
+
+        R_error = mat_mul(transpose(*sunctx, RD), RC, *sunctx);
+
+        rotm2axang(R_error, angle, axis);
+
+        // Get error        
+        Ith(error, 0) = Ith(tr_error, 0);
+        Ith(error, 1) = Ith(tr_error, 1);
+        Ith(error, 2) = Ith(tr_error, 2);
+        Ith(error, 3) = angle * Ith(axis, 0);
+        Ith(error, 4) = angle * Ith(axis, 1);
+        Ith(error, 5) = angle * Ith(axis, 2);
+
+        // Verify convergence
+        if ( sqrt(N_VDotProd(error, error)) < tol )
+        {
+            break;
+        }
+
+        // Compute Jacobian
+        J = compute_jacobian(y, user_data);
+
+        // Compute pseudoinvers
+        pinv_J = pseudo_inverse(*sunctx, J);
+
+        // Find delta q
+        SUNMatMatvec(pinv_J, error, dq);
+
+        // Update q
+        N_VLinearSum(1, q, 1, dq, q);
+    }
+
+    SUNMatDestroy(RC);
+    SUNMatDestroy(RD);
+    SUNMatDestroy(R_error);
+    SUNMatDestroy(TC);
+    SUNMatDestroy(J);
+    SUNMatDestroy(pinv_J);
+    N_VDestroy_Serial(dq);
+    N_VDestroy_Serial(trC);
+    N_VDestroy_Serial(trD);
+    N_VDestroy_Serial(tr_error);
+    N_VDestroy_Serial(axis);
+    N_VDestroy_Serial(error);
+
+    return q;
 }
 
 SUNMatrix compute_jacobian(N_Vector y, void* user_data) {
@@ -280,8 +382,10 @@ int f_manipulator(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
         // Check if torque is required
         if (max_diff > 1e-5)
         {
+            // cout << "in " << max_diff << endl;
             inv_dyn(y, tau, data);
         } else {
+            // cout << "out " << max_diff << endl;
             N_VConst(0.0, tau);
         }
         

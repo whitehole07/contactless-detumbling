@@ -9,7 +9,7 @@ class Actor(nn.Module):
     a final output layer selects one single optimized action for the state
     """
 
-    def __init__(self, n_states, action_dim, hidden1):
+    def __init__(self, n_states, action_dim, hidden1, max_action):
         super(Actor, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(n_states, hidden1),
@@ -18,8 +18,12 @@ class Actor(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden1, hidden1),
             nn.ReLU(),
-            nn.Linear(hidden1, action_dim)
+            nn.Linear(hidden1, action_dim),
+            nn.Tanh()
         )
 
+        # Save max action
+        self.max_action = max_action
+
     def forward(self, state):
-        return self.net(state)
+        return self.max_action * self.net(state)
