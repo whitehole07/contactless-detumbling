@@ -3,7 +3,7 @@ import numpy as np
 from environment import debris
 
 # Environment-related
-max_range = np.array([0.15, 0.15, 0.15])                          # Action maximum range
+max_action = 0.0174533                                            # Action maximum range [rad]
 safe_sphere: float = max(debris.height/2, debris.radius) + 0.5    # Safe sphere for collision check  [m]
 detumbling_threshold: float = 50                                  # Detumbling threshold in energy terms [J]
 
@@ -13,11 +13,11 @@ detumbling_threshold: float = 50                                  # Detumbling t
 # pos_EE (3), vel_EE (3), om_EE (3), om_DEB (3)
 #
 # Actions:
-# d_EE (3)
+# d_EE (2)
 #
 
 state_dim = 12
-action_dim = 3
+action_dim = 2
 
 # Model-related
 actor_layers = 256

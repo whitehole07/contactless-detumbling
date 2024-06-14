@@ -3,7 +3,7 @@ import numpy as np
 
 from environment import attitude, arm, env, t_step, save, debris, joints
 from processing.RL.DDPG.ddpg import DDPG
-from processing.RL.hyperparameters import max_range, detumbling_threshold, safe_sphere, state_dim, action_dim, \
+from processing.RL.hyperparameters import max_action, detumbling_threshold, safe_sphere, state_dim, action_dim, \
     actor_layers, critic_layers
 from processing.RL.reward_function import state_extractor, evaluate_step
 from processing.system_animation import animate_system
@@ -27,7 +27,7 @@ state = state_extractor(list(global_state))  # discard time
 
 while t <= max_time_steps and retval == 0:
     # Get action
-    action = max_range * agent.select_action(state)  # Noise and clip
+    action = max_action * agent.select_action(state)  # Noise and clip
 
     # Inverse kinematics: build desired transformation matrix
     TD = arm.get_transformation(global_state[:6], 6)

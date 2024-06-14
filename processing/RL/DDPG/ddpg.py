@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from matplotlib import pyplot as plt
 import torch.nn.functional as F
@@ -6,13 +7,15 @@ import copy
 
 from processing.RL.DDPG.networks.actor import Actor
 from processing.RL.DDPG.networks.critic import Critic
+from processing.RL.DDPG.replay_buffer import ReplayBuffer
 from processing.RL.hyperparameters import actor_lr, critic_lr
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 class DDPG(object):
-    def __init__(self, state_dim, action_dim, max_action, hidden_actor, hidden_critic, discount=0.99, tau=0.001):
+    def __init__(self, state_dim, action_dim, *, max_action, hidden_actor, hidden_critic, discount=0.99, tau=0.001):
+        # Initialize nets
         self.actor = Actor(state_dim, action_dim, hidden_actor, max_action).to(device)
         self.actor_target = copy.deepcopy(self.actor)
         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=actor_lr)
@@ -21,9 +24,19 @@ class DDPG(object):
         self.critic_target = copy.deepcopy(self.critic)
         self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=critic_lr, weight_decay=1e-2)
 
+        # Save params
+        self.action_dim = action_dim
+        self.max_action = max_action
+
+        # Hyperparameters
         self.discount = discount
         self.tau = tau
 
+        # Replay buffers
+        self.replay_buffer_1 = ReplayBuffer(state_dim, action_dim)
+        self.replay_buffer_2 = ReplayBuffer(state_dim, action_dim)
+
+        # Losses history
         self.actor_losses = []
         self.critic_losses = []
 
@@ -31,9 +44,12 @@ class DDPG(object):
         state = torch.FloatTensor(state.reshape(1, -1)).to(device)
         return self.actor(state).cpu().data.numpy().flatten()
 
-    def train(self, replay_buffer, batch_size=64):
-        # Sample replay buffer
-        state, action, next_state, reward, not_done = replay_buffer.sample(batch_size)
+    def sample(self):
+        return self.max_action * np.random.uniform(-1, 1, size=self.action_dim)
+
+    def train(self, w_hp, batch_size):
+        # Sample improved replay buffer
+        state, action, next_state, reward, not_done = self.replay_buffer_2.improved_sample(batch_size, w_hp=w_hp)
 
         # Compute the target Q value
         target_Q = self.critic_target(next_state, self.actor_target(next_state))

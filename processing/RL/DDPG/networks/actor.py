@@ -1,4 +1,9 @@
+import numpy as np
+import torch
 import torch.nn as nn
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 
 class Actor(nn.Module):
     """
@@ -23,7 +28,7 @@ class Actor(nn.Module):
         )
 
         # Save max action
-        self.max_action = max_action
+        self.max_action = torch.from_numpy(np.array(max_action)).float().to(device)
 
     def forward(self, state):
         return self.max_action * self.net(state)
