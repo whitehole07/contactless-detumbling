@@ -81,6 +81,9 @@ public:
     // Method to reset the environment
     void reset();
 
+    // Method to reset the environment with custom y0
+    void reset_change_y0(vector<double> y0);
+
     // Compute control torque
     void set_control_torque(vector<double> yD);
 

@@ -29,11 +29,11 @@ class ReplayBuffer(object):
 
 	def copy(self, replay_buffer):
 		self.size = replay_buffer.size
-		self.state = replay_buffer.state
-		self.action = replay_buffer.action
-		self.next_state = replay_buffer.next_state
-		self.reward = replay_buffer.reward
-		self.not_done = replay_buffer.not_done
+		self.state = replay_buffer.state.copy()
+		self.action = replay_buffer.action.copy()
+		self.next_state = replay_buffer.next_state.copy()
+		self.reward = replay_buffer.reward.copy()
+		self.not_done = replay_buffer.not_done.copy()
 
 		# Sort by reward for improved experience replay
 		self.sort_by_reward()
@@ -50,7 +50,7 @@ class ReplayBuffer(object):
 		self.not_done[:self.size] = self.not_done[sorted_indices]
 
 	def sample(self, batch_size):
-		un_ind = np.random.randint(0, self.max_size, size=batch_size)
+		un_ind = np.random.randint(0, self.size, size=batch_size)
 
 		return (
 			torch.FloatTensor(self.state[un_ind]).to(self.device),
@@ -69,7 +69,7 @@ class ReplayBuffer(object):
 		hp_ind = np.arange(num_hp_samples)
 
 		# Uniformly sampled indices (excluding the high-priority range)
-		un_ind = np.random.randint(num_hp_samples, batch_size, size=num_uniform_samples)
+		un_ind = np.random.randint(num_hp_samples, self.size, size=num_uniform_samples)
 
 		# Combine high-priority and uniformly sampled indices
 		indices = np.concatenate((hp_ind, un_ind))

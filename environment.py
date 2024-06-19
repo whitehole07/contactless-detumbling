@@ -45,6 +45,14 @@ def save(tf, prop):
     arm.save_new(tf, prop=prop)
     attitude.save_new(tf, prop=prop)
 
+def random_y0():
+    # Random joint angle
+    ja = list(np.random.uniform(0, 2*np.pi, size=6))
+    dw = list(np.random.uniform(-0.5, 0.2, size=3))
+    y0r = ja + [0, 0, 0, 0, 0, 0] + dw + [0, 0, 0, 1]
+
+    return y0r
+
 # Generate debris
 debris = Cylinder(
     mass=950.0,
@@ -85,8 +93,6 @@ electromagnet: ElectromagnetEndEffector = ElectromagnetEndEffector(
 # External moments
 # Eddy current
 eddy: TorqueObject = EddyCurrentTorque(
-    entity=debris,
-    chaser_w0=[0.0, 0.0, 0.0],
     electromagnets=[electromagnet]
 )
 
@@ -94,7 +100,7 @@ eddy: TorqueObject = EddyCurrentTorque(
 attitude = AttitudePropagator(entity=debris, M_ext=eddy)
 
 # Save robotic arm results
-base_offset = np.array([10, 0, 5])
+base_offset = np.array([10, 0, 0])
 max_torques = np.array([.1, .1, .1, .1, .1, .1])
 arm = ArmPropagator(joints=joints, com=com, end_effector=electromagnet, base_offset=base_offset, max_torques=max_torques)
 
@@ -103,18 +109,21 @@ t_step = .1  # Propagation time step [s]
 
 # Set initial conditions
 y0_arm = [
-    5, 3.14, 5, 1.5, 1.5, 1.5,   # Initial joint angles
+    5, 3.14, 5, 1.5, 1.5, 1.5,      # Initial joint angles
     0.02, 0.0, 0.0, 0.0, 0.0, 0.0   # Initial joint velocities
 ]
 
 y0_debris = [
-    0.1, 0.2, 0.0,                    # Initial debris angular velocity
+    0.4, 0.2, 0.02,                    # Initial debris angular velocity
     0.0, 0.0, 0.0, 1.0                # Initial debris quaternions
 ]
 
+# y0 = y0_arm + y0_debris
+y0 = random_y0()
+
 # Initialize environment
 env = Environment(
-    cppyy.gbl.std.vector[float](y0_arm + y0_debris),               # Initial conditions
+    cppyy.gbl.std.vector[float](y0),                               # Initial conditions
     debris.Ixx,                                                    # Debris Ixx
     debris.Iyy,                                                    # Debris Iyy
     debris.Izz,                                                    # Debris Izz

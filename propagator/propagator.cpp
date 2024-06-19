@@ -164,6 +164,14 @@ void Environment::reset() {
     initialize();
 }
 
+void Environment::reset_change_y0(vector<double> y0_new) {
+    // Convert vector into N_Vector
+    user_data->y0 = y0_new;
+
+    // Reset environment
+    reset();
+}
+
 void Environment::set_control_torque(vector<double> yD) {
     // Convert vector into N_Vector (velocities set to zero)
     N_Vector yD_sun = N_VNew_Serial(NEQ_MANIP, sunctx);
@@ -395,6 +403,7 @@ PYBIND11_MODULE(environment, m) {
                        vector<double>, vector<double>, vector<double>, vector<vector<double>>>())
         .def("initialize", &Environment::initialize)
         .def("reset", &Environment::reset)
+        .def("reset_change_y0", &Environment::reset_change_y0, py::arg("y0_new"))
         .def("current_state", &Environment::current_state)
         .def("set_control_torque", &Environment::set_control_torque, py::arg("yD"))
         .def("unset_control_torque", &Environment::unset_control_torque)

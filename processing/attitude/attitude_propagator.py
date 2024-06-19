@@ -56,5 +56,10 @@ class AttitudePropagator(object):
 
             self._ext_torque.base_torque.history = np.hstack((self._ext_torque.base_torque.history, prop[37:40].reshape(-1, 1)))
 
+    def reset(self):
+        self._timestamps = None
+        self._prop_sol = None
+        self._ext_torque.base_torque.history = None
+
     def plot(self, quantities: list, ncols: int = 2) -> None:
         plot_evolution(self, quantities, ncols)

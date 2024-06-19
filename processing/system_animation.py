@@ -33,7 +33,7 @@ def rotate_cylinder(longitudinal_axis_m):
     return rotation_matrix
 
 
-def animate_system(*, t, q, eu, h, r, dpi, dh_par, arms: list = ()):
+def animate_system(*, t, q, eu, h, r, dpi, att, arms: list = ()):
     # Initialize the figure and 3D axis
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')
@@ -149,6 +149,10 @@ def animate_system(*, t, q, eu, h, r, dpi, dh_par, arms: list = ()):
 
         # Arrow for the positive z direction
         ax.quiver(*(0, 0, 0), 0, 0, arrow_length, color='r', label='Z-axis')
+
+        # Arrow for angular velocity
+        w_norm = att.w[:, frame] / np.linalg.norm(att.w[:, frame])
+        ax.quiver(*(0, 0, 0), *(arrow_length*w_norm), color='black', label='Angular velocity')
 
         # Remove tick labels
         ax.set_xticklabels([])

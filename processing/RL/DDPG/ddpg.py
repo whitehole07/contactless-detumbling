@@ -49,7 +49,7 @@ class DDPG(object):
 
     def train(self, w_hp, batch_size):
         # Sample improved replay buffer
-        state, action, next_state, reward, not_done = self.replay_buffer_2.improved_sample(batch_size, w_hp=w_hp)
+        state, action, next_state, reward, not_done = self.replay_buffer_2.improved_sample(batch_size, w_hp)
 
         # Compute the target Q value
         target_Q = self.critic_target(next_state, self.actor_target(next_state))
@@ -103,7 +103,7 @@ class DDPG(object):
 
     def plot_losses(self):
         # Create subplots
-        fig, axs = plt.subplots(2, 1, figsize=(10, 10))
+        fig, axs = plt.subplots(2, 1, figsize=(8, 6))
 
         # Plot the critic loss
         axs[0].plot(self.critic_losses, label='Critic Loss')

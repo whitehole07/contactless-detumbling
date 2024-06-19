@@ -1,8 +1,6 @@
 import numpy as np
 
-
-def state_extractor(to_be_extracted: list):
-    return np.array(to_be_extracted[19:22] + to_be_extracted[31:37] + to_be_extracted[12:15])
+from processing.RL.hyperparameters import state_extractor
 
 
 def evaluate_step(prev_state, global_step, ik_success, attitude, detumbling_threshold, safe_sphere):
@@ -13,50 +11,42 @@ def evaluate_step(prev_state, global_step, ik_success, attitude, detumbling_thre
     done = 0  # "done" normally negative
     reward = 0
 
-    # Distance reward function
-    """distance = np.linalg.norm(state[:3]) - safe_sphere - 5
-    reward += 2*(np.exp(-0.99*abs(distance)) - 1)
+    # Distance area reward function
+    distance = np.linalg.norm(state[:3]) - safe_sphere
+    if distance <= 2:
+        reward += 0.5
+    # reward += (np.exp(-0.99*abs(distance)) - 1)
 
     # Sparse reward function
     if not ik_success:
-        reward -= 2
+        reward -= 1.0
 
-    # Directional reward function
-    pre_distance = np.linalg.norm(prev_state[:3]) - safe_sphere - 5
-    if distance > pre_distance:
-        reward -= 1
-    elif distance == pre_distance:
-        reward += 0
-    elif distance < pre_distance:
-        reward += 1
-
-    # Regional reward function
-    if 4 < distance < 6:
-        reward += 2"""
-
-    # Check: collision with safe sphere
-    # for i in range(len(arm.joints) + 1):
-    #    pos: np.ndarray = arm.get_joint_position(global_step[:6], i)
-    #    if np.linalg.norm(pos) < safe_sphere:
-    #        reward -= 10
-
-    # Energy reward
-    w: np.ndarray = state[9:13]
+    # Compute energy
+    w: np.ndarray = state[6:9]
     II = attitude._entity.inertia_matrix
     E = np.dot(np.dot(w, II), w.T)
-    # reward += 2*(np.exp(-0.99*E) - 1)
+
+    # Angle reward
+    ang_vel = w / np.linalg.norm(w)
+    ee_pos = state[3:6] / np.linalg.norm(state[3:6])
+    dot_prod = np.clip(np.dot(ee_pos, ang_vel), -1.0, 1.0)
+    angle = np.arccos(dot_prod)
+    reward -= 2 * (abs(angle - np.pi/2) / (np.pi/2))
 
     # Directional
-    prev_w = prev_state[9:13]
-    II = attitude._entity.inertia_matrix
-    prev_E = np.dot(np.dot(prev_w, II), prev_w.T)
-    dE = (E - prev_E) / 50
-    reward += -dE  * 100
+    prev_w = prev_state[6:9]
+    prev_ang_vel = prev_w / np.linalg.norm(prev_w)
+    prev_ee_pos = prev_state[3:6] / np.linalg.norm(prev_state[3:6])
+    prev_dot_prod = np.clip(np.dot(prev_ee_pos, prev_ang_vel), -1.0, 1.0)
+    prev_angle = abs(np.arccos(prev_dot_prod) - np.pi/2)
+    if angle - prev_angle < 0:
+        reward += 0.25
+    elif angle - prev_angle > 0:
+        reward -= 0.25
 
     # Check if detumbling is over
     if E <= detumbling_threshold:
         done = 1
-        reward += 10
-        print("Detumbling!!", reward)
+        print("Detumbling!!")
         return state, reward, done # Detumbling completed, simulation over
     return state, reward, done

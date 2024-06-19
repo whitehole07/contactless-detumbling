@@ -134,6 +134,15 @@ class ArmPropagator(object):
             self.end_effector.lin_vel = np.hstack((self.end_effector.lin_vel, prop[31:34].reshape(-1, 1)))
             self.end_effector.ang_vel = np.hstack((self.end_effector.ang_vel, prop[34:37].reshape(-1, 1)))
 
+    def reset(self):
+        self._timestamps = None
+        self._prop_sol = None
+        self.joint_torques = None
+        self.end_effector.locations = None
+        self.end_effector.poses = None
+        self.end_effector.lin_vel = None
+        self.end_effector.ang_vel = None
+
     def get_transformation(self, thetas: np.ndarray, joint_number: int) -> np.ndarray:
         """ Compute the transformation matrix for the i-th joint. """
         T: np.ndarray = np.eye(4, 4)
