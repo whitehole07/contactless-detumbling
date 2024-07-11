@@ -5,7 +5,7 @@ from environment import debris
 # Environment-related
 max_action = 0.5                                                  # Action maximum range [rad]
 safe_sphere: float = max(debris.radius, debris.height/2) + 0.5    # Safe sphere for collision check  [m]
-detumbling_threshold: float = 1                                   # Detumbling threshold in energy terms [J]
+detumbling_threshold: float = 0.01                                   # Detumbling threshold in energy terms [J]
 
 
 # Environment action and states

@@ -18,7 +18,7 @@ from processing.system_animation import animate_system
 from processing.utilities.rotations import construct_rotation_matrix
 
 # Define different parameters for training the agent
-epochs = 50
+epochs = 300
 max_time_steps = 86400
 total_step = 0
 score_hist = []
@@ -81,6 +81,10 @@ for i in range(epochs):
         # Perform step until convergence or time over
         while t - tp < 50:
             retval, t, global_state = env.step(t_step=t_step)
+
+            # Check for integration errors
+            if retval != 0:
+                break
         save(t, global_state)
 
         # Compute angle
@@ -96,16 +100,12 @@ for i in range(epochs):
         II = attitude._entity.inertia_matrix
         E = np.dot(np.dot(w, II), w.T)
 
-        # Check for integration errors
-        if retval != 0:
-            break
-
         # Evaluate reward
         next_state, reward, done = evaluate_step(state, list(global_state), success, attitude,
                                                  detumbling_threshold, safe_sphere)
         total_reward += reward
 
-        print(f"#{i+1}-{step+1}[{agent.replay_buffer_1.size}] - T: {t:.2f}, IT: {t - tp:.2f}, A: {angle}, E: {E:.2f}, d: {np.linalg.norm(global_state[19:22]) - safe_sphere:.2f},"
+        print(f"#{i+1}-{step+1}[{agent.replay_buffer_1.size}] - T: {t:.2f}, IT: {t - tp:.2f}, A: {angle:.2f}, E: {E:.2f}, d: {np.linalg.norm(global_state[19:22]) - safe_sphere:.2f},"
               f" R: {reward:.2f}, TR: {total_reward:.2f}, ik_success: {success}, action: {not_noisy_action} + {noise}")
 
         # Update replay buffers
