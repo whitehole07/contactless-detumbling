@@ -4,6 +4,7 @@
 
 #include "robotic_arms.h"
 #include "attitude.h"
+#include "orbit.h"
 
 #ifndef PROPAGATOR_H
 #define PROPAGATOR_H
@@ -13,9 +14,10 @@
 #define IJth(A, i, j)  SM_ELEMENT_D(A, i, j)  /* (i,j)-th matrix component i,j=1..NEQ */
 
 // Integrator configuration
-#define NEQ                   NEQ_ATTITUDE + NEQ_MANIP
+#define NEQ                   NEQ_ATTITUDE + NEQ_MANIP + NEQ_ORBIT
 #define INIT_SLICE_MANIP      0
 #define INIT_SLICE_ATTITUDE   NEQ_MANIP
+#define INIT_SLICE_ORBIT      NEQ_MANIP + NEQ_ATTITUDE
 
 using namespace std;
 
@@ -26,13 +28,15 @@ using namespace std;
     6x - joint torques
     6x - linear and angular velocity
     3x - eddy current torque
+    3x - relative angular velocity in LVLH frame
 */
-#define ADDITIONAL_SIZE   21
+#define ADDITIONAL_SIZE   24
 #define EE_LOC_INIT_SLICE 0
 #define EE_POS_INIT_SLICE 3
 #define EE_TOR_INIT_SLICE 6
 #define EE_LAV_INIT_SLICE 12
 #define EE_ECT_INIT_SLICE 18
+#define EE_WLV_INIT_SLICE 21
 
 typedef struct function_data
 { 

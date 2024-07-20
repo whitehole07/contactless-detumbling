@@ -29,7 +29,9 @@ SUNMatrix mat_mul(SUNMatrix A, SUNMatrix B, SUNContext sunctx);
 
 N_Vector cross(SUNContext sunctx, N_Vector a, N_Vector b);
 
-N_Vector inv_dyn(N_Vector y, void* user_data);
+void inv_dyn(N_Vector y, N_Vector tau, void* user_data);
+
+SUNMatrix transpose(SUNContext sunctx, SUNMatrix mat);
 
 #endif
 

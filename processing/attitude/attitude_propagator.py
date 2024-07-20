@@ -49,12 +49,12 @@ class AttitudePropagator(object):
             self._timestamps = np.array([t])
             self._prop_sol = prop[12:19].reshape(-1, 1)
 
-            self._ext_torque.base_torque.history = prop[37:40].reshape(-1, 1)
+            self._ext_torque.base_torque.history = prop[43:46].reshape(-1, 1)
         else:
             self._timestamps = np.hstack((self._timestamps, np.array([t])))
             self._prop_sol = np.hstack((self._prop_sol, prop[12:19].reshape(-1, 1)))
 
-            self._ext_torque.base_torque.history = np.hstack((self._ext_torque.base_torque.history, prop[37:40].reshape(-1, 1)))
+            self._ext_torque.base_torque.history = np.hstack((self._ext_torque.base_torque.history, prop[43:46].reshape(-1, 1)))
 
     def reset(self):
         self._timestamps = None

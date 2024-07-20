@@ -15,7 +15,7 @@ save(t, s)
 
 # Solve inverse kinematics
 TD = np.eye(4)
-TD[:3, -1] = [-4, 0, 0]
+TD[:3, -1] = [-5, 0, 0]
 TD[:3, :3] = construct_rotation_matrix(-(TD[:3, -1] + arm.base_offset))
 
 _, yD_arm = arm.inverse_kinematics(TD, np.array(y0_arm[:6]), 1e-5, 100, 20)
@@ -30,10 +30,14 @@ print("Final EE position: ", T_c[:3, -1] + arm.base_offset)
 env.set_control_torque(yD=cppyy.gbl.std.vector[float](list(yD_arm)))
 
 # Perform steps
-while t < 5000:
+orb = [[], [], []]
+while t < 10000:
     # Perform step
     retval, t, s = env.step(t_step=t_step)
     save(t, s)
+    orb[0].append(s[19])
+    orb[1].append(s[20])
+    orb[2].append(s[21])
 
 attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
 
@@ -67,12 +71,27 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot the 3D line
+ax.plot(*orb, label='3D Line')
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
+ax.set_title('3D Line Plot')
+
+# Add a legend
+ax.legend()
+
+# Show the plot
+plt.show()
 
 print("Supposed:\n", TD)
 print("\nAfter IK:\n", T_c)
 print("\nReached:\n", arm.get_transformation(s[:6], 6))
 
-animate_system(
+"""animate_system(
     t=attitude.t,
     q=attitude.q,
     eu=attitude.euler_angles,
@@ -81,4 +100,4 @@ animate_system(
     dpi=300,
     att=attitude,
     arms=[arm]
-)
+)"""

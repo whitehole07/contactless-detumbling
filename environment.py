@@ -87,7 +87,7 @@ com = [
 electromagnet: ElectromagnetEndEffector = ElectromagnetEndEffector(
     n_turns=500.0,
     radius=1.0,
-    current=50.0
+    current=100.0
 )
 
 # External moments
@@ -114,12 +114,17 @@ y0_arm = [
 ]
 
 y0_debris = [
-    0.4, 0.2, 0.02,                    # Initial debris angular velocity
+    0.0, 0.0, 0.5,                    # Initial debris angular velocity
     0.0, 0.0, 0.0, 1.0                # Initial debris quaternions
 ]
 
-# y0 = y0_arm + y0_debris
-y0 = random_y0()
+y0_orbit = [
+    6778, 0.0, 0.0,
+    0.0, 7.67, 0.0
+]
+
+y0 = y0_arm + y0_debris + y0_orbit
+# y0 = random_y0()
 
 # Initialize environment
 env = Environment(

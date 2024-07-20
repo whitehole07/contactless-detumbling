@@ -14,6 +14,7 @@
 
 /* Local */
 #include "propagator.h"
+#include "orbit.h"
 #include "attitude.h"
 #include "robotic_arms.h"
 
@@ -108,6 +109,7 @@ void Environment::initialize() {
     y = N_VNew_Serial(NEQ, sunctx);
 
     /* Initiate external propagators */
+    initiate_orbit(sunctx, y, user_data);
     initiate_manipulator(sunctx, y, user_data);
     initiate_attitude(sunctx, y, user_data);
 
@@ -206,11 +208,13 @@ tuple<double, vector<double>> Environment::current_state() {
     7-12: joint angular velocity
     13-15: debris angular velocity
     16-19: debris quaternons
-    20-22: end-effector position
-    23-25: end-effector pose
-    26-31: joint torques
-    32-37: end-effector linear and angular velocity
-    38-40: eddy current torque
+    20-22: orbital position
+    23-25: orbital velocity
+    26-28: end-effector position
+    29-31: end-effector pose
+    32-37: joint torques
+    38-43: end-effector linear and angular velocity
+    44-46: eddy current torque
     */
    
     // Convert N_vector into vector
@@ -233,7 +237,7 @@ tuple<int, double, vector<double>> Environment::step(double t_step) {
     // Execute one step in the environment
     tout += t_step;
     int retval = CVode(cvode_mem, tout, y, &t, CV_NORMAL);
-    // PrintOutput(iout, t, y);
+    PrintOutput(iout, t, y);
 
     if (check_retval(&retval, "CVode", 1)) {
       }
@@ -266,27 +270,35 @@ int main(void)
     vector<double> y0(NEQ, 0.0f);
 
     // Set the first 12 elements in the vector y0
-    y0[0] = 5.0f;
-    y0[1] = 3.14f;
-    y0[2] = 5.0f;
-    y0[3] = 1.5f;
-    y0[4] = 1.5f;
-    y0[5] = 1.5f;
-    y0[6] = 0.02f;
-    y0[7] = 0.0f;
-    y0[8] = 0.0f;
-    y0[9] = 0.0f;
-    y0[10] = 0.0f;
-    y0[11] = 0.0f;
+    y0[0] = 5.0;
+    y0[1] = 3.14;
+    y0[2] = 5.0;
+    y0[3] = 1.5;
+    y0[4] = 1.5;
+    y0[5] = 1.5;
+    y0[6] = 0.02;
+    y0[7] = 0.0;
+    y0[8] = 0.0;
+    y0[9] = 0.0;
+    y0[10] = 0.0;
+    y0[11] = 0.0;
 
     // Set the last 7 elements in the vector y0 with the new values
-    y0[12] = 0.1f;
-    y0[13] = 0.2f;
-    y0[14] = 0.0f;
-    y0[15] = 0.0f;
-    y0[16] = 0.0f;
-    y0[17] = 0.0f;
-    y0[18] = 1.0f;
+    y0[12] = 0.1;
+    y0[13] = 0.2;
+    y0[14] = 0.0;
+    y0[15] = 0.0;
+    y0[16] = 0.0;
+    y0[17] = 0.0;
+    y0[18] = 1.0;
+
+    // Set orbital initial conditions
+    y0[19] = 6778e+3;
+    y0[20] = 0.0;
+    y0[21] = 0.0;
+    y0[22] = 0.0;
+    y0[23] = 7.67e3;
+    y0[24] = 0.0;
 
     // Define com
     vector<vector<double>> com = {
@@ -305,12 +317,12 @@ int main(void)
 
     test.set_control_torque({ 6.14991239, 3.95688279, 6.0450804, 2.88883968, 1.4444002, 1.5284258 });
     
-    for (size_t i = 0; i < 100000; i++)
+    for (size_t i = 0; i < 10000; i++)
     {
       test.step(0.1);
     }
 
-    return (0);
+    return(0);
 }
 
 
@@ -325,13 +337,16 @@ int main(void)
  */
 
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data) {
+  // Orbit
+  f_orbit(t, y, ydot, user_data);
+
   // Robotic Arm
   f_manipulator(t, y, ydot, user_data);
 
   // Attitude
   f_attitude(t, y, ydot, user_data);
 
-  return (0);
+  return(0);
 }
 
 /*

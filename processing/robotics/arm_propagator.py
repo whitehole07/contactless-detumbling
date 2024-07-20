@@ -120,19 +120,19 @@ class ArmPropagator(object):
         if self._timestamps is None:
             self._timestamps = np.array([t])
             self._prop_sol = prop[0:12].reshape(-1, 1)
-            self.joint_torques = prop[25:31].reshape(-1, 1)
-            self.end_effector.locations = prop[19:22].reshape(-1, 1)
-            self.end_effector.poses = prop[22:25].reshape(-1, 1)
-            self.end_effector.lin_vel = prop[31:34].reshape(-1, 1)
-            self.end_effector.ang_vel = prop[34:37].reshape(-1, 1)
+            self.joint_torques = prop[31:37].reshape(-1, 1)
+            self.end_effector.locations = prop[25:28].reshape(-1, 1)
+            self.end_effector.poses = prop[28:31].reshape(-1, 1)
+            self.end_effector.lin_vel = prop[37:40].reshape(-1, 1)
+            self.end_effector.ang_vel = prop[40:43].reshape(-1, 1)
         else:
             self._timestamps = np.hstack((self._timestamps, np.array([t])))
             self._prop_sol = np.hstack((self._prop_sol, prop[0:12].reshape(-1, 1)))
-            self.joint_torques = np.hstack((self.joint_torques, prop[25:31].reshape(-1, 1)))
-            self.end_effector.locations = np.hstack((self.end_effector.locations, prop[19:22].reshape(-1, 1)))
-            self.end_effector.poses = np.hstack((self.end_effector.poses, prop[22:25].reshape(-1, 1)))
-            self.end_effector.lin_vel = np.hstack((self.end_effector.lin_vel, prop[31:34].reshape(-1, 1)))
-            self.end_effector.ang_vel = np.hstack((self.end_effector.ang_vel, prop[34:37].reshape(-1, 1)))
+            self.joint_torques = np.hstack((self.joint_torques, prop[31:37].reshape(-1, 1)))
+            self.end_effector.locations = np.hstack((self.end_effector.locations, prop[25:28].reshape(-1, 1)))
+            self.end_effector.poses = np.hstack((self.end_effector.poses, prop[28:31].reshape(-1, 1)))
+            self.end_effector.lin_vel = np.hstack((self.end_effector.lin_vel, prop[37:40].reshape(-1, 1)))
+            self.end_effector.ang_vel = np.hstack((self.end_effector.ang_vel, prop[40:43].reshape(-1, 1)))
 
     def reset(self):
         self._timestamps = None
