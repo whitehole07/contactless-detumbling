@@ -55,11 +55,17 @@ def random_y0():
 
 # Generate debris
 debris = Cylinder(
-    mass=950.0,
-    radius=2.5,
-    height=5.0,
+    mass=700.0,
+    radius=2.6/2,
+    height=7.372,
     thickness=0.1,
-    sigma=35000000.0
+    sigma=35000000.0,
+    Ix=28000,
+    Iy=28000,
+    Iz=3000,
+    Mx=5.908e6,  # Magnetic tensor
+    My=5.908e6,
+    Mz=1.951e6
 )
 
 # Generate robotic arms (UR10 standard)
@@ -87,7 +93,7 @@ com = [
 electromagnet: ElectromagnetEndEffector = ElectromagnetEndEffector(
     n_turns=500.0,
     radius=1.0,
-    current=100.0
+    current=60.0
 )
 
 # External moments
@@ -100,7 +106,7 @@ eddy: TorqueObject = EddyCurrentTorque(
 attitude = AttitudePropagator(entity=debris, M_ext=eddy)
 
 # Save robotic arm results
-base_offset = np.array([10, 0, 0])
+base_offset = np.array([7, 0, 0])
 max_torques = np.array([.1, .1, .1, .1, .1, .1])
 arm = ArmPropagator(joints=joints, com=com, end_effector=electromagnet, base_offset=base_offset, max_torques=max_torques)
 
@@ -114,13 +120,13 @@ y0_arm = [
 ]
 
 y0_debris = [
-    0.0, 0.0, 0.5,                    # Initial debris angular velocity
+    0.5, 0.5, 0.5,                    # Initial debris angular velocity
     0.0, 0.0, 0.0, 1.0                # Initial debris quaternions
 ]
 
 y0_orbit = [
-    6778, 0.0, 0.0,
-    0.0, 7.67, 0.0
+    7138, 0.0, 0.0,
+    0.0, 7.46, 0.0
 ]
 
 y0 = y0_arm + y0_debris + y0_orbit
@@ -132,10 +138,9 @@ env = Environment(
     debris.Ixx,                                                    # Debris Ixx
     debris.Iyy,                                                    # Debris Iyy
     debris.Izz,                                                    # Debris Izz
-    debris.radius,                                                 # Debris cylinder radius
-    debris.height,                                                 # Debris cylinder height
-    debris.thickness,                                              # Debris cylinder thickness
-    debris.sigma,                                                  # Debris conductivity
+    debris.Mxx,                                                    # Magnetic tensor xx
+    debris.Myy,                                                    # Magnetic tensor yy
+    debris.Mzz,                                                    # Magnetic tensor zz
     electromagnet.n_turns,                                         # Coil number of turns
     electromagnet.current,                                         # Coil current
     electromagnet.radius,                                          # Coil radius

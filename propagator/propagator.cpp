@@ -65,7 +65,7 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
  */
 
 Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
-                double debris_radius, double debris_height, double debris_thick, double debris_sigma,
+                double Mxx, double Myy, double Mzz,
                  double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
                   double base_to_body_y, double base_to_body_z, vector<double> dh_a,
                    vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max, vector<vector<double>> com) {
@@ -75,10 +75,9 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
     user_data->debris_Ixx = debris_Ixx;
     user_data->debris_Iyy = debris_Iyy;
     user_data->debris_Izz = debris_Izz;
-    user_data->debris_radius = debris_radius;
-    user_data->debris_height = debris_height;
-    user_data->debris_thick = debris_thick;
-    user_data->debris_sigma = debris_sigma;
+    user_data->Mxx = Mxx;
+    user_data->Mxx = Myy;
+    user_data->Mxx = Mzz;
     user_data->mag_n_turns = mag_n_turns;
     user_data->mag_current = mag_current;
     user_data->mag_radius = mag_radius;
@@ -92,6 +91,8 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
     user_data->control = false;
     user_data->com = com;
     user_data->yD = NULL;
+
+    // Conver M
 
     // Initialize environment 
     initialize();
@@ -215,6 +216,7 @@ tuple<double, vector<double>> Environment::current_state() {
     32-37: joint torques
     38-43: end-effector linear and angular velocity
     44-46: eddy current torque
+    47-49: relative angular velocity in LVLH frame
     */
    
     // Convert N_vector into vector
@@ -310,8 +312,7 @@ int main(void)
       {  0,    0, -0.125}
     };
 
-    Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, DEBRIS_RADIUS, DEBRIS_HEIGHT, 
-    DEBRIS_THICK, DEBRIS_SIGMA, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
+    Environment test(y0, DEBRIS_IXX, DEBRIS_IYY, DEBRIS_IZZ, 5.908e6, 5.908e6, 1.951e6, MAG_N_TURNS, MAG_CURRENT, MAG_RADIUS,
      ORIGIN_XDISTANCE_TO_DEBRIS, ORIGIN_YDISTANCE_TO_DEBRIS, ORIGIN_ZDISTANCE_TO_DEBRIS, DH_A, DH_D, DH_ALPHA,
      {0.1, 0.1, 0.1, 0.1, 0.1, 0.1}, com);
 
@@ -413,7 +414,7 @@ static int check_retval(void* returnvalue, const char* funcname, int opt)
 PYBIND11_MODULE(environment, m) {
     py::class_<Environment>(m, "Environment")
         .def(py::init<vector<double>, double, double, double, double, 
-                      double, double, double, double, double, 
+                      double, double, double, double,
                       double, double, double, double, vector<double>,
                        vector<double>, vector<double>, vector<double>, vector<vector<double>>>())
         .def("initialize", &Environment::initialize)

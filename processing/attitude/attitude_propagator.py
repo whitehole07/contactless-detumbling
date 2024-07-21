@@ -16,6 +16,7 @@ class AttitudePropagator(object):
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps
         self._prop_sol = None  # Propagation solution
+        self._omega_LVLH = None
 
     @property
     def t(self) -> np.ndarray:
@@ -24,6 +25,10 @@ class AttitudePropagator(object):
     @property
     def w(self) -> np.ndarray:
         return self._prop_sol[:3, :]
+
+    @property
+    def w_LVLH(self) -> np.ndarray:
+        return self._omega_LVLH
 
     @property
     def q(self) -> np.ndarray:
@@ -48,11 +53,13 @@ class AttitudePropagator(object):
         if self._prop_sol is None:
             self._timestamps = np.array([t])
             self._prop_sol = prop[12:19].reshape(-1, 1)
+            self._omega_LVLH = prop[46:49].reshape(-1, 1)
 
             self._ext_torque.base_torque.history = prop[43:46].reshape(-1, 1)
         else:
             self._timestamps = np.hstack((self._timestamps, np.array([t])))
             self._prop_sol = np.hstack((self._prop_sol, prop[12:19].reshape(-1, 1)))
+            self._omega_LVLH = np.hstack((self._omega_LVLH, prop[46:49].reshape(-1, 1)))
 
             self._ext_torque.base_torque.history = np.hstack((self._ext_torque.base_torque.history, prop[43:46].reshape(-1, 1)))
 

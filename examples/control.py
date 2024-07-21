@@ -31,7 +31,7 @@ env.set_control_torque(yD=cppyy.gbl.std.vector[float](list(yD_arm)))
 
 # Perform steps
 orb = [[], [], []]
-while t < 10000:
+while t < 20000:
     # Perform step
     retval, t, s = env.step(t_step=t_step)
     save(t, s)
@@ -39,13 +39,13 @@ while t < 10000:
     orb[1].append(s[20])
     orb[2].append(s[21])
 
-attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
+attitude.plot(["angular_velocity_lvlh", "torques", "energy", "euler_angles"])
 
 arm.plot()
 
 # Angle between ee and angular velocity
 angles = []
-for ang_vel, ee_pose in zip(attitude.w.T, arm.end_effector.poses.T):
+for ang_vel, ee_pose in zip(attitude.w_LVLH.T, arm.end_effector.poses.T):
     # Normalize
     ang_vel = ang_vel / np.linalg.norm(ang_vel)
     ee_pos = ee_pose / np.linalg.norm(ee_pose)

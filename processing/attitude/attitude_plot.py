@@ -39,6 +39,28 @@ def plot_evolution(attitude_propagator, quantities: list, ncols: int = 2) -> Non
 
             # Increase counter
             index += 1
+        if "angular_velocity_lvlh" == quantity:
+            # Retrieve angular velocities
+            w = attitude_propagator.w_LVLH
+
+            # Set plot
+            ax[index].set_xlabel('Time [s]')
+            ax[index].set_ylabel('Angular Velocity [rad/s]')
+
+            # Plot the vectors with customized appearance
+            ax[index].plot(t, w[0, :], label='$\omega_x$', color='blue', linestyle='-')
+            ax[index].plot(t, w[1, :], label='$\omega_y$', color='green', linestyle='--')
+            ax[index].plot(t, w[2, :], label='$\omega_z$', color='red', linestyle='-.')
+
+            # Add a legend
+            ax[index].legend()
+
+            # Add a title and grid
+            ax[index].set_title('Angular Velocities')
+            ax[index].grid(True)
+
+            # Increase counter
+            index += 1
         if "euler_angles" == quantity:
             # Retrieve angles
             euler = attitude_propagator.euler_angles

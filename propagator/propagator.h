@@ -46,8 +46,7 @@ typedef struct function_data
 
   // Attitude (debris)
   double debris_Ixx, debris_Iyy, debris_Izz;
-  double debris_radius, debris_height, debris_thick, debris_sigma;
-  SUNMatrix M;
+  double Mxx, Myy, Mzz;
 
   // Magnet
   double mag_n_turns, mag_current, mag_radius;
@@ -73,7 +72,7 @@ public:
     
     // Constructor
     Environment(vector<double> y0, double debris_Ixx, double debris_Iyy, double debris_Izz, 
-                double debris_radius, double debris_height, double debris_thick, double debris_sigma,
+                double Mxx, double Myy, double Mzz,
                  double mag_n_turns, double mag_current, double mag_radius, double base_to_body_x,
                   double base_to_body_y, double base_to_body_z, vector<double> dh_a,
                    vector<double> dh_d, vector<double> dh_alpha, vector<double> tau_max, vector<vector<double>> com);
