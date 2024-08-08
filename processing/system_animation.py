@@ -151,7 +151,7 @@ def animate_system(*, t, q, eu, h, r, dpi, att, arms: list = ()):
         ax.quiver(*(0, 0, 0), 0, 0, arrow_length, color='r', label='Z-axis')
 
         # Arrow for angular velocity
-        w_norm = att.w[:, frame] / np.linalg.norm(att.w[:, frame])
+        w_norm = att.w_LVLH[:, frame] / np.linalg.norm(att.w_LVLH[:, frame])
         ax.quiver(*(0, 0, 0), *(arrow_length*w_norm), color='black', label='Angular velocity')
 
         # Remove tick labels

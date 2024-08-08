@@ -86,6 +86,7 @@ class ArmPropagator(object):
         # Evolving parameters
         self._timestamps = None  # Propagation timestamps
         self._prop_sol = None  # Propagation solution
+        self.mag_field = None
         self.joint_torques = None
 
     @property
@@ -125,6 +126,7 @@ class ArmPropagator(object):
             self.end_effector.poses = prop[28:31].reshape(-1, 1)
             self.end_effector.lin_vel = prop[37:40].reshape(-1, 1)
             self.end_effector.ang_vel = prop[40:43].reshape(-1, 1)
+            self.mag_field = prop[49:52].reshape(-1, 1)
         else:
             self._timestamps = np.hstack((self._timestamps, np.array([t])))
             self._prop_sol = np.hstack((self._prop_sol, prop[0:12].reshape(-1, 1)))
@@ -133,6 +135,7 @@ class ArmPropagator(object):
             self.end_effector.poses = np.hstack((self.end_effector.poses, prop[28:31].reshape(-1, 1)))
             self.end_effector.lin_vel = np.hstack((self.end_effector.lin_vel, prop[37:40].reshape(-1, 1)))
             self.end_effector.ang_vel = np.hstack((self.end_effector.ang_vel, prop[40:43].reshape(-1, 1)))
+            self.mag_field = np.hstack((self.mag_field, prop[49:52].reshape(-1, 1)))
 
     def reset(self):
         self._timestamps = None

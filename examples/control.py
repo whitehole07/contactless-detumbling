@@ -31,7 +31,7 @@ env.set_control_torque(yD=cppyy.gbl.std.vector[float](list(yD_arm)))
 
 # Perform steps
 orb = [[], [], []]
-while t < 20000:
+while t < 15000:
     # Perform step
     retval, t, s = env.step(t_step=t_step)
     save(t, s)
@@ -40,8 +40,10 @@ while t < 20000:
     orb[2].append(s[21])
 
 attitude.plot(["angular_velocity_lvlh", "torques", "energy", "euler_angles"])
+attitude.plot(["angular_velocity", "torques", "energy", "euler_angles"])
+attitude.plot(["angular_velocity_x", "angular_velocity_y", "angular_velocity_z", "energy"])
 
-arm.plot()
+# arm.plot()
 
 # Angle between ee and angular velocity
 angles = []
@@ -71,7 +73,27 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-fig = plt.figure()
+# Plot magnetic field
+# Create a figure and axis
+fig, ax = plt.subplots()
+
+# Plot data
+ax.plot(arm.mag_field[0, :], label='$B_x$', color='blue', linestyle='-')
+ax.plot(arm.mag_field[1, :], label='$B_y$', color='green', linestyle='--')
+ax.plot(arm.mag_field[2, :], label='$B_z$', color='red', linestyle='-.')
+
+# Add title and labels
+ax.set_title('Magnetic field in body frame')
+ax.set_xlabel('Time')
+ax.set_ylabel('Magnetic Field')
+
+# Add a legend
+ax.legend()
+
+# Display the plot
+plt.show()
+
+"""fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the 3D line
@@ -85,7 +107,7 @@ ax.set_title('3D Line Plot')
 ax.legend()
 
 # Show the plot
-plt.show()
+plt.show()"""
 
 print("Supposed:\n", TD)
 print("\nAfter IK:\n", T_c)

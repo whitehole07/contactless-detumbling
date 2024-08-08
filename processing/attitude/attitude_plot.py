@@ -17,6 +17,66 @@ def plot_evolution(attitude_propagator, quantities: list, ncols: int = 2) -> Non
     # Go through the quantities
     index = 0
     for quantity in quantities:
+        if "angular_velocity_x" == quantity:
+            # Retrieve angular velocities
+            w = attitude_propagator.w_LVLH
+
+            # Set plot
+            ax[index].set_xlabel('Time [s]')
+            ax[index].set_ylabel('Angular Velocity [rad/s]')
+
+            # Plot the vectors with customized appearance
+            ax[index].plot(t, w[0, :], label='$\omega_x$', color='blue', linestyle='-')
+
+            # Add a legend
+            ax[index].legend()
+
+            # Add a title and grid
+            ax[index].set_title('X Component of Relative Angular Velocity')
+            ax[index].grid(True)
+
+            # Increase counter
+            index += 1
+        if "angular_velocity_y" == quantity:
+            # Retrieve angular velocities
+            w = attitude_propagator.w_LVLH
+
+            # Set plot
+            ax[index].set_xlabel('Time [s]')
+            ax[index].set_ylabel('Angular Velocity [rad/s]')
+
+            # Plot the vectors with customized appearance
+            ax[index].plot(t, w[1, :], label='$\omega_y$', color='green', linestyle='--')
+
+            # Add a legend
+            ax[index].legend()
+
+            # Add a title and grid
+            ax[index].set_title('Y Component of Relative Angular Velocity')
+            ax[index].grid(True)
+
+            # Increase counter
+            index += 1
+        if "angular_velocity_z" == quantity:
+            # Retrieve angular velocities
+            w = attitude_propagator.w_LVLH
+
+            # Set plot
+            ax[index].set_xlabel('Time [s]')
+            ax[index].set_ylabel('Angular Velocity [rad/s]')
+
+            # Plot the vectors with customized appearance
+            ax[index].plot(t, w[2, :], label='$\omega_z$', color='red', linestyle='-.')
+
+            # Add a legend
+            ax[index].legend()
+
+            # Add a title and grid
+            ax[index].set_title('Z Component of Relative Angular Velocity')
+            ax[index].grid(True)
+
+            # Increase counter
+            index += 1
         if "angular_velocity" == quantity:
             # Retrieve angular velocities
             w = attitude_propagator.w
@@ -34,7 +94,7 @@ def plot_evolution(attitude_propagator, quantities: list, ncols: int = 2) -> Non
             ax[index].legend()
 
             # Add a title and grid
-            ax[index].set_title('Angular Velocities')
+            ax[index].set_title('Angular Velocities (Body Frame)')
             ax[index].grid(True)
 
             # Increase counter
@@ -56,7 +116,7 @@ def plot_evolution(attitude_propagator, quantities: list, ncols: int = 2) -> Non
             ax[index].legend()
 
             # Add a title and grid
-            ax[index].set_title('Angular Velocities')
+            ax[index].set_title('Relative Angular Velocities (LVLH Frame)')
             ax[index].grid(True)
 
             # Increase counter

@@ -93,7 +93,7 @@ com = [
 electromagnet: ElectromagnetEndEffector = ElectromagnetEndEffector(
     n_turns=500.0,
     radius=1.0,
-    current=60.0
+    current=500 # 60.0
 )
 
 # External moments
@@ -111,7 +111,7 @@ max_torques = np.array([.1, .1, .1, .1, .1, .1])
 arm = ArmPropagator(joints=joints, com=com, end_effector=electromagnet, base_offset=base_offset, max_torques=max_torques)
 
 # Set propagation settings
-t_step = .1  # Propagation time step [s]
+t_step = 1  # Propagation time step [s]
 
 # Set initial conditions
 y0_arm = [

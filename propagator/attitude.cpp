@@ -44,23 +44,11 @@ int initiate_attitude(SUNContext sunctx, N_Vector y, void* user_data) {
     Ith(y, INIT_SLICE_ATTITUDE + i) = data->y0[INIT_SLICE_ATTITUDE + i];
   }
 
-  // Get magnetic tensor
-  /* SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
-  double gamma  = 1 - ((2*data->debris_radius/data->debris_height) * tanh(data->debris_height/(2*data->debris_radius)));
-  double magn   = PI * data->debris_sigma * pow(data->debris_radius, 3) * data->debris_thick * data->debris_height;
-  IJth(M, 0, 0) = gamma * magn;
-  IJth(M, 1, 1) = gamma * magn;
-  IJth(M, 2, 2) = 0.5   * magn;
-
-  // Set user data
-  data->M = M; */
-
   // Retrieve relative angular velocity in body frame
   N_Vector w_r_LVLH = relative_angular_velocity_body(sunctx, y, data);
 
   // Initialize eddy current torque
   N_Vector Tec = eddy_current_torque(sunctx, y, data);
-  
   
   // Clean up
   N_VDestroy(Tec);
@@ -82,10 +70,20 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   wx = Ith(y, INIT_SLICE_ATTITUDE + 0);
   wy = Ith(y, INIT_SLICE_ATTITUDE + 1);
   wz = Ith(y, INIT_SLICE_ATTITUDE + 2);
-  q1 = Ith(y, INIT_SLICE_ATTITUDE + 3);
-  q2 = Ith(y, INIT_SLICE_ATTITUDE + 4);
-  q3 = Ith(y, INIT_SLICE_ATTITUDE + 5);
-  q4 = Ith(y, INIT_SLICE_ATTITUDE + 6);
+
+  // Normalize quaternions
+  N_Vector q = N_VNew_Serial(4, *sunctx);
+  N_Vector q_norm = N_VNew_Serial(4, *sunctx);
+  Ith(q, 0) = Ith(y, INIT_SLICE_ATTITUDE + 3);
+  Ith(q, 1) = Ith(y, INIT_SLICE_ATTITUDE + 4);
+  Ith(q, 2) = Ith(y, INIT_SLICE_ATTITUDE + 5);
+  Ith(q, 3) = Ith(y, INIT_SLICE_ATTITUDE + 6);
+  N_VScale(1/sqrt(N_VDotProd(q, q)), q, q_norm);
+
+  q1 = Ith(q_norm, 0);
+  q2 = Ith(q_norm, 1);
+  q3 = Ith(q_norm, 2);
+  q4 = Ith(q_norm, 3);
 
   // Retrieve relative angular velocity in body frame
   N_Vector w_r_LVLH = relative_angular_velocity_body(*sunctx, y, data);
@@ -99,9 +97,9 @@ int f_attitude(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   // Compute gravity gradient torque
   N_Vector T_gg = gravity_gradient_torque(*sunctx, y, data);
 
-  Ith(ydot, INIT_SLICE_ATTITUDE + 0) = ((Ith(T_eddy, 0) + Ith(T_gg, 0)) - (data->debris_Izz - data->debris_Iyy) * wz * wy) / data->debris_Ixx;
-  Ith(ydot, INIT_SLICE_ATTITUDE + 1) = ((Ith(T_eddy, 1) + Ith(T_gg, 1)) - (data->debris_Ixx - data->debris_Izz) * wx * wz) / data->debris_Iyy;
-  Ith(ydot, INIT_SLICE_ATTITUDE + 2) = ((Ith(T_eddy, 2) + Ith(T_gg, 2)) - (data->debris_Iyy - data->debris_Ixx) * wy * wx) / data->debris_Izz;
+  Ith(ydot, INIT_SLICE_ATTITUDE + 0) = ((Ith(T_eddy, 0)) - (data->debris_Izz - data->debris_Iyy) * wz * wy) / data->debris_Ixx; //  + Ith(T_gg, 0)
+  Ith(ydot, INIT_SLICE_ATTITUDE + 1) = ((Ith(T_eddy, 1)) - (data->debris_Ixx - data->debris_Izz) * wx * wz) / data->debris_Iyy; //  + Ith(T_gg, 1)
+  Ith(ydot, INIT_SLICE_ATTITUDE + 2) = ((Ith(T_eddy, 2)) - (data->debris_Iyy - data->debris_Ixx) * wy * wx) / data->debris_Izz; //  + Ith(T_gg, 2)
 
   // Quaternions EODs
   Ith(ydot, INIT_SLICE_ATTITUDE + 3) = SUN_RCONST(0.5) * (wz_r * q2 - wy_r * q3 + wx_r * q4);
@@ -206,6 +204,11 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
   // Compute magnetic field
   N_Vector B = get_magnetic_field(y, sunctx, user_data);
 
+  for (size_t i = 0; i < 3; i++)
+  {
+    Ith(user_data->additional, EE_MAG_INIT_SLICE + i) = Ith(B, i);
+  }
+
   // Get magnetic tensor
   SUNMatrix M = SUNDenseMatrix(3, 3, sunctx);
   IJth(M, 0, 0) = user_data->Mxx;
@@ -229,12 +232,10 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
   // Compute torque
   // Compute cross product: cross(wr, B)
   N_Vector cross_res = cross(sunctx, wr_body, B);
-  N_VScale(1.0, cross_res, wr_body);
   
   // Perform the matrix-vector multiplication: M * temp1
   N_Vector tmp = N_VNew_Serial(3, sunctx);
-  SUNMatMatvecSetup(M);
-  SUNMatMatvec(M, wr_body, tmp);
+  SUNMatMatvec(M, cross_res, tmp);
 
   // Torque, perform the cross product: cross(M * cross(wr, B), B)
   N_Vector T = cross(sunctx, tmp, B);
@@ -247,6 +248,7 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
 
   // Free memory
   SUNMatDestroy(R_LVLHB);
+  SUNMatDestroy(M);
   N_VDestroy(B);
   N_VDestroy(linang_vel);
   N_VDestroy(wr);
@@ -259,12 +261,13 @@ N_Vector eddy_current_torque(SUNContext sunctx, N_Vector y, UserData user_data) 
 
 // Function to convert quaternion to rotation matrix
 SUNMatrix LVLH_to_body(N_Vector y, SUNContext sunctx) {
+    // Retrieve current timestep quaternions from integrator
     double q1 = Ith(y, INIT_SLICE_ATTITUDE + 3 + 0);
     double q2 = Ith(y, INIT_SLICE_ATTITUDE + 3 + 1);
     double q3 = Ith(y, INIT_SLICE_ATTITUDE + 3 + 2);
     double q4 = Ith(y, INIT_SLICE_ATTITUDE + 3 + 3);
 
-    // Create a 3x3 SUNMatrix
+    // Initialize a 3x3 SUNMatrix
     SUNMatrix R = SUNDenseMatrix(3, 3, sunctx);
 
     // Fill the SUNMatrix with the rotation matrix elements
@@ -278,12 +281,14 @@ SUNMatrix LVLH_to_body(N_Vector y, SUNContext sunctx) {
     IJth(R, 2, 1) = 2 * (q2 * q3 - q1 * q4);
     IJth(R, 2, 2) = -q1 * q1 - q2 * q2 + q3 * q3 + q4 * q4;
 
-    return R;
+    return R; // THIS FUNCTION IS MOST PROBABLY WRONG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 N_Vector relative_angular_velocity_body(SUNContext sunctx, N_Vector y, UserData user_data) {
-  // LVLH to Body
+  // Get rotation matrix: LVLH to Body
   SUNMatrix R_LVLHB = LVLH_to_body(y, sunctx);
+
+  // Get rotation matrix: Body to LVLH
   SUNMatrix R_BLVLH = transpose(sunctx, R_LVLHB);
 
   // Retrieve orbital state
@@ -294,31 +299,34 @@ N_Vector relative_angular_velocity_body(SUNContext sunctx, N_Vector y, UserData 
     Ith(position, i) = Ith(y, INIT_SLICE_ORBIT + i);
     Ith(velocity, i) = Ith(y, INIT_SLICE_ORBIT + i + 3);
   }
-  double r = sqrt(N_VDotProd(position, position));
-  double v = sqrt(N_VDotProd(velocity, velocity));
+  double r = sqrt(N_VDotProd(position, position));  // Magnitude of orbital position vector
+  double v = sqrt(N_VDotProd(velocity, velocity));  // Magnitude of orbital velocity vector
 
   // Rotate to LVLH frame
-  Ith(position, 0) = -v;
-  Ith(position, 1) = 0.0;
+  Ith(position, 0) = 0.0;
+  Ith(position, 1) = r;
   Ith(position, 2) = 0.0;
-  Ith(velocity, 0) = 0.0;
-  Ith(velocity, 1) = r;
+  Ith(velocity, 0) = -v;
+  Ith(velocity, 1) = 0.0;
   Ith(velocity, 2) = 0.0;
 
-  // Compute LVLH angular velocity
+  // Compute orbital angular velocity and rotate to body frame
   N_Vector w_or = N_VNew_Serial(3, sunctx);
   N_Vector w_or_body = N_VNew_Serial(3, sunctx);
   N_Vector h = cross(sunctx, position, velocity);
   N_VScale(1/(r*r), h, w_or);
   SUNMatMatvec(R_LVLHB, w_or, w_or_body);
 
-  // Compute relative velocity in body frame
+  // Compute relative angular velocity in the body frame and rotate back to LVLH
   N_Vector w_r = N_VNew_Serial(3, sunctx);
   N_Vector w_r_LVLH = N_VNew_Serial(3, sunctx);
-  Ith(w_r, 0) = Ith(w_or, 0) + Ith(y, INIT_SLICE_ATTITUDE + 0);
-  Ith(w_r, 1) = Ith(w_or, 1) + Ith(y, INIT_SLICE_ATTITUDE + 1);
-  Ith(w_r, 2) = Ith(w_or, 2) + Ith(y, INIT_SLICE_ATTITUDE + 2);
+  Ith(w_r, 0) = Ith(y, INIT_SLICE_ATTITUDE + 0) - Ith(w_or_body, 0);
+  Ith(w_r, 1) = Ith(y, INIT_SLICE_ATTITUDE + 1) - Ith(w_or_body, 1);
+  Ith(w_r, 2) = Ith(y, INIT_SLICE_ATTITUDE + 2) - Ith(w_or_body, 2);
   SUNMatMatvec(R_BLVLH, w_r, w_r_LVLH);
+
+  // cout << "Rel BODY: " << Ith(w_r, 0) << ", " << Ith(w_r, 1) << ", " << Ith(w_r, 2) << endl;
+  // cout << "Rel LVLH: " << Ith(w_r_LVLH, 0) << ", " << Ith(w_r_LVLH, 1) << ", " << Ith(w_r_LVLH, 2) << endl;
 
   // Save to user data
   for (size_t i = 0; i < 3; i++)
@@ -333,7 +341,7 @@ N_Vector relative_angular_velocity_body(SUNContext sunctx, N_Vector y, UserData 
   N_VDestroy(velocity);
   N_VDestroy(w_or);
   N_VDestroy(w_or_body);
-  N_VDestroy(h);
+  N_VDestroy(h); 
   N_VDestroy(w_r);
 
   return w_r_LVLH;

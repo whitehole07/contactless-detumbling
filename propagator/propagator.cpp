@@ -76,8 +76,8 @@ Environment::Environment(vector<double> y0, double debris_Ixx, double debris_Iyy
     user_data->debris_Iyy = debris_Iyy;
     user_data->debris_Izz = debris_Izz;
     user_data->Mxx = Mxx;
-    user_data->Mxx = Myy;
-    user_data->Mxx = Mzz;
+    user_data->Myy = Myy;
+    user_data->Mzz = Mzz;
     user_data->mag_n_turns = mag_n_turns;
     user_data->mag_current = mag_current;
     user_data->mag_radius = mag_radius;

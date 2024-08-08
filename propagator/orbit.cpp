@@ -63,6 +63,9 @@ int f_orbit(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   Ith(ydot, INIT_SLICE_ORBIT + 4) = mag * Ith(rv, 1);
   Ith(ydot, INIT_SLICE_ORBIT + 5) = mag * Ith(rv, 2);
 
+  // Clean up
+  N_VDestroy(rv);
+
   return(0);
 }
 

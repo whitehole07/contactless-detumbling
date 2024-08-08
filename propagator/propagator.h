@@ -29,14 +29,16 @@ using namespace std;
     6x - linear and angular velocity
     3x - eddy current torque
     3x - relative angular velocity in LVLH frame
+    3x - magnetic field in the body frame
 */
-#define ADDITIONAL_SIZE   24
+#define ADDITIONAL_SIZE   27
 #define EE_LOC_INIT_SLICE 0
 #define EE_POS_INIT_SLICE 3
 #define EE_TOR_INIT_SLICE 6
 #define EE_LAV_INIT_SLICE 12
 #define EE_ECT_INIT_SLICE 18
 #define EE_WLV_INIT_SLICE 21
+#define EE_MAG_INIT_SLICE 24
 
 typedef struct function_data
 { 
